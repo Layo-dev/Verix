@@ -40,7 +40,6 @@ const Partners = () => {
             </h3>
           </div>
           <div>
-            <p className="text-sm text-accent mb-2">✨ 4.9 {'{'}6k+Reviews{'}'} by Trustpilot</p>
             <p className="text-lg font-semibold text-foreground">
               The Platform stands alone as the payix customer management solution.
             </p>

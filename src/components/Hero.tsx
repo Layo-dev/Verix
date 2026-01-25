@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, Lock, Play } from "lucide-react";
-import PhoneMockup from "./PhoneMockup";
+
+import PhoneMockup from "@/assets/Phonemockup.svg";
 
 const Hero = () => {
   return (
@@ -12,21 +13,15 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div className="max-w-xl">
-            {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 bg-background/80 backdrop-blur-sm border border-border rounded-full px-4 py-2 mb-6 shadow-sm">
-              <span className="text-lg">✨</span>
-              <span className="text-sm font-medium text-accent">4.9 {'{'}6k+Reviews{'}'}</span>
-              <span className="text-sm text-muted-foreground">by Trustpilot</span>
-            </div>
-
+            
             {/* Heading */}
             <h1 className="section-title mb-6">
-              Simplify management and payments from a single platform
+              Receive OTPs Without Using Your Personal Number
             </h1>
 
             {/* Description */}
             <p className="section-description mb-8">
-              Meet the new standard for a modern card platform. Launch your product, issue cards, and grow your revenue.
+              Rent secure virtual phone numbers for instant SMS verification on any platform.
             </p>
 
             {/* CTA Buttons */}
@@ -56,7 +51,7 @@ const Hero = () => {
 
           {/* Right Content - Phone Mockup */}
           <div className="relative flex justify-center lg:justify-end">
-            <PhoneMockup />
+            <img src={PhoneMockup} alt="Phone Mockup" />
           </div>
         </div>
       </div>
