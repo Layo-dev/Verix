@@ -4,7 +4,7 @@ import PhoneMockup from "./PhoneMockup";
 
 const Hero = () => {
   return (
-    <section className="relative pt-24 md:pt-32 pb-16 md:pb-24 overflow-hidden">
+    <section className="relative pt-24 md:pt-32 pb-16 md:pb-24 overflow-hidden overflow-x-hidden">
       {/* Background Gradient */}
       <div className="absolute inset-0 gradient-hero -z-10" />
       
@@ -55,7 +55,7 @@ const Hero = () => {
           </div>
 
           {/* Right Content - Phone Mockup */}
-          <div className="relative flex justify-center lg:justify-end">
+          <div className="relative flex justify-center lg:justify-end pb-24 sm:pb-28">
             <PhoneMockup />
           </div>
         </div>

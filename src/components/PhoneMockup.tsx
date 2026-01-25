@@ -83,38 +83,38 @@ const PhoneMockup = () => {
         </div>
       </div>
 
-      {/* Floating Stats Card */}
-      <div className="absolute -bottom-8 -left-4 md:-left-12 bg-card rounded-2xl p-4 shadow-xl border border-border/50 animate-fade-in">
-        <div className="flex gap-6">
+      {/* Floating Stats Card - Hidden on small mobile to prevent overflow */}
+      <div className="absolute -bottom-8 left-0 md:-left-12 bg-card rounded-2xl p-3 md:p-4 shadow-xl border border-border/50 animate-fade-in hidden sm:block max-w-[280px] md:max-w-none">
+        <div className="flex gap-4 md:gap-6">
           <div>
             <p className="text-xs text-muted-foreground mb-1">Total Income</p>
-            <p className="text-lg font-bold">90,560.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
+            <p className="text-sm md:text-lg font-bold">90,560.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
             <p className="text-xs text-success flex items-center gap-1 mt-1">
               <ArrowUpRight size={12} />
-              60% increase compared to last week
+              60% increase
             </p>
           </div>
-          <div className="border-l border-border pl-6">
+          <div className="border-l border-border pl-4 md:pl-6">
             <p className="text-xs text-muted-foreground mb-1">Total Expense</p>
-            <p className="text-lg font-bold">19,760.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
+            <p className="text-sm md:text-lg font-bold">19,760.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
             <p className="text-xs text-destructive flex items-center gap-1 mt-1">
               <ArrowUpRight size={12} className="rotate-90" />
-              40% decrease compared to last week
+              40% decrease
             </p>
           </div>
         </div>
       </div>
 
-      {/* User Card */}
-      <div className="absolute -bottom-20 right-0 md:right-4 bg-card rounded-xl p-3 shadow-lg border border-border/50 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold">
+      {/* User Card - Hidden on small mobile to prevent overflow */}
+      <div className="absolute -bottom-20 right-0 bg-card rounded-xl p-2 md:p-3 shadow-lg border border-border/50 hidden sm:flex items-center gap-2 md:gap-3 max-w-[240px] md:max-w-none">
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs md:text-sm font-semibold flex-shrink-0">
           HE
         </div>
-        <div>
-          <p className="text-sm font-medium">Hawardi Elia</p>
-          <p className="text-xs text-muted-foreground">info@hawardielia.au</p>
+        <div className="min-w-0">
+          <p className="text-xs md:text-sm font-medium truncate">Hawardi Elia</p>
+          <p className="text-xs text-muted-foreground truncate">info@hawardielia.au</p>
         </div>
-        <p className="text-sm font-bold ml-4">$489.00</p>
+        <p className="text-xs md:text-sm font-bold ml-2 md:ml-4 flex-shrink-0">$489.00</p>
       </div>
     </div>
   );

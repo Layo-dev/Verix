@@ -75,13 +75,13 @@ const Pricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6">
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`relative rounded-3xl p-6 md:p-8 border transition-all ${
+              className={`relative rounded-3xl p-5 md:p-8 border transition-all ${
                 plan.popular
-                  ? 'bg-accent text-accent-foreground border-accent shadow-xl scale-105'
+                  ? 'bg-accent text-accent-foreground border-accent shadow-xl md:scale-105'
                   : 'bg-card border-border hover:border-accent/30 hover:shadow-lg'
               }`}
             >

@@ -71,11 +71,11 @@ const Dashboard = () => {
               </div>
 
               {/* Visual Bars */}
-              <div className="flex gap-2 justify-center">
+              <div className="flex gap-1 sm:gap-2 justify-center">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div
                     key={i}
-                    className={`w-14 md:w-16 rounded-t-xl ${i === 4 ? 'h-16 bg-accent' : 'h-12 bg-peach-dark/50'}`}
+                    className={`w-10 sm:w-14 md:w-16 rounded-t-xl ${i === 4 ? 'h-16 bg-accent' : 'h-12 bg-peach-dark/50'}`}
                   />
                 ))}
               </div>
