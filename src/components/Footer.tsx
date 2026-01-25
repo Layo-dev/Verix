@@ -73,15 +73,15 @@ const Footer = () => {
           </div>
 
           {/* Newsletter */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h4 className="font-semibold mb-4">Subscribe to our newsletter</h4>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
                 placeholder="Enter your mail"
-                className="flex-1 px-4 py-2 rounded-full border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                className="flex-1 min-w-0 px-4 py-2 rounded-full border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
               />
-              <Button variant="default" size="default">
+              <Button variant="default" size="default" className="flex-shrink-0">
                 Subscribe
               </Button>
             </div>
