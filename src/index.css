@@ -120,19 +120,19 @@
 
 @layer components {
   .section-label {
-    @apply text-xs sm:text-sm font-medium text-accent;
+    @apply text-sm font-medium text-accent;
   }
 
   .section-title {
-    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight tracking-tight;
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight tracking-tight;
   }
 
   .section-description {
-    @apply text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed;
+    @apply text-base md:text-lg text-muted-foreground leading-relaxed;
   }
 
   .card-feature {
-    @apply bg-card rounded-2xl p-4 sm:p-5 md:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border border-border/50;
+    @apply bg-card rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border border-border/50;
   }
 
   .gradient-hero {
@@ -145,15 +145,5 @@
 
   .gradient-accent {
     background: var(--gradient-accent);
-  }
-}
-
-@layer utilities {
-  .container-padding {
-    @apply px-4 sm:px-6 md:px-8 lg:px-12;
-  }
-  
-  .section-padding {
-    @apply py-12 sm:py-16 md:py-20 lg:py-28;
   }
 }
