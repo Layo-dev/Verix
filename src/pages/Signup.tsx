@@ -1,0 +1,137 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
+import AuthInput from "@/components/auth/AuthInput";
+import SupportButton from "@/components/auth/SupportButton";
+
+const Signup = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [errors, setErrors] = useState<{ confirmPassword?: string }>({});
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate password match
+    if (password !== confirmPassword) {
+      setErrors({ confirmPassword: "Passwords do not match" });
+      return;
+    }
+
+    setErrors({});
+    // Handle signup logic here
+    console.log("Signup submitted:", { email, password, agreedToTerms });
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <div className="w-3 h-3 bg-primary-foreground rounded-sm" />
+          </div>
+          <span className="text-xl font-bold text-foreground">Verix.</span>
+        </div>
+
+        {/* Heading */}
+        <h1 className="text-3xl font-bold text-foreground text-center">
+          Sign Up
+        </h1>
+
+        {/* Social Login */}
+        <SocialLoginButtons />
+
+        {/* Divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">Or</span>
+          </div>
+        </div>
+
+        {/* Signup Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <AuthInput
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            helperText="Confirmation required"
+            required
+          />
+          <AuthInput
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <AuthInput
+            type="password"
+            placeholder="Repeat password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={errors.confirmPassword}
+            required
+          />
+
+          {/* Terms Checkbox */}
+          <div className="flex items-start gap-3">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+              className="mt-0.5"
+            />
+            <label
+              htmlFor="terms"
+              className="text-sm text-muted-foreground leading-snug"
+            >
+              By continuing, you agree to our{" "}
+              <Link to="/terms" className="text-accent hover:underline">
+                Terms of Service
+              </Link>
+              ,{" "}
+              <Link to="/privacy" className="text-accent hover:underline">
+                Privacy Policy
+              </Link>
+              , and{" "}
+              <Link to="/refund" className="text-accent hover:underline">
+                Refund Policy
+              </Link>
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full h-12"
+            variant="accent"
+            disabled={!agreedToTerms}
+          >
+            Sign Up
+          </Button>
+        </form>
+
+        {/* Login Link */}
+        <p className="text-center text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link to="/login" className="text-accent font-medium hover:underline">
+            Login
+          </Link>
+        </p>
+      </div>
+
+      <SupportButton />
+    </div>
+  );
+};
+
+export default Signup;
