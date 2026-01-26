@@ -14,26 +14,26 @@ const Navbar = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <div className="w-3 h-3 bg-primary-foreground rounded-sm" />
             </div>
-            <span className="text-xl font-bold text-foreground">Payix.</span>
+            <span className="text-xl font-bold text-foreground">Verix.</span>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Features
+              Receive SMS
             </a>
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </a>
-            <a href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Company
+            <a href="#reviews" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              About Us
             </a>
           </div>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="nav" size="sm">Personal</Button>
-            <Button variant="navActive" size="sm">Business</Button>
+            <Button variant="nav" size="sm">Login</Button>
+            <Button variant="navActive" size="sm">Sign Up</Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -50,14 +50,14 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border animate-fade-in">
             <div className="flex flex-col gap-4">
-              <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Features
+              <a href="#receive-sms" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Receive SMS
               </a>
               <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Pricing
               </a>
-              <a href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Company
+              <a href="#reviews" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                About Us
               </a>
               <div className="flex gap-2 pt-4">
                 <Button variant="nav" size="sm" className="flex-1">Personal</Button>

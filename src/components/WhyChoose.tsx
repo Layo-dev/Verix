@@ -29,7 +29,7 @@ const WhyChoose = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div className="max-w-lg">
-            <p className="section-label mb-4">{'{'} Why Choose E-Bank {'}'}</p>
+            <p className="section-label mb-4">{'{'} Why Choose Verix {'}'}</p>
             <h2 className="section-title mb-6">
               Financial technology with banking license, and expert guidance
             </h2>

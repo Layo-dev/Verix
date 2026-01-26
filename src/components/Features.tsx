@@ -7,9 +7,9 @@ const Features = () => {
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <p className="section-label mb-4">{'{'} Powerful Features {'}'}</p>
-          <h2 className="section-title mb-6">Explore the standout features</h2>
+          <h2 className="section-title mb-6">Receive SMS with codes online directly on our website</h2>
           <p className="section-description">
-            Which spokesperson is my target audience responding to. Get real-time answers to improve your creative mid-flight. And see what's worked in the past to get Intel for your next campaign
+            Receive SMS with codes online directly on our website.
           </p>
         </div>
 
