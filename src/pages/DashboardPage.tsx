@@ -3,11 +3,14 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import CountryList from "@/components/dashboard/CountryList";
 import ServiceList from "@/components/dashboard/ServiceList";
 import MyNumbers from "@/components/dashboard/MyNumbers";
+import MobileDashboard from "@/components/dashboard/MobileDashboard";
 import { Settings } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DashboardPage = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("RU");
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   // Empty orders for demo - in real app this would come from API
   const orders: Array<{
@@ -17,6 +20,19 @@ const DashboardPage = () => {
     expiresAt: Date;
   }> = [];
 
+  // Render mobile layout
+  if (isMobile) {
+    return (
+      <MobileDashboard
+        selectedCountry={selectedCountry}
+        selectedService={selectedService}
+        onSelectCountry={setSelectedCountry}
+        onSelectService={setSelectedService}
+      />
+    );
+  }
+
+  // Desktop layout
   return (
     <div className="min-h-screen bg-background flex w-full">
       <DashboardSidebar />
