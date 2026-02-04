@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   { icon: MessageSquare, label: "Buy Number", href: "/dashboard", active: true },
   { icon: Smartphone, label: "Mobile proxies", href: "/dashboard/proxies" },
-  { icon: Phone, label: "Number rent", href: "/dashboard/rent" },
-  { icon: Users, label: "Referral program", href: "/dashboard/referral" },
+  { icon: Phone, label: "Active Numbers", href: "/dashboard/rent" },
+  { icon: Users, label: "SMS Inbox", href: "/dashboard/referral" },
 ];
 
 const secondaryItems = [
