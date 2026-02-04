@@ -26,7 +26,7 @@ const menuItems = [
 ];
 
 const secondaryItems = [
-  { icon: Wallet, label: "Refill balance", href: "/dashboard/refill" },
+  { icon: Wallet, label: "History", href: "/dashboard/refill" },
   { icon: Ticket, label: "Tickets", href: "/dashboard/tickets" },
 ];
 
