@@ -87,8 +87,9 @@ const MobileDashboard = ({
     <div className="min-h-screen bg-background flex flex-col">
       {/* Mobile Header */}
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-        
-            <DashboardSidebar />
+     <SheetContent side="left" className="p-0 w-[280px] lg:hidden">
+       <DashboardSidebar />
+     </SheetContent>
 
         <h1 className="text-lg font-bold text-foreground">Receive SMS</h1>
 
