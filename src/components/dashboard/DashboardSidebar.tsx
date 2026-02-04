@@ -19,7 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { icon: MessageSquare, label: "Receive SMS", href: "/dashboard", active: true },
+  { icon: MessageSquare, label: "Buy Number", href: "/dashboard", active: true },
   { icon: Smartphone, label: "Mobile proxies", href: "/dashboard/proxies" },
   { icon: Phone, label: "Number rent", href: "/dashboard/rent" },
   { icon: Users, label: "Referral program", href: "/dashboard/referral" },
