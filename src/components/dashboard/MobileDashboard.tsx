@@ -87,16 +87,8 @@ const MobileDashboard = ({
     <div className="min-h-screen bg-background flex flex-col">
       {/* Mobile Header */}
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetTrigger asChild>
-            <button className="p-2 -ml-2 text-foreground">
-              <Menu className="w-6 h-6" />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-[280px]">
+        
             <DashboardSidebar />
-          </SheetContent>
-        </Sheet>
 
         <h1 className="text-lg font-bold text-foreground">Receive SMS</h1>
 
