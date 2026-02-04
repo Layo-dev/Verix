@@ -98,7 +98,6 @@ const MobileDashboard = ({
             <DashboardSidebar />
           </SheetContent>
         </Sheet>
-{/*This shows that i have two sidebar*\}
 
         <h1 className="text-lg font-bold text-foreground">Receive SMS</h1>
 
