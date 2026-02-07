@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import DashboardSidebar from "./DashboardSidebar";
 import MyNumbers from "./MyNumbers";
 import SupportButton from "@/components/auth/SupportButton";
+import { services } from "./ServiceList";
 
 // Extended country data with count, price, and status
 const countries = [
@@ -24,21 +25,6 @@ const countries = [
   { code: "GB", name: "United Kingdom", flag: "🇬🇧", phoneCode: "+44", count: 1200, price: 2.00, status: "low" as const },
   { code: "US", name: "United States", flag: "🇺🇸", phoneCode: "+1", count: 3200, price: 1.80, status: "medium" as const },
   { code: "CA", name: "Canada", flag: "🇨🇦", phoneCode: "+1", count: 1500, price: 1.75, status: "low" as const },
-];
-
-const services = [
-  { id: "telegram", name: "Telegram", icon: "✈️", count: 22100, price: 0.20 },
-  { id: "whatsapp", name: "WhatsApp", icon: "💬", count: 15600, price: 0.35 },
-  { id: "facebook", name: "Facebook", icon: "📘", count: 12450, price: 0.15 },
-  { id: "google", name: "Google/Gmail", icon: "🔴", count: 8920, price: 0.25 },
-  { id: "instagram", name: "Instagram", icon: "📸", count: 9800, price: 0.18 },
-  { id: "twitter", name: "Twitter/X", icon: "🐦", count: 7200, price: 0.22 },
-  { id: "tiktok", name: "TikTok", icon: "🎵", count: 11300, price: 0.28 },
-  { id: "discord", name: "Discord", icon: "🎮", count: 6500, price: 0.12 },
-  { id: "microsoft", name: "Microsoft", icon: "🪟", count: 4200, price: 0.30 },
-  { id: "apple", name: "Apple", icon: "🍎", count: 3100, price: 0.45 },
-  { id: "amazon", name: "Amazon", icon: "📦", count: 5600, price: 0.38 },
-  { id: "spotify", name: "Spotify", icon: "🎧", count: 8100, price: 0.15 },
 ];
 
 interface MobileDashboardProps {
@@ -141,7 +127,14 @@ const MobileDashboard = ({
               onClick={() => setServiceSheetOpen(true)}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-full bg-[hsl(200,100%,95%)] text-[hsl(200,100%,40%)] font-medium"
             >
-              <span className="text-xl">{selectedServiceData?.icon || "📱"}</span>
+              {selectedServiceData ? (
+                (() => {
+                  const Icon = selectedServiceData.icon;
+                  return <Icon className="h-6 w-6 shrink-0" />;
+                })()
+              ) : (
+                <span className="text-xl">📱</span>
+              )}
               <span>{selectedServiceData?.name || "Select service"}</span>
             </button>
             <Sheet open={serviceSheetOpen} onOpenChange={setServiceSheetOpen}>
@@ -165,25 +158,27 @@ const MobileDashboard = ({
                 </div>
                 <ScrollArea className="h-[calc(85vh-140px)]">
                   <div className="p-2">
-                    {filteredServices.map((service) => (
-                      <button
-                        key={service.id}
-                        onClick={() => {
-                          onSelectService(service.id);
-                          setServiceSheetOpen(false);
-                        }}
-                        className={cn(
-                          "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-colors",
-                          selectedService === service.id
-                            ? "bg-[hsl(200,100%,95%)]"
-                            : "hover:bg-muted"
-                        )}
-                      >
-                        <Star className="w-5 h-5 text-muted-foreground" />
-                        <span className="text-xl">{service.icon}</span>
-                        <span className="flex-1 text-sm font-medium">{service.name}</span>
-                      </button>
-                    ))}
+                    {filteredServices.map((service) => {
+                      const Icon = service.icon;
+                      return (
+                        <button
+                          key={service.id}
+                          onClick={() => {
+                            onSelectService(service.id);
+                            setServiceSheetOpen(false);
+                          }}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-colors",
+                            selectedService === service.id
+                              ? "bg-[hsl(200,100%,95%)]"
+                              : "hover:bg-muted"
+                          )}
+                        >
+                          <Icon className="h-5 w-5 shrink-0" />
+                          <span className="flex-1 text-sm font-medium">{service.name}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </ScrollArea>
               </SheetContent>
