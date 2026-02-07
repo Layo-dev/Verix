@@ -1,228 +1,207 @@
 
-# Mobile and Tablet Dashboard Responsive Implementation
+
+# Complete Supabase Authentication System
 
 ## Overview
 
-Transform the "Receive SMS" dashboard page to be fully responsive for mobile and tablet devices, matching the provided screenshots. The mobile design uses a different UI pattern with bottom sheets/modals for country and service selection instead of the three-column desktop layout.
+Wire up the existing Login and Signup UI pages to Supabase Auth, add a profiles table with auto-creation, create an auth context provider, protect the dashboard route, and add logout functionality.
 
 ---
 
-## Design Analysis from Screenshots
+## Database Setup
 
-### Screenshot 1: Service Selection Modal (Mobile)
-- Full-screen modal with "Website or service" header and X close button
-- Search input with "Find a site or service" placeholder
-- Scrollable list with favorite star icons, service icons, and service names
-- Selected item has light blue background highlight
+### 1. Create `profiles` table
 
-### Screenshot 2: Main Mobile View
-- Header: hamburger menu icon, "Receive SMS" title, wallet icon, "$0" balance
-- Tab bar: "Buy a number" (active/blue text) | "My numbers" (inactive)
-- Selected service chip: Telegram icon + name in light blue pill
-- Selected country chip: Morocco flag + "+212" with settings icon
-- Full-width blue "Buy a number for $1" button
-- Floating chat support button (bottom right)
+A `profiles` table will store user display information (username, avatar, etc.) and be linked to Supabase's `auth.users` table.
 
-### Screenshot 3: Country Selection Modal (Mobile)
-- Full-screen modal with "Country" header and X close button
-- Search input with "Find a country" placeholder and sort icon button
-- Scrollable list with:
-  - Favorite star icon
-  - Country flag emoji
-  - Country name + phone code
-  - Availability count (e.g., "9977")
-  - Price in blue (e.g., "$1")
-  - Status dot indicator (blue/red)
+```sql
+CREATE TABLE public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  username TEXT,
+  display_name TEXT,
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- Users can read their own profile
+CREATE POLICY "Users can read own profile"
+  ON public.profiles FOR SELECT
+  TO authenticated
+  USING (auth.uid() = id);
+
+-- Users can update their own profile
+CREATE POLICY "Users can update own profile"
+  ON public.profiles FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
+
+-- Users can insert their own profile (for trigger)
+CREATE POLICY "Users can insert own profile"
+  ON public.profiles FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = id);
+```
+
+### 2. Auto-create profile on signup (trigger)
+
+```sql
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, display_name)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data ->> 'full_name', NEW.email)
+  );
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
+```
 
 ---
 
-## Implementation Strategy
+## New Files to Create
 
-### Approach: Conditional Rendering Based on Screen Size
-- Use the existing `useIsMobile` hook to detect mobile/tablet screens
-- **Mobile (< 768px)**: Show compact card-based UI with sheet modals for selection
-- **Tablet/Desktop (>= 768px)**: Keep existing three-column grid layout
+### 1. `src/contexts/AuthContext.tsx` -- Auth Provider
+
+A React context that:
+- Sets up `onAuthStateChange` listener (before `getSession`)
+- Exposes `user`, `session`, `loading`, `signOut` to the app
+- Wraps the entire app in `App.tsx`
+
+### 2. `src/components/auth/ProtectedRoute.tsx` -- Route Guard
+
+A wrapper component that:
+- Checks if user is authenticated via `useAuth()`
+- If loading, shows a spinner
+- If not authenticated, redirects to `/login`
+- If authenticated, renders children
 
 ---
 
 ## Files to Modify
 
-### 1. `src/pages/DashboardPage.tsx`
-Add mobile-specific layout with:
-- Tab bar for "Buy a number" / "My numbers" toggle
-- Compact selection display (service chip + country chip)
-- "Buy a number for $X" action button
-- Sheet triggers for country/service modals
+### 1. `src/pages/Login.tsx`
 
-### 2. `src/components/dashboard/CountryList.tsx`
-Add:
-- Availability count display (e.g., "9977")
-- Price column (e.g., "$1")
-- Status indicator dot (blue/red based on availability)
-- Sort button in header
-- Modal/Sheet variant for mobile use
+- Import `supabase` client and `useNavigate`
+- Replace `console.log` in `handleSubmit` with `supabase.auth.signInWithPassword({ email, password })`
+- Add loading state and error display using toast notifications
+- On success, navigate to `/dashboard`
+- If user is already logged in, redirect to `/dashboard`
 
-### 3. `src/components/dashboard/ServiceList.tsx`
-Add:
-- Favorite star icon on each row
-- Modal/Sheet variant for mobile use
-- Simplified mobile item display
+### 2. `src/pages/Signup.tsx`
 
-### 4. Create `src/components/dashboard/MobileDashboard.tsx`
-New component containing:
-- Mobile header with menu, title, wallet balance
-- Tab bar component
-- Selected service/country display chips
-- Buy button with dynamic price
-- Sheet modals for country and service selection
+- Import `supabase` client and `useNavigate`
+- Replace `console.log` in `handleSubmit` with `supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } })`
+- Add loading state and error display using toast notifications
+- On success, show a "Check your email for confirmation" message or redirect to `/dashboard`
+
+### 3. `src/App.tsx`
+
+- Wrap routes with `AuthProvider`
+- Wrap `/dashboard` route with `ProtectedRoute`
+
+### 4. `src/components/dashboard/DashboardSidebar.tsx`
+
+- Import `useAuth()` to get user data
+- Replace hardcoded "John Doe" / "ID: 12345678" with actual user display name and ID
+- Wire up the LogOut button to call `signOut()` and navigate to `/login`
+
+### 5. `src/components/dashboard/MobileDashboard.tsx`
+
+- Import `useAuth()` for user data in the mobile header
+- Wire up sidebar logout
+
+### 6. `src/components/Navbar.tsx`
+
+- Import `useAuth()` to check if user is logged in
+- If logged in: show "Dashboard" button instead of Login/Sign Up
+- If not logged in: keep Login/Sign Up buttons as-is
 
 ---
 
-## Detailed Component Specifications
-
-### MobileDashboard Component Structure
+## Authentication Flow
 
 ```text
-MobileDashboard
-├── Header
-│   ├── Menu Button (hamburger icon)
-│   ├── "Receive SMS" title
-│   ├── Wallet Icon
-│   └── Balance Display ("$0")
-│
-├── Tab Bar
-│   ├── "Buy a number" tab (active state)
-│   └── "My numbers" tab
-│
-├── Selection Area (when "Buy a number" tab active)
-│   ├── Service Chip (triggers service sheet)
-│   │   └── Icon + Service Name in blue pill
-│   │
-│   ├── Country Chip (triggers country sheet)
-│   │   └── Flag + Phone Code + Settings icon
-│   │
-│   └── Buy Button
-│       └── "Buy a number for $X" (full-width blue button)
-│
-├── My Numbers Area (when "My numbers" tab active)
-│   └── Empty state or orders list
-│
-├── Service Selection Sheet
-│   ├── Header: "Website or service" + X button
-│   ├── Search input
-│   └── Scrollable service list
-│
-├── Country Selection Sheet
-│   ├── Header: "Country" + X button
-│   ├── Search input + Sort button
-│   └── Scrollable country list with prices
-│
-└── Support FAB (floating action button)
+User visits /signup
+  -> Fills form, clicks "Sign Up"
+  -> supabase.auth.signUp() called
+  -> Supabase sends confirmation email
+  -> User confirms email
+  -> Profile auto-created via trigger
+  -> User redirected to /login
+
+User visits /login
+  -> Fills form, clicks "Login"
+  -> supabase.auth.signInWithPassword() called
+  -> On success: session stored, redirect to /dashboard
+  -> On failure: toast error message
+
+User visits /dashboard (protected)
+  -> ProtectedRoute checks auth state
+  -> If no session: redirect to /login
+  -> If session exists: render dashboard
+
+User clicks LogOut
+  -> supabase.auth.signOut() called
+  -> Session cleared
+  -> Redirect to /login
 ```
-
-### Mobile Header Specifications
-- Height: 48-56px
-- Background: white/card background
-- Left: Menu icon (opens sidebar sheet)
-- Center: "Receive SMS" title (bold, 18px)
-- Right: Wallet icon + "$0" balance
-
-### Tab Bar Specifications
-- Full-width with two equal tabs
-- Active tab: Blue text color (#00A3FF)
-- Inactive tab: Muted gray text
-- Background: Light gray/muted rounded container
-- Padding: 8px vertical, rounded-full corners
-
-### Selection Chips
-- Service chip: Light blue background, blue text, rounded-full
-- Country chip: Light gray background, dark text, rounded-lg, with settings icon
-- Both should be tappable to open respective sheets
-
-### Country List Mobile Enhancements
-- Add `count` and `price` fields to country data
-- Display format: `Flag | Name (Code) | Count | $Price | Dot`
-- Status dot: Blue for available, Red for low stock
-- Include favorite star icon (outline) on left
-
-### Buy Button
-- Full-width, rounded-full
-- Blue background (#00A3FF)
-- White text: "Buy a number for $X"
-- Price derived from selected country + service
-
----
-
-## Updated Data Structures
-
-### Extended Country Type
-```typescript
-interface Country {
-  code: string;
-  name: string;
-  flag: string;
-  phoneCode: string;
-  count: number;      // NEW: availability count
-  price: number;      // NEW: price in USD
-  status: 'high' | 'low';  // NEW: stock status
-}
-```
-
-### Extended Service Type
-```typescript
-interface Service {
-  id: string;
-  name: string;
-  icon: string;
-  count: number;
-  price: number;
-  isFavorite?: boolean;  // NEW: for star icon state
-}
-```
-
----
-
-## Responsive Breakpoints
-
-| Breakpoint | Layout |
-|------------|--------|
-| < 768px (mobile) | Single column, sheet modals, tab interface |
-| 768-1023px (tablet) | Two-column grid, inline lists |
-| >= 1024px (desktop) | Three-column grid, full sidebar |
 
 ---
 
 ## Implementation Order
 
-1. **Create MobileDashboard component** with basic structure
-2. **Update CountryList** with extended data and mobile sheet variant
-3. **Update ServiceList** with favorite icons and mobile sheet variant
-4. **Modify DashboardPage** to conditionally render MobileDashboard vs desktop layout
-5. **Add Sheet components** for country and service selection
-6. **Style and polish** for consistent spacing and alignment
-7. **Test responsive behavior** across all breakpoints
+1. Run database migration (profiles table + trigger)
+2. Create `AuthContext.tsx` with auth state management
+3. Create `ProtectedRoute.tsx` component
+4. Update `App.tsx` to wrap with AuthProvider and protect routes
+5. Update `Login.tsx` with real Supabase auth
+6. Update `Signup.tsx` with real Supabase auth
+7. Update `DashboardSidebar.tsx` with user data and logout
+8. Update `MobileDashboard.tsx` with user data
+9. Update `Navbar.tsx` to show conditional auth state
 
 ---
 
-## Technical Notes
+## Technical Details
 
-### Sheet Modal Behavior
-- Use `Sheet` component from shadcn/ui with `side="bottom"` for mobile
-- Full height sheets (95vh) for selection lists
-- Smooth slide-up animation
-- Close on backdrop click or X button
+### Auth Context Shape
 
-### State Management
-- Lift `selectedCountry` and `selectedService` state to parent
-- Pass down to both desktop and mobile components
-- Calculate total price based on selections
+```typescript
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+}
+```
 
-### Accessibility
-- Proper ARIA labels for sheet triggers
-- Focus management when sheets open/close
-- Keyboard navigation within lists
+### Session Listener Pattern
 
-### No Horizontal Scroll
-- All content constrained within viewport
-- Use `overflow-x-hidden` on containers
-- Proper padding on mobile (16px sides)
+The `onAuthStateChange` listener will be set up BEFORE calling `getSession()` to avoid race conditions -- this is a Supabase best practice.
+
+### Error Handling
+
+- Invalid credentials: "Invalid email or password"
+- Email not confirmed: "Please check your email to confirm your account"
+- Network errors: "Something went wrong. Please try again."
+- All errors shown via toast notifications (using existing Sonner)
+
+### Email Confirmation
+
+By default, Supabase requires email confirmation. After signup, users will see a message asking them to check their email. The `emailRedirectTo` option will be set to `window.location.origin` so users return to the app after confirming.
+
