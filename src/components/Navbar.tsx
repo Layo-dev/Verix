@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -33,12 +35,20 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="nav" size="sm" asChild>
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button variant="navActive" size="sm" asChild>
-              <Link to="/signup">Sign Up</Link>
-            </Button>
+            {!loading && user ? (
+              <Button variant="navActive" size="sm" asChild>
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="nav" size="sm" asChild>
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button variant="navActive" size="sm" asChild>
+                  <Link to="/signup">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -65,12 +75,20 @@ const Navbar = () => {
                 About Us
               </a>
               <div className="flex gap-2 pt-4">
-                <Button variant="nav" size="sm" className="flex-1" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button variant="navActive" size="sm" className="flex-1" asChild>
-                  <Link to="/signup">Sign Up</Link>
-                </Button>
+                {!loading && user ? (
+                  <Button variant="navActive" size="sm" className="flex-1" asChild>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="nav" size="sm" className="flex-1" asChild>
+                      <Link to="/login">Login</Link>
+                    </Button>
+                    <Button variant="navActive" size="sm" className="flex-1" asChild>
+                      <Link to="/signup">Sign Up</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>

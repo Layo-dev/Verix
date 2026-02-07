@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   MessageSquare,
   Smartphone,
@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
   { icon: MessageSquare, label: "Buy Number", href: "/dashboard", active: true },
@@ -32,10 +33,20 @@ const secondaryItems = [
 
 const DashboardSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (href: string) => location.pathname === href;
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+  const userId = user?.id?.slice(0, 8) || "--------";
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/login", { replace: true });
+  };
 
   const SidebarContent = () => (
     <>
@@ -135,10 +146,13 @@ const DashboardSidebar = () => {
       <div className="p-6 pt-2 border-t border-border">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-foreground">John Doe</p>
-            <p className="text-xs text-muted-foreground">ID: 12345678</p>
+            <p className="text-sm font-medium text-foreground">{displayName}</p>
+            <p className="text-xs text-muted-foreground">ID: {userId}</p>
           </div>
-          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            onClick={handleLogout}
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
             <LogOut className="w-5 h-5" />
           </button>
         </div>

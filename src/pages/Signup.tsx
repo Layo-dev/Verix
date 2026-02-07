@@ -1,10 +1,14 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2 } from "lucide-react";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 import AuthInput from "@/components/auth/AuthInput";
 import SupportButton from "@/components/auth/SupportButton";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -12,19 +16,43 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [errors, setErrors] = useState<{ confirmPassword?: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate password match
     if (password !== confirmPassword) {
       setErrors({ confirmPassword: "Passwords do not match" });
       return;
     }
 
     setErrors({});
-    // Handle signup logic here
-    console.log("Signup submitted:", { email, password, agreedToTerms });
+    setIsLoading(true);
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      toast.error(error.message);
+      setIsLoading(false);
+      return;
+    }
+
+    toast.success("Check your email to confirm your account!");
+    setIsLoading(false);
   };
 
   return (
@@ -114,9 +142,9 @@ const Signup = () => {
             type="submit"
             className="w-full h-12"
             variant="accent"
-            disabled={!agreedToTerms}
+            disabled={!agreedToTerms || isLoading}
           >
-            Sign Up
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign Up"}
           </Button>
         </form>
 
