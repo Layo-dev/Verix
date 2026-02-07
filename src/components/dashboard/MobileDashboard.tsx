@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Menu, Wallet, Settings, Star, Search, ArrowUpDown, X } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import DashboardSidebar from "./DashboardSidebar";
@@ -87,16 +87,14 @@ const MobileDashboard = ({
     <div className="min-h-screen bg-background flex flex-col">
       {/* Mobile Header */}
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetTrigger asChild>
-            <button className="p-2 -ml-2 text-foreground">
-              <Menu className="w-6 h-6" />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-[280px]">
-            <DashboardSidebar />
-          </SheetContent>
-        </Sheet>
+        <button className="p-2 -ml-2 text-foreground" onClick={() => setSidebarOpen(true)}>
+          <Menu className="w-6 h-6" />
+        </button>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent side="left" className="p-0 w-[280px]">
+            <DashboardSidebar />
+          </SheetContent>
+        </Sheet>
 
         <h1 className="text-lg font-bold text-foreground">Receive SMS</h1>
 
@@ -139,13 +137,14 @@ const MobileDashboard = ({
         {activeTab === "buy" ? (
           <div className="space-y-4">
             {/* Service Selection Chip */}
+            <button
+              onClick={() => setServiceSheetOpen(true)}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-full bg-[hsl(200,100%,95%)] text-[hsl(200,100%,40%)] font-medium"
+            >
+              <span className="text-xl">{selectedServiceData?.icon || "📱"}</span>
+              <span>{selectedServiceData?.name || "Select service"}</span>
+            </button>
             <Sheet open={serviceSheetOpen} onOpenChange={setServiceSheetOpen}>
-              <SheetTrigger asChild>
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-full bg-[hsl(200,100%,95%)] text-[hsl(200,100%,40%)] font-medium">
-                  <span className="text-xl">{selectedServiceData?.icon || "📱"}</span>
-                  <span>{selectedServiceData?.name || "Select service"}</span>
-                </button>
-              </SheetTrigger>
               <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
                 <SheetHeader className="p-4 border-b border-border">
                   <div className="flex items-center justify-between">
@@ -191,16 +190,17 @@ const MobileDashboard = ({
             </Sheet>
 
             {/* Country Selection Chip */}
+            <button
+              onClick={() => setCountrySheetOpen(true)}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-muted text-foreground"
+            >
+              <span className="text-xl">{selectedCountryData?.flag || "🌍"}</span>
+              <span className="flex-1 text-left font-medium">
+                {selectedCountryData?.phoneCode || "Select country"}
+              </span>
+              <Settings className="w-5 h-5 text-muted-foreground" />
+            </button>
             <Sheet open={countrySheetOpen} onOpenChange={setCountrySheetOpen}>
-              <SheetTrigger asChild>
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-muted text-foreground">
-                  <span className="text-xl">{selectedCountryData?.flag || "🌍"}</span>
-                  <span className="flex-1 text-left font-medium">
-                    {selectedCountryData?.phoneCode || "Select country"}
-                  </span>
-                  <Settings className="w-5 h-5 text-muted-foreground" />
-                </button>
-              </SheetTrigger>
               <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
                 <SheetHeader className="p-4 border-b border-border">
                   <div className="flex items-center justify-between">
