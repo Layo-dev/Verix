@@ -1,18 +1,48 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 import AuthInput from "@/components/auth/AuthInput";
 import SupportButton from "@/components/auth/SupportButton";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login submitted:", { email, password });
+    setIsLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      toast.error(
+        error.message === "Invalid login credentials"
+          ? "Invalid email or password"
+          : error.message
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    toast.success("Welcome back!");
+    navigate("/dashboard", { replace: true });
   };
 
   return (
@@ -70,8 +100,13 @@ const Login = () => {
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full h-12" variant="accent">
-            Login
+          <Button
+            type="submit"
+            className="w-full h-12"
+            variant="accent"
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Login"}
           </Button>
         </form>
 
