@@ -31,11 +31,7 @@ const secondaryItems = [
   { icon: Ticket, label: "Tickets", href: "/dashboard/tickets" },
 ];
 
-interface DashboardSidebarProps {
-  hideMobileToggle?: boolean;
-}
-
-const DashboardSidebar = ({ hideMobileToggle = false }: DashboardSidebarProps) => {
+const DashboardSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -167,17 +163,15 @@ const DashboardSidebar = ({ hideMobileToggle = false }: DashboardSidebarProps) =
   return (
     <>
       {/* Mobile Toggle */}
-      {!hideMobileToggle && (
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="fixed top-4 left-4 z-50 p-2 bg-background rounded-lg border border-border shadow-md lg:hidden"
-        >
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      )}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-4 left-4 z-50 p-2 bg-background rounded-lg border border-border shadow-md lg:hidden"
+      >
+        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
 
       {/* Mobile Overlay */}
-      {!hideMobileToggle && isOpen && (
+      {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
@@ -188,7 +182,7 @@ const DashboardSidebar = ({ hideMobileToggle = false }: DashboardSidebarProps) =
       <aside
         className={cn(
           "fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex flex-col z-40 transition-transform duration-300 lg:translate-x-0 lg:static",
-          hideMobileToggle ? "translate-x-0 static h-full" : isOpen ? "translate-x-0" : "-translate-x-full"
+          isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <SidebarContent />

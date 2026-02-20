@@ -78,7 +78,7 @@ const MobileDashboard = ({
         </button>
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetContent side="left" className="p-0 w-[280px]">
-            <DashboardSidebar hideMobileToggle />
+            <DashboardSidebar />
           </SheetContent>
         </Sheet>
 
@@ -119,7 +119,7 @@ const MobileDashboard = ({
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 p-4">
         {activeTab === "buy" ? (
           <div className="space-y-4">
             {/* Service Selection Chip */}
