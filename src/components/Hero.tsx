@@ -31,7 +31,7 @@ const Hero = () => {
               </Button>
               <Button variant="heroOutline" size="lg" className="gap-2">
                 <Play size={18} />
-                Watch Demo
+                Buy a Number
               </Button>
             </div>
 

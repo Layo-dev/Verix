@@ -5,18 +5,18 @@ const WhyChoose = () => {
   const features = [
     {
       icon: Cloud,
-      title: "Cloud-based API",
-      description: "APIs are designed to simplify the development process by abstracting the underlying complexity of software systems.",
+      title: "Instant Access to Virtual Numbers ",
+      description:"Get your number in seconds no waiting, no hassle. Verix makes it simple to start communicating right away.",
     },
     {
       icon: Users,
-      title: "Powered by people",
-      description: "APIs are designed to simplify the development process by abstracting the underlying complexity of software systems.",
+      title: "Global Reach",
+      description: "Access virtual numbers in over 180 countries, perfect for international business needs.",
     },
     {
       icon: Shield,
-      title: "Safe and secure to stay",
-      description: "APIs are designed to simplify the development process by abstracting the underlying complexity of software systems.",
+      title: "Secure and Reliable",
+      description: "Your privacy is our priority. Verix ensures secure transactions and dependable service so you can focus on what’s important."
     },
   ];
 
@@ -31,7 +31,8 @@ const WhyChoose = () => {
           <div className="max-w-lg">
             <p className="section-label mb-4">{'{'} Why Choose Verix {'}'}</p>
             <h2 className="section-title mb-6">
-              Financial technology with banking license, and expert guidance
+            Instant Access to Virtual Numbers  
+            Get your number in seconds.
             </h2>
             <Button variant="hero" size="lg" className="gap-2">
               <Lock size={18} />

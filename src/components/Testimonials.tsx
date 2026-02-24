@@ -35,7 +35,7 @@ const Testimonials = () => {
               Customer words about their experiences
             </h2>
           </div>
-          <div className="lg:col-span-2 flex items-end justify-end">
+          <div className="bg-accent/10 lg:col-span-2 flex items-end justify-end">
             <p className="section-description max-w-md text-right">
               We help to keep track of your expenses and incomes. it shows
             </p>

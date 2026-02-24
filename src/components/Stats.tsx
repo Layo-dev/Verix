@@ -1,6 +1,6 @@
 const Stats = () => {
   const stats = [
-    { value: "160+", label: "Beneficial Cashback" },
+    { value: "160+", label: "Services Available" },
     { value: "1.8M", label: "Satisfied Customer" },
     { value: "196+", label: "County Available" },
   ];
@@ -15,7 +15,7 @@ const Stats = () => {
               <div className="w-3 h-3 rounded-full border-2 border-foreground" />
             </div>
             <p className="text-lg font-semibold text-foreground">
-              Powered and supported by leading international financial services
+            Global coverage - 180+ countries
             </p>
           </div>
 

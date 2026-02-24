@@ -19,7 +19,7 @@ const Footer = () => {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <div className="w-3 h-3 bg-primary-foreground rounded-sm" />
               </div>
-              <span className="text-xl font-bold text-foreground">Payix.</span>
+              <span className="text-xl font-bold text-foreground">Verix.</span>
             </div>
             <p className="text-sm text-muted-foreground">Copyright ©2024. All rights reserved.</p>
           </div>
