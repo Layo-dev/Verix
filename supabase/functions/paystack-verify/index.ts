@@ -91,7 +91,11 @@ Deno.serve(async (req) => {
         userId: authData.user.id,
         orderId: order.id,
       },
-      { serviceName: pricing.service.service_name, countryFlag: pricing.country.country_flag }
+      {
+        serviceName: pricing.service.service_name,
+        countryName: pricing.country.country_name,
+        countryFlag: pricing.country.country_flag,
+      }
     );
 
     // Create purchased_numbers row (this is what Inbox reads)
@@ -100,6 +104,7 @@ Deno.serve(async (req) => {
       .insert({
         user_id: authData.user.id,
         phone_number: provisioned.phone_number,
+        activation_id: provisioned.activation_id,
         country_code: order.country_code,
         country_flag: provisioned.country_flag,
         service_name: provisioned.service_name,

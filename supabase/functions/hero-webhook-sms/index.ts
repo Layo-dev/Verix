@@ -2,11 +2,12 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { createSupabaseAdminClient } from "../_shared/supabase.ts";
 
 type HeroWebhookPayload = {
-  to?: string;
-  from?: string;
+  activationId?: string;
+  service?: string;
   text?: string;
-  otp_code?: string | null;
-  timestamp?: string;
+  country?: number;
+  receivedAt?: string;
+  code?: string | null;
 };
 
 function json(status: number, body: unknown) {
@@ -30,26 +31,21 @@ Deno.serve(async (req) => {
     return json(405, { error: "Method not allowed" });
   }
 
-  const secret = Deno.env.get("HERO_WEBHOOK_SECRET");
-  if (secret) {
-    const provided = req.headers.get("x-hero-webhook-secret");
-    if (!provided || provided !== secret) {
-      return json(401, { error: "Unauthorized" });
-    }
-  }
-
   try {
     const payload = (await req.json().catch(() => ({}))) as HeroWebhookPayload;
 
-    const phoneNumber = payload.to?.trim();
-    const sender = payload.from?.trim() ?? "unknown";
-    const body = payload.text?.trim() ?? "";
+    const activationId = payload.activationId?.toString().trim();
+    const sender = payload.service?.toString().trim() ?? "HeroSMS";
+    const body = payload.text?.toString().trim() ?? "";
+    const receivedAtRaw = payload.receivedAt?.toString();
     const receivedAt =
-      payload.timestamp && !Number.isNaN(Date.parse(payload.timestamp))
-        ? new Date(payload.timestamp).toISOString()
+      receivedAtRaw && !Number.isNaN(Date.parse(receivedAtRaw))
+        ? new Date(receivedAtRaw).toISOString()
         : new Date().toISOString();
 
-    if (!phoneNumber || !body) {
+    const providedOtp = payload.code?.toString().trim() || null;
+
+    if (!activationId || !body) {
       return json(400, { error: "Missing required fields" });
     }
 
@@ -58,8 +54,6 @@ Deno.serve(async (req) => {
     const { data: purchased, error: lookupError } = await supabase
       .from("purchased_numbers")
       .select("id")
-      .eq("phone_number", phoneNumber)
-      .order("created_at", { ascending: false })
       .maybeSingle();
 
     if (lookupError) {
@@ -67,14 +61,31 @@ Deno.serve(async (req) => {
     }
 
     if (!purchased) {
-      // Number not found; acknowledge to avoid retries, but log for debugging.
+      // Activation not found; acknowledge to avoid retries.
       return json(204, { ok: false, reason: "number_not_found" });
     }
 
-    const otpCode =
-      payload.otp_code && payload.otp_code.trim().length
-        ? payload.otp_code.trim()
-        : extractOtp(body);
+    // Hero expects sms-incoming payload to include code optionally.
+    // If code is not provided, extract a best-effort OTP from the SMS text.
+    const otpCode = providedOtp ? providedOtp : extractOtp(body);
+
+    // Best-effort idempotency: Hero may retry webhook delivery.
+    const { data: existing } = await supabase
+      .from("sms_messages")
+      .select("id,otp_code")
+      .eq("number_id", purchased.id)
+      .eq("body", body)
+      .order("received_at", { ascending: false })
+      .limit(1);
+
+    const existingFirst = Array.isArray(existing) ? existing[0] : null;
+    if (existingFirst) {
+      const existingOtp = typeof existingFirst.otp_code === "string" ? existingFirst.otp_code : null;
+      const nextOtp = otpCode ? otpCode : null;
+      if (existingOtp === nextOtp) {
+        return json(200, { ok: true, deduped: true });
+      }
+    }
 
     const { error: insertError } = await supabase.from("sms_messages").insert({
       number_id: purchased.id,

@@ -6,6 +6,7 @@ type ProvisionInput = {
 };
 
 export type ProvisionedNumber = {
+  activation_id: string;
   phone_number: string;
   expires_at: string; // ISO
   service_name: string;
@@ -43,13 +44,14 @@ function pseudoNumber(countryCode: string) {
  */
 export async function provisionNumber(
   input: ProvisionInput,
-  ui: { serviceName: string; countryFlag: string }
+  ui: { serviceName: string; countryName: string; countryFlag: string }
 ): Promise<ProvisionedNumber> {
   const { baseUrl, apiKey } = getProviderConfig();
 
   // Fallback so the payment flow is testable before provider credentials are added.
   if (!baseUrl || !apiKey) {
     return {
+      activation_id: `dummy_${input.orderId}`,
       phone_number: pseudoNumber(input.countryCode),
       expires_at: addDays(7),
       service_name: ui.serviceName,
@@ -57,52 +59,106 @@ export async function provisionNumber(
     };
   }
 
-  const res = await fetch(`${baseUrl.replace(/\/+$/, "")}/number/request`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      countryCode: input.countryCode,
-      serviceId: input.serviceId,
-      userId: input.userId,
-      orderId: input.orderId,
-    }),
-  });
+  const trimmed = baseUrl.replace(/\/+$/, "");
+  const handlerApiUrl = trimmed.includes("handler_api.php")
+    ? trimmed
+    : `${trimmed}/stubs/handler_api.php`;
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Provider provision failed: ${res.status} ${text}`);
-  }
+  const normalize = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "");
 
-  const json = (await res.json()) as {
-    phone_number?: string;
-    number?: string;
-    expires_at?: string;
-    ttl_minutes?: number;
-    service_name?: string;
-    country_flag?: string;
+  const getJson = async (url: string) => {
+    const res = await fetch(url, { method: "GET" });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`HeroSMS request failed: ${res.status} ${text}`);
+    }
+    return (await res.json()) as any;
   };
 
-  const phoneNumber = json.phone_number ?? json.number;
-  if (!phoneNumber) {
-    throw new Error("Provider response missing phone number");
+  const apiKeyParam = `api_key=${encodeURIComponent(apiKey)}`;
+
+  // Resolve hero numeric countryId + service code by matching names.
+  const countriesResp = await getJson(
+    `${handlerApiUrl}?action=getCountries&${apiKeyParam}`
+  );
+  const servicesResp = await getJson(
+    `${handlerApiUrl}?action=getServicesList&${apiKeyParam}`
+  );
+
+  const heroCountries = Array.isArray(countriesResp) ? countriesResp : [];
+  const heroServices = Array.isArray(servicesResp?.services)
+    ? servicesResp.services
+    : [];
+
+  const uiCountryNorm = normalize(ui.countryName);
+  const uiServiceNorm = normalize(ui.serviceName);
+
+  const heroCountry =
+    heroCountries.find((c: any) => {
+      const eng = typeof c?.eng === "string" ? normalize(c.eng) : "";
+      const rus = typeof c?.rus === "string" ? normalize(c.rus) : "";
+      return (
+        eng === uiCountryNorm ||
+        rus === uiCountryNorm ||
+        eng.includes(uiCountryNorm) ||
+        rus.includes(uiCountryNorm)
+      );
+    }) ?? null;
+
+  const heroService =
+    heroServices.find((s: any) => {
+      const nameNorm = typeof s?.name === "string" ? normalize(s.name) : "";
+      return (
+        nameNorm === uiServiceNorm ||
+        nameNorm.includes(uiServiceNorm) ||
+        uiServiceNorm.includes(nameNorm)
+      );
+    }) ?? null;
+
+  if (!heroCountry?.id || !heroService?.code) {
+    throw new Error(
+      `HeroSMS mapping failed for country="${ui.countryName}" and service="${ui.serviceName}"`
+    );
   }
 
-  let expiresAt = json.expires_at;
-  if (!expiresAt) {
-    const ttlMinutes = typeof json.ttl_minutes === "number" && json.ttl_minutes > 0
-      ? json.ttl_minutes
-      : 60 * 24 * 7; // default 7 days
-    expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000).toISOString();
+  const numberResp = await getJson(
+    `${handlerApiUrl}?action=getNumberV2&${apiKeyParam}&service=${encodeURIComponent(
+      heroService.code
+    )}&country=${encodeURIComponent(heroCountry.id)}`
+  );
+
+  const activationId = String(numberResp.activationId ?? "");
+  const phoneNumber = String(numberResp.phoneNumber ?? "");
+  const activationEndTime = numberResp.activationEndTime as
+    | string
+    | undefined;
+
+  if (!activationId || !phoneNumber) {
+    throw new Error(
+      `HeroSMS getNumberV2 returned unexpected payload: ${JSON.stringify(numberResp).slice(
+        0,
+        300
+      )}`
+    );
   }
+
+  const expiresAt = activationEndTime
+    ? new Date(activationEndTime).toISOString()
+    : addDays(7);
+
+  const phoneWithPlus = phoneNumber.startsWith("+")
+    ? phoneNumber
+    : `+${phoneNumber}`;
 
   return {
-    phone_number: phoneNumber,
+    activation_id: activationId,
+    phone_number: phoneWithPlus,
     expires_at: expiresAt,
-    service_name: json.service_name ?? ui.serviceName,
-    country_flag: json.country_flag ?? ui.countryFlag,
+    service_name: ui.serviceName,
+    country_flag: ui.countryFlag,
   };
 }
 
