@@ -16,36 +16,53 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
-          amount: number
-          country: string
+          amount_kobo: number
+          country_code: string
           created_at: string | null
+          currency: string
           id: string
           paystack_reference: string | null
-          service: string
+          provider_status: string | null
+          purchased_number_id: string | null
+          service_id: string
           status: string | null
           user_id: string | null
         }
         Insert: {
-          amount: number
-          country: string
+          amount_kobo: number
+          country_code: string
           created_at?: string | null
+          currency?: string
           id?: string
           paystack_reference?: string | null
-          service: string
+          provider_status?: string | null
+          purchased_number_id?: string | null
+          service_id: string
           status?: string | null
           user_id?: string | null
         }
         Update: {
-          amount?: number
-          country?: string
+          amount_kobo?: number
+          country_code?: string
           created_at?: string | null
+          currency?: string
           id?: string
           paystack_reference?: string | null
-          service?: string
+          provider_status?: string | null
+          purchased_number_id?: string | null
+          service_id?: string
           status?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_purchased_number_id_fkey"
+            columns: ["purchased_number_id"]
+            isOneToOne: false
+            referencedRelation: "purchased_numbers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
