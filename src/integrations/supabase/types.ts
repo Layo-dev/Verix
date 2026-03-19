@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          amount: number
+          country: string
+          created_at: string | null
+          id: string
+          paystack_reference: string | null
+          service: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          country: string
+          created_at?: string | null
+          id?: string
+          paystack_reference?: string | null
+          service: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          country?: string
+          created_at?: string | null
+          id?: string
+          paystack_reference?: string | null
+          service?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
