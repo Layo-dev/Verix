@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import DashboardPage from "./pages/DashboardPage";
+import SmsInboxPage from "./pages/SmsInboxPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/referral"
+              element={
+                <ProtectedRoute>
+                  <SmsInboxPage />
                 </ProtectedRoute>
               }
             />

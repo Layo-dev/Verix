@@ -41,6 +41,77 @@ export type Database = {
         }
         Relationships: []
       }
+      purchased_numbers: {
+        Row: {
+          country_code: string
+          country_flag: string
+          created_at: string
+          expires_at: string
+          id: string
+          phone_number: string
+          service_name: string
+          status: Database["public"]["Enums"]["number_status"]
+          user_id: string
+        }
+        Insert: {
+          country_code: string
+          country_flag?: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          phone_number: string
+          service_name: string
+          status?: Database["public"]["Enums"]["number_status"]
+          user_id: string
+        }
+        Update: {
+          country_code?: string
+          country_flag?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone_number?: string
+          service_name?: string
+          status?: Database["public"]["Enums"]["number_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sms_messages: {
+        Row: {
+          body: string
+          id: string
+          number_id: string
+          otp_code: string | null
+          received_at: string
+          sender: string
+        }
+        Insert: {
+          body: string
+          id?: string
+          number_id: string
+          otp_code?: string | null
+          received_at?: string
+          sender: string
+        }
+        Update: {
+          body?: string
+          id?: string
+          number_id?: string
+          otp_code?: string | null
+          received_at?: string
+          sender?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_messages_number_id_fkey"
+            columns: ["number_id"]
+            isOneToOne: false
+            referencedRelation: "purchased_numbers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -49,7 +120,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      number_status: "active" | "expiring" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -176,6 +247,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      number_status: ["active", "expiring", "expired"],
+    },
   },
 } as const
