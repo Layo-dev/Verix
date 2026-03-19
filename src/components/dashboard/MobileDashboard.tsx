@@ -177,7 +177,29 @@ const MobileDashboard = ({
                           )}
                         >
                           <Icon className="h-5 w-5 shrink-0" />
-                          <span className="flex-1 text-sm font-medium">{service.name}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{service.name}</p>
+                            <p
+                              className={cn(
+                                "text-xs",
+                                selectedService === service.id
+                                  ? "text-white/70"
+                                  : "text-muted-foreground"
+                              )}
+                            >
+                              {service.count.toLocaleString()} numbers
+                            </p>
+                          </div>
+                          <span
+                            className={cn(
+                              "text-sm font-semibold",
+                              selectedService === service.id
+                                ? "text-white"
+                                : "text-accent"
+                            )}
+                          >
+                            ${service.price.toFixed(2)}
+                          </span>
                         </button>
                       );
                     })}
