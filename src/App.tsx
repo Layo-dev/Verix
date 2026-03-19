@@ -11,6 +11,7 @@ import Signup from "./pages/Signup";
 import DashboardPage from "./pages/DashboardPage";
 import SmsInboxPage from "./pages/SmsInboxPage";
 import NotFound from "./pages/NotFound";
+import PaystackCallback from "./pages/PaystackCallback";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SmsInboxPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment/callback"
+              element={
+                <ProtectedRoute>
+                  <PaystackCallback />
                 </ProtectedRoute>
               }
             />

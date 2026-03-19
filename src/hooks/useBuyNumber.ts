@@ -25,52 +25,11 @@ export function useBuyNumber() {
         throw new Error(error?.message || data?.error || "Failed to initialize payment");
       }
 
-      const { reference, authorization_url } = data;
+      const { authorization_url } = data;
 
-      // 2. Open Paystack popup
-      const PaystackPop = (await import("@paystack/inline-js")).default;
-      const popup = new PaystackPop();
-
-      popup.resumeTransaction({
-        accessCode: data.access_code,
-        onSuccess: async () => {
-          // 3. Verify payment
-          try {
-            const { data: verifyData, error: verifyError } =
-              await supabase.functions.invoke("paystack-verify", {
-                body: { reference },
-              });
-
-            if (verifyError || !verifyData?.ok) {
-              throw new Error(verifyError?.message || verifyData?.error || "Verification failed");
-            }
-
-            toast({
-              title: "Number purchased!",
-              description: "Your number is now active. Check SMS Inbox.",
-            });
-
-            // Navigate to SMS inbox
-            navigate("/dashboard/referral");
-          } catch (err: any) {
-            toast({
-              title: "Verification failed",
-              description: err.message,
-              variant: "destructive",
-            });
-          } finally {
-            setLoading(false);
-          }
-        },
-        onCancel: () => {
-          toast({
-            title: "Payment cancelled",
-            description: "You cancelled the payment.",
-            variant: "destructive",
-          });
-          setLoading(false);
-        },
-      });
+      // 2. Redirect to Paystack hosted payment page
+      window.location.href = authorization_url;
+      // Loading state will naturally reset when user returns via callback route.
     } catch (err: any) {
       toast({
         title: "Payment error",
