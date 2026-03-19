@@ -291,7 +291,7 @@ const MobileDashboard = ({
                   Processing...
                 </span>
               ) : (
-                `Buy a number for $${totalPrice.toFixed(0)}`
+                `Buy a number for $${totalPrice.toFixed(2)}`
               )}
             </button>
           </div>
