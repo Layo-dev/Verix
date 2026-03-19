@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Wallet, Settings, Star, Search, ArrowUpDown, X } from "lucide-react";
+import { Menu, Wallet, Settings, Star, Search, ArrowUpDown, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,7 @@ import DashboardSidebar from "./DashboardSidebar";
 import MyNumbers from "./MyNumbers";
 import SupportButton from "@/components/auth/SupportButton";
 import { services } from "./ServiceList";
+import { useBuyNumber } from "@/hooks/useBuyNumber";
 
 // Extended country data with count, price, and status
 const countries = [
