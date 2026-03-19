@@ -47,6 +47,7 @@ const MobileDashboard = ({
   const [serviceSheetOpen, setServiceSheetOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
+  const { buyNumber, loading: buyLoading } = useBuyNumber();
 
   const selectedCountryData = countries.find((c) => c.code === selectedCountry);
   const selectedServiceData = services.find((s) => s.id === selectedService);
