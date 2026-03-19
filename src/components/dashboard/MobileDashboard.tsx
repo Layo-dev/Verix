@@ -246,19 +246,6 @@ const MobileDashboard = ({
                         <span className="text-xs text-muted-foreground">
                           {country.count.toLocaleString()}
                         </span>
-                        <span className="text-sm font-semibold text-[hsl(200,100%,50%)]">
-                          ${country.price.toFixed(0)}
-                        </span>
-                        <div
-                          className={cn(
-                            "w-2 h-2 rounded-full",
-                            country.status === "high"
-                              ? "bg-[hsl(200,100%,50%)]"
-                              : country.status === "medium"
-                              ? "bg-yellow-500"
-                              : "bg-destructive"
-                          )}
-                        />
                       </button>
                     ))}
                   </div>
