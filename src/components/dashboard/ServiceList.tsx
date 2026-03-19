@@ -50,9 +50,10 @@ export const services: ServiceItem[] = [
 interface ServiceListProps {
   selectedService: string | null;
   onSelectService: (id: string) => void;
+  loading?: boolean;
 }
 
-const ServiceList = ({ selectedService, onSelectService }: ServiceListProps) => {
+const ServiceList = ({ selectedService, onSelectService, loading }: ServiceListProps) => {
   const [search, setSearch] = useState("");
 
   const filteredServices = services.filter((service) =>

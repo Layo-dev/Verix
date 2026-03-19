@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Wallet, Settings, Star, Search, ArrowUpDown, X } from "lucide-react";
+import { Menu, Wallet, Settings, Star, Search, ArrowUpDown, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,7 @@ import DashboardSidebar from "./DashboardSidebar";
 import MyNumbers from "./MyNumbers";
 import SupportButton from "@/components/auth/SupportButton";
 import { services } from "./ServiceList";
+import { useBuyNumber } from "@/hooks/useBuyNumber";
 
 // Extended country data with count, price, and status
 const countries = [
@@ -46,6 +47,7 @@ const MobileDashboard = ({
   const [serviceSheetOpen, setServiceSheetOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
+  const { buyNumber, loading: buyLoading } = useBuyNumber();
 
   const selectedCountryData = countries.find((c) => c.code === selectedCountry);
   const selectedServiceData = services.find((s) => s.id === selectedService);
@@ -266,10 +268,22 @@ const MobileDashboard = ({
 
             {/* Buy Button */}
             <button
-              className="w-full py-4 rounded-full bg-[hsl(200,100%,50%)] text-white font-semibold text-base"
-              disabled={!selectedCountry || !selectedService}
+              className="w-full py-4 rounded-full bg-[hsl(200,100%,50%)] text-white font-semibold text-base disabled:opacity-50"
+              disabled={!selectedCountry || !selectedService || buyLoading}
+              onClick={() => {
+                if (selectedCountry && selectedService) {
+                  buyNumber({ countryCode: selectedCountry, serviceId: selectedService });
+                }
+              }}
             >
-              Buy a number for ${totalPrice.toFixed(0)}
+              {buyLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processing...
+                </span>
+              ) : (
+                `Buy a number for $${totalPrice.toFixed(0)}`
+              )}
             </button>
           </div>
         ) : (
