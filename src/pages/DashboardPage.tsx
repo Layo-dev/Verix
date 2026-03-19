@@ -6,13 +6,22 @@ import MyNumbers from "@/components/dashboard/MyNumbers";
 import MobileDashboard from "@/components/dashboard/MobileDashboard";
 import { Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useBuyNumber } from "@/hooks/useBuyNumber";
 
 const DashboardPage = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("RU");
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const isMobile = useIsMobile();
+  const { buyNumber, loading } = useBuyNumber();
 
-  // Empty orders for demo - in real app this would come from API
+  const handleSelectService = (serviceId: string) => {
+    setSelectedService(serviceId);
+    // On desktop/tablet, selecting a service triggers payment if country is also selected
+    if (selectedCountry && !isMobile) {
+      buyNumber({ countryCode: selectedCountry, serviceId });
+    }
+  };
+
   const orders: Array<{
     id: string;
     number: string;
@@ -20,7 +29,6 @@ const DashboardPage = () => {
     expiresAt: Date;
   }> = [];
 
-  // Render mobile layout
   if (isMobile) {
     return (
       <MobileDashboard
@@ -32,14 +40,11 @@ const DashboardPage = () => {
     );
   }
 
-  // Desktop layout
   return (
     <div className="min-h-screen bg-background flex w-full">
       <DashboardSidebar />
 
-      {/* Main Content */}
       <main className="flex-1 p-4 lg:p-8 lg:pl-4 overflow-x-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6 pl-12 lg:pl-0">
           <h1 className="text-2xl font-bold text-foreground">Receive SMS</h1>
           <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
@@ -47,9 +52,7 @@ const DashboardPage = () => {
           </button>
         </div>
 
-        {/* Three Column Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-          {/* Country List */}
           <div className="h-[500px] md:h-[600px]">
             <CountryList
               selectedCountry={selectedCountry}
@@ -57,24 +60,24 @@ const DashboardPage = () => {
             />
           </div>
 
-          {/* Service List */}
           <div className="h-[500px] md:h-[600px]">
             <ServiceList
               selectedService={selectedService}
-              onSelectService={setSelectedService}
+              onSelectService={handleSelectService}
+              loading={loading}
             />
           </div>
 
-          {/* My Numbers */}
           <div className="h-[500px] md:h-[600px] md:col-span-2 lg:col-span-1">
             <MyNumbers orders={orders} />
           </div>
         </div>
 
-        {/* Settings Info */}
         <div className="mt-6 p-4 bg-muted/50 rounded-xl border border-border">
           <p className="text-sm text-muted-foreground">
-            Select a country and service to purchase a virtual number for SMS verification.
+            {loading
+              ? "Processing payment..."
+              : "Select a country and service to purchase a virtual number for SMS verification."}
           </p>
         </div>
       </main>

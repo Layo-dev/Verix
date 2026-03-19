@@ -268,10 +268,22 @@ const MobileDashboard = ({
 
             {/* Buy Button */}
             <button
-              className="w-full py-4 rounded-full bg-[hsl(200,100%,50%)] text-white font-semibold text-base"
-              disabled={!selectedCountry || !selectedService}
+              className="w-full py-4 rounded-full bg-[hsl(200,100%,50%)] text-white font-semibold text-base disabled:opacity-50"
+              disabled={!selectedCountry || !selectedService || buyLoading}
+              onClick={() => {
+                if (selectedCountry && selectedService) {
+                  buyNumber({ countryCode: selectedCountry, serviceId: selectedService });
+                }
+              }}
             >
-              Buy a number for ${totalPrice.toFixed(0)}
+              {buyLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processing...
+                </span>
+              ) : (
+                `Buy a number for $${totalPrice.toFixed(0)}`
+              )}
             </button>
           </div>
         ) : (
