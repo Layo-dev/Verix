@@ -80,7 +80,7 @@ const MobileDashboard = ({
         </button>
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetContent side="left" className="p-0 w-[280px]">
-            <DashboardSidebar />
+            <DashboardSidebar contentOnly onNavigate={() => setSidebarOpen(false)} />
           </SheetContent>
         </Sheet>
 

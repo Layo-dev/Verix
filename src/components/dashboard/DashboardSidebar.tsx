@@ -11,8 +11,6 @@ import {
   ChevronDown,
   Globe,
   LogOut,
-  Menu,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -20,23 +18,27 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
-  { icon: MessageSquare, label: "Buy Number", href: "/dashboard", active: true },
+  { icon: MessageSquare, label: "Receive SMS", href: "/dashboard" },
   { icon: Smartphone, label: "Mobile proxies", href: "/dashboard/proxies" },
-  { icon: Phone, label: "Active Numbers", href: "/dashboard/rent" },
+  { icon: Phone, label: "Number rent", href: "/dashboard/rent" },
   { icon: Users, label: "SMS Inbox", href: "/dashboard/referral" },
 ];
 
 const secondaryItems = [
-  { icon: Wallet, label: "History", href: "/dashboard/refill" },
+  { icon: Wallet, label: "Refill balance", href: "/dashboard/refill" },
   { icon: Ticket, label: "Tickets", href: "/dashboard/tickets" },
 ];
 
-const DashboardSidebar = () => {
+interface DashboardSidebarProps {
+  contentOnly?: boolean;
+  onNavigate?: () => void;
+}
+
+const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -48,11 +50,15 @@ const DashboardSidebar = () => {
     navigate("/login", { replace: true });
   };
 
+  const handleNavClick = () => {
+    onNavigate?.();
+  };
+
   const SidebarContent = () => (
-    <>
+    <div className="flex flex-col h-full bg-[hsl(var(--card))] text-card-foreground">
       {/* Logo */}
       <div className="p-6 pb-4">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2" onClick={handleNavClick}>
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <div className="w-3 h-3 bg-primary-foreground rounded-sm" />
           </div>
@@ -77,6 +83,7 @@ const DashboardSidebar = () => {
           <Link
             key={item.label}
             to={item.href}
+            onClick={handleNavClick}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
               isActive(item.href)
@@ -99,6 +106,7 @@ const DashboardSidebar = () => {
           <Link
             key={item.label}
             to={item.href}
+            onClick={handleNavClick}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
               isActive(item.href)
@@ -157,37 +165,17 @@ const DashboardSidebar = () => {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 
+  if (contentOnly) {
+    return <SidebarContent />;
+  }
+
   return (
-    <>
-      {/* Mobile Toggle */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-2 bg-background rounded-lg border border-border shadow-md lg:hidden"
-      >
-        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
-
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex flex-col z-40 transition-transform duration-300 lg:translate-x-0 lg:static",
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        <SidebarContent />
-      </aside>
-    </>
+    <aside className="hidden lg:flex w-64 flex-col border-r border-border flex-shrink-0">
+      <SidebarContent />
+    </aside>
   );
 };
 
