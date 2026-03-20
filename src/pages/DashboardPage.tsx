@@ -45,7 +45,7 @@ const DashboardPage = () => {
       <DashboardSidebar />
 
       <main className="flex-1 p-4 lg:p-8 lg:pl-4 overflow-x-hidden">
-        <div className="flex items-center justify-between mb-6 pl-12 lg:pl-0">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-foreground">Receive SMS</h1>
           <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
             <Settings className="w-5 h-5" />
