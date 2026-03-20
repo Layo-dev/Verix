@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, Lock, Play } from "lucide-react";
 // import PhoneMockup from "./PhoneMockup";
-import HeroImage from "@/assets/Hero-image.webp";
+import HeroImage from "@/assets/Hero-image.jpeg";
 
 const Hero = () => {
   return (
