@@ -51,7 +51,8 @@ const Hero = () => {
 
           {/* Right Content - Phone Mockup */}
           <div className="relative flex justify-center lg:justify-end pb-24 sm:pb-28">
-            <PhoneMockup />
+            {/* <PhoneMockup /> */}
+            <img src={HeroImage} alt="Verix virtual number app" className="w-72 md:w-80 object-contain animate-float" />
           </div>
         </div>
       </div>
