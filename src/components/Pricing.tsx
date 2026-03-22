@@ -1,143 +1,48 @@
-import { Button } from "@/components/ui/button";
-import { Check, Rocket, Users, X, Zap } from "lucide-react";
-import { useState } from "react";
+import { SiAmazon, SiFacebook, SiTiktok, SiX, SiWhatsapp, SiGoogle } from "react-icons/si";
+import { Ticket } from "lucide-react";
+
+const services = [
+  { name: "Amazon", icon: SiAmazon, count: "967761 pcs", price: "$0.03" },
+  { name: "Ticketmaster", icon: Ticket, count: "845320 pcs", price: "$0.05" },
+  { name: "Google / YouTube / Gmail", icon: SiGoogle, count: "723194 pcs", price: "$0.04" },
+  { name: "Facebook", icon: SiFacebook, count: "612487 pcs", price: "$0.03" },
+  { name: "TikTok / Douyin", icon: SiTiktok, count: "534892 pcs", price: "$0.04" },
+  { name: "Twitter", icon: SiX, count: "498215 pcs", price: "$0.03" },
+  { name: "WhatsApp", icon: SiWhatsapp, count: "421376 pcs", price: "$0.05" },
+];
 
 const Pricing = () => {
-  const [isYearly, setIsYearly] = useState(false);
-
-  const plans = [
-    {
-      name: "Starter",
-      icon: Rocket,
-      price: isYearly ? 6 : 8,
-      popular: false,
-      features: [
-        { text: "No credit card required", included: true },
-        { text: "Description can be added here", included: true },
-        { text: "Fast acceptance", included: false },
-      ],
-    },
-    {
-      name: "Professional",
-      icon: Users,
-      price: isYearly ? 38 : 48,
-      popular: true,
-      features: [
-        { text: "No credit card required", included: true },
-        { text: "Description can be added here", included: true },
-        { text: "Fast acceptance", included: false },
-      ],
-    },
-    {
-      name: "Enterprise",
-      icon: Zap,
-      price: isYearly ? 69 : 89,
-      popular: false,
-      features: [
-        { text: "No credit card required", included: true },
-        { text: "Description can be added here", included: true },
-        { text: "Fast acceptance", included: true },
-      ],
-    },
-  ];
-
   return (
     <section id="pricing" className="py-20 md:py-28 bg-background">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="section-label mb-4">{'{'} Portable Pricing system {'}'}</p>
-          <h2 className="section-title mb-6">Explore our pricing plans</h2>
+          <p className="section-label mb-4">{'{'} Service Pricing {'}'}</p>
+          <h2 className="section-title mb-6">Popular services and prices</h2>
           <p className="section-description">
-            We help to keep track of your expenses and incomes. It shows the flow of records over a specific period of time. such as weekly, monthly or re*wly
+            Get virtual numbers for SMS verification at the lowest prices. Choose from hundreds of services.
           </p>
         </div>
 
-        {/* Toggle */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          <button
-            onClick={() => setIsYearly(false)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              !isYearly ? 'bg-muted text-foreground' : 'text-muted-foreground'
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setIsYearly(true)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
-              isYearly ? 'bg-muted text-foreground' : 'text-muted-foreground'
-            }`}
-          >
-            Yearly
-            <span className="text-xs text-accent">10%off</span>
-          </button>
-        </div>
-
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-          {plans.map((plan, index) => (
+        {/* Service List */}
+        <div className="max-w-3xl mx-auto space-y-3">
+          {services.map((service) => (
             <div
-              key={index}
-              className={`relative rounded-3xl p-5 md:p-8 border transition-all ${
-                plan.popular
-                  ? 'bg-accent text-accent-foreground border-accent shadow-xl md:scale-105'
-                  : 'bg-card border-border hover:border-accent/30 hover:shadow-lg'
-              }`}
+              key={service.name}
+              className="flex items-center justify-between bg-card rounded-2xl px-5 py-4 border border-border/50 hover:border-accent/30 hover:shadow-sm transition-all"
             >
-              {plan.popular && (
-                <span className="absolute top-4 right-4 bg-background text-foreground text-xs font-medium px-3 py-1 rounded-full">
-                  Most Popular
-                </span>
-              )}
-
-              <div className="mb-6">
-                <div className={`w-12 h-12 rounded-xl ${plan.popular ? 'bg-accent-foreground/20' : 'bg-muted'} flex items-center justify-center mb-4`}>
-                  <plan.icon size={24} className={plan.popular ? 'text-accent-foreground' : 'text-foreground'} />
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                  <service.icon size={20} className="text-accent" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground text-sm">{service.name}</p>
+                  <p className="text-xs text-muted-foreground">{service.count}</p>
                 </div>
               </div>
-
-              <div className="mb-6">
-                <p className="text-4xl font-bold">
-                  <span className="text-lg align-top">$</span>
-                  {plan.price}.00
-                  <span className={`text-sm font-normal ${plan.popular ? 'text-accent-foreground/70' : 'text-muted-foreground'}`}>
-                    (Per month)
-                  </span>
-                </p>
-              </div>
-
-              <Button
-                variant={plan.popular ? "outline" : "default"}
-                className={`w-full mb-6 ${plan.popular ? 'bg-background text-foreground hover:bg-muted border-0' : ''}`}
-                size="lg"
-              >
-                Get Started
-              </Button>
-
-              <p className={`text-sm mb-4 ${plan.popular ? 'text-accent-foreground/70' : 'text-muted-foreground'}`}>
-                Additional information can be added here
-              </p>
-
-              <div className="pt-4 border-t border-current/10">
-                <p className={`text-sm font-medium mb-4 ${plan.popular ? 'text-accent-foreground' : 'text-foreground'}`}>
-                  What's included:
-                </p>
-                <ul className="space-y-3">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-3 text-sm">
-                      {feature.included ? (
-                        <Check size={16} className={plan.popular ? 'text-accent-foreground' : 'text-success'} />
-                      ) : (
-                        <X size={16} className={plan.popular ? 'text-accent-foreground/50' : 'text-muted-foreground'} />
-                      )}
-                      <span className={!feature.included ? (plan.popular ? 'text-accent-foreground/50' : 'text-muted-foreground') : ''}>
-                        {feature.text}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <span className="bg-accent/10 text-accent text-xs font-semibold px-3 py-1.5 rounded-full whitespace-nowrap">
+                up to {service.price}
+              </span>
             </div>
           ))}
         </div>
