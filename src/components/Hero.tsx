@@ -5,7 +5,7 @@ import HeroImage from "@/assets/Hero-image.jpeg";
 
 const Hero = () => {
   return (
-    <section className="relative pt-24 md:pt-32 pb-16 md:pb-24 overflow-hidden overflow-x-hidden">
+    <section className="relative pt-24 md:pt-24 pb-16 md:pb-8 overflow-hidden overflow-x-hidden">
       {/* Background Gradient */}
       <div className="absolute inset-0 gradient-hero -z-10" />
       
@@ -50,9 +50,9 @@ const Hero = () => {
           </div>
 
           {/* Right Content - Phone Mockup */}
-          <div className="relative flex justify-center lg:justify-end pb-24 sm:pb-28">
+          <div className="relative flex justify-center lg:justify-end pb-16 sm:pb-16">
             {/* <PhoneMockup /> */}
-            <img src={HeroImage} alt="Verix virtual number app" className="w-72 md:w-80 object-contain animate-float" />
+            <img src={HeroImage} alt="Verix virtual number app" className="w-96 md:w-96 object-contain animate-float" />
           </div>
         </div>
       </div>
