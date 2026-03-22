@@ -34,7 +34,7 @@ const Features = () => {
           <div className="card-feature">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/20 to-peach/50 flex items-center justify-center">
-                <span className="text-sm font-bold">SK</span>
+               
               </div>
               <div>
                 <h3 className="text-md font-semibold">Facebook</h3>
