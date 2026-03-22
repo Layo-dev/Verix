@@ -8,12 +8,12 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div className="max-w-lg">
-            <p className="section-label mb-4">{'{'} Analysis Dashboard {'}'}</p>
+            <p className="section-label mb-4">{'{'} Guide to receive SMS codes {'}'}</p>
             <h2 className="section-title mb-6">
               Manage and review your income and spending.
             </h2>
             <p className="section-description mb-8">
-              We help to keep track of your expenses and incomes. It shows the flow of records over a specific period of time, such as weekly, monthly or re*wly
+            The Verix service is a pivotal resource for users in need of a one time phone number to receive SMS online, providing an array of options including temporary phone numbers and disposable phone numbers designed specifically for SMS verification. This service enables users to effortlessly receive SMSs for a multitude of purposes, ranging from verification on messengers, social networks, and marketplaces, to ensuring secure transactions on delivery services. Discover how you can leverage this versatile service.
             </p>
             <Button variant="hero" size="lg" className="gap-2">
               <Lock size={18} />
