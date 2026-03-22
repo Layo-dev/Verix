@@ -1,86 +1,68 @@
 import { Button } from "@/components/ui/button";
-import { Lock, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { Lock, MousePointerClick, Settings, ShoppingCart, Smartphone, MessageSquare } from "lucide-react";
+
+const steps = [
+  {
+    icon: MousePointerClick,
+    title: "Selection",
+    description: "Begin by choosing the appropriate service from the numbers page that matches your needs.",
+  },
+  {
+    icon: Settings,
+    title: "Configuration",
+    description: "Indicate your preferred country and the quantity of temp numbers you require.",
+  },
+  {
+    icon: ShoppingCart,
+    title: "Purchase",
+    description: "Proceed by clicking the cart icon to secure your number for verification.",
+  },
+  {
+    icon: Smartphone,
+    title: "Activation",
+    description: "Provided temp phone number for verification will be displayed on the Activation page.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Receiving SMS",
+    description: "The verification code will appear next to your virtual number, ready for use.",
+  },
+];
 
 const Dashboard = () => {
   return (
     <section className="py-20 md:py-28 bg-background">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Content */}
-          <div className="max-w-lg">
-            <p className="section-label mb-4">{'{'} Guide to receive SMS codes {'}'}</p>
-            <h2 className="section-title mb-6">
-              Manage and review your income and spending.
-            </h2>
-            <p className="section-description mb-8">
-            The Verix service is a pivotal resource for users in need of a one time phone number to receive SMS online, providing an array of options including temporary phone numbers and disposable phone numbers designed specifically for SMS verification. This service enables users to effortlessly receive SMSs for a multitude of purposes, ranging from verification on messengers, social networks, and marketplaces, to ensuring secure transactions on delivery services. Discover how you can leverage this versatile service.
-            </p>
-            <Button variant="hero" size="lg" className="gap-2">
-              <Lock size={18} />
-              Open An Account
-            </Button>
-          </div>
+        {/* Top Content */}
+        <div className="max-w-2xl mx-auto text-center mb-12">
+          <p className="section-label mb-4">{'{'} Guide to receive SMS codes {'}'}</p>
+          <h2 className="section-title mb-6">
+            How to receive SMS verification codes
+          </h2>
+          <p className="section-description mb-8">
+            The Verix service provides temporary phone numbers for SMS verification. Follow these simple steps to get started.
+          </p>
+          <Button variant="hero" size="lg" className="gap-2">
+            <Lock size={18} />
+            Open An Account
+          </Button>
+        </div>
 
-          {/* Right Content - Dashboard Card */}
-          <div className="relative">
-            <div className="bg-violet-light/50 rounded-3xl p-6 md:p-8 border border-border/30">
-              {/* Balance Header */}
-              <div className="flex items-center justify-between mb-6 bg-card rounded-xl p-4 shadow-sm border border-border/50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                    <Wallet size={20} className="text-accent" />
-                  </div>
-                  <span className="font-medium">Available Balance:</span>
-                </div>
-                <p className="text-xl font-bold">
-                  <span className="text-sm align-top">$</span>8,884.00
-                </p>
+        {/* 5 Step Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {steps.map((step, index) => (
+            <div
+              key={step.title}
+              className="bg-card rounded-2xl p-5 border border-border/50 shadow-sm hover:shadow-md transition-shadow text-center"
+            >
+              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                <step.icon size={22} className="text-accent" />
               </div>
-
-              {/* Payments Section */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="font-medium">Total Payments</p>
-                  <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">USD ▾</span>
-                </div>
-
-                <div className="text-center mb-6">
-                  <p className="text-5xl font-bold text-accent mb-2">~60%</p>
-                  <p className="text-sm text-muted-foreground">Grow since last week</p>
-                </div>
-              </div>
-
-              {/* Stats Cards */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-card rounded-xl p-4 border border-border/50">
-                  <p className="text-xs text-muted-foreground mb-1">Total Income</p>
-                  <p className="text-xl font-bold mb-2">90,560.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
-                  <p className="text-xs text-success flex items-center gap-1">
-                    <TrendingUp size={12} />
-                    60% increase compared to last week
-                  </p>
-                </div>
-                <div className="bg-card rounded-xl p-4 border border-border/50">
-                  <p className="text-xs text-muted-foreground mb-1">Total Expense</p>
-                  <p className="text-xl font-bold mb-2">19,760.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
-                  <p className="text-xs text-destructive flex items-center gap-1">
-                    <TrendingDown size={12} />
-                    40% decrease compared to last week
-                  </p>
-                </div>
-              </div>
-
-              {/* Visual Bars */}
-              <div className="flex gap-1 sm:gap-2 justify-center">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className={`w-10 sm:w-14 md:w-16 rounded-t-xl ${i === 4 ? 'h-16 bg-accent' : 'h-12 bg-peach-dark/50'}`}
-                  />
-                ))}
-              </div>
+              <span className="text-xs text-muted-foreground font-medium mb-1 block">Step {index + 1}</span>
+              <h3 className="font-semibold text-foreground mb-2 text-sm">{step.title}</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">{step.description}</p>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
