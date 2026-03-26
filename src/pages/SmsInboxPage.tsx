@@ -5,7 +5,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import NumberList from "@/components/dashboard/NumberList";
 import SmsFeed from "@/components/dashboard/SmsFeed";
-import { Settings, ArrowLeft } from "lucide-react";
+import { Settings, ArrowLeft, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 interface PurchasedNumber {
   id: string;
