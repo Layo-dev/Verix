@@ -7,21 +7,21 @@ const Testimonials = () => {
       role: "Crypto Trader",
       avatar: "AA",
       rating: 5,
-      text: "\"\"",
+      text: "\"As a crypto trader, I need reliable tools that protect my privacy while keeping me agile across multiple exchanges. Verix has been a huge asset its virtual number service makes account verification simple, secure, and stress-free.\"",
     },
     {
       name: "Paul Jackson",
-      role: "User Interface Designer of Janugs",
+      role: "Digital Marketer",
       avatar: "PJ",
       rating: 4.9,
-      text: "\"Few writers can match Kotler's invigorating and insightful style. Tomorrowland is like an adrenaline rush. What makes us for hire stand out is their exclusive focus on. We help to keep track of your expenses and incomes. SEO recruitment and their candidate testing process recommendations.\"",
+      text: "\"Managing multiple client campaigns means I’m constantly signing up for new platforms, ad accounts, and analytics tools. Verix has been a lifesaver—its virtual number service lets me verify accounts quickly without juggling dozens of personal SIM cards.\"",
     },
     {
       name: "Alcin Adason",
-      role: "Visual Designer at Lolup",
+      role: "Freelancer",
       avatar: "AA",
       rating: 5,
-      text: "\"It's challenging to find a writer as dynamic and in-tune as Kotler. Tomorrow land is akin to a powerful caffeine boost.\"",
+      text: "\"Working with clients worldwide requires me to sign up for countless collaboration tools. Verix gives me a dedicated virtual number that keeps my work life separate from my personal life. It’s simple, reliable, and helps me maintain professionalism across borders.\"",
     },
   ];
 
@@ -37,7 +37,7 @@ const Testimonials = () => {
           </div>
           <div className="bg-accent/10 lg:col-span-2 flex items-end justify-end">
             <p className="section-description max-w-md text-right">
-              We help to keep track of your expenses and incomes. it shows
+              Verix makes the process seamless and efficient. It’s a tool I can’t imagine working without.
             </p>
           </div>
         </div>
