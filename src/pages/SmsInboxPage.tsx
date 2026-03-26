@@ -5,7 +5,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import NumberList from "@/components/dashboard/NumberList";
 import SmsFeed from "@/components/dashboard/SmsFeed";
-import { Settings, ArrowLeft } from "lucide-react";
+import { Settings, ArrowLeft, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 interface PurchasedNumber {
   id: string;
@@ -33,6 +35,7 @@ const SmsInboxPage = () => {
   const [selectedNumberId, setSelectedNumberId] = useState<string | null>(null);
   const [numbers, setNumbers] = useState<PurchasedNumber[]>([]);
   const [messages, setMessages] = useState<SmsMessage[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Fetch purchased numbers
   useEffect(() => {
@@ -101,7 +104,16 @@ const SmsInboxPage = () => {
               <ArrowLeft className="w-5 h-5" />
             </button>
           ) : (
-            <div className="w-7" />
+            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-64 border-r border-border">
+                <DashboardSidebar contentOnly onNavigate={() => setSidebarOpen(false)} />
+              </SheetContent>
+            </Sheet>
           )}
           <h1 className="text-lg font-bold text-foreground flex-1 text-center">
             {selectedNumberId ? selectedNumber?.phone_number || "Messages" : "SMS Inbox"}
