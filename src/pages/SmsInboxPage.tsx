@@ -35,6 +35,7 @@ const SmsInboxPage = () => {
   const [selectedNumberId, setSelectedNumberId] = useState<string | null>(null);
   const [numbers, setNumbers] = useState<PurchasedNumber[]>([]);
   const [messages, setMessages] = useState<SmsMessage[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Fetch purchased numbers
   useEffect(() => {
