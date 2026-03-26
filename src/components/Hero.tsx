@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Lock, Play } from "lucide-react";
 // import PhoneMockup from "./PhoneMockup";
 import HeroImage from "@/assets/Hero-image.jpeg";
+import { Link } from "@radix-ui/react-navigation-menu";
 
 const Hero = () => {
   return (
@@ -26,10 +27,12 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 mb-8">
+              {/*<Link to="#">*/}
               <Button variant="hero" size="lg" className="gap-2">
                 <Lock size={18} />
                 Open An Account
               </Button>
+             {/* </Link>*/}
               <Button variant="heroOutline" size="lg" className="gap-2">
                 <Play size={18} />
                 Buy a Number

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
+import { SiFacebook, SiTiktok, SiX, SiInstagram, SiTelegram} from "react-icons/si";
 
 const Footer = () => {
   const links = {
@@ -101,15 +102,12 @@ const Footer = () => {
 
           {/* Social Icons */}
           <div className="flex items-center gap-3">
-            {['⚙', 'f', '𝕏', '📷'].map((icon, index) => (
-              <a
-                key={index}
-                href="#"
-                className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center hover:bg-foreground/80 transition-colors text-sm"
-              >
-                {icon}
-              </a>
-            ))}
+            <SiFacebook className="size-9"/>
+            <SiTiktok className="size-9"/>
+            <SiInstagram className="size-9"/>
+            <SiTelegram className="size-9"/>
+            <SiX className="size-"/>                
+          
           </div>
         </div>
       </div>

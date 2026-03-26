@@ -4,10 +4,10 @@ const Testimonials = () => {
   const testimonials = [
     {
       name: "Alcin Adason",
-      role: "Visual Designer at Lolup",
+      role: "Crypto Trader",
       avatar: "AA",
       rating: 5,
-      text: "\"What makes us for hire stand out is their exclusive focus on SEO recruitment and their candidate testing process prior to recommendations.\"",
+      text: "\"\"",
     },
     {
       name: "Paul Jackson",
