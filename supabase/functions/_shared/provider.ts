@@ -82,39 +82,51 @@ export async function provisionNumber(
     `${handlerApiUrl}?action=getServicesList&${apiKeyParam}`
   );
 
-  const heroCountries = Array.isArray(countriesResp) ? countriesResp : [];
-  const heroServices = Array.isArray(servicesResp?.services)
-    ? servicesResp.services
-    : [];
+  const heroCountries = Array.isArray(countriesResp)
+    ? countriesResp
+    : typeof countriesResp === "object" && countriesResp !== null
+      ? Object.values(countriesResp)
+      : [];
+
+  const rawServices = servicesResp?.services ?? servicesResp;
+  const heroServices = Array.isArray(rawServices)
+    ? rawServices
+    : typeof rawServices === "object" && rawServices !== null
+      ? Object.values(rawServices)
+      : [];
 
   const uiCountryNorm = normalize(ui.countryName);
   const uiServiceNorm = normalize(ui.serviceName);
 
+  console.log("HeroSMS countries sample:", JSON.stringify(heroCountries.slice(0, 3)).slice(0, 500));
+  console.log("HeroSMS services sample:", JSON.stringify(heroServices.slice(0, 5)).slice(0, 500));
+  console.log(`Searching for country="${ui.countryName}" (norm="${uiCountryNorm}"), service="${ui.serviceName}" (norm="${uiServiceNorm}")`);
+
   const heroCountry =
     heroCountries.find((c: any) => {
-      const eng = typeof c?.eng === "string" ? normalize(c.eng) : "";
-      const rus = typeof c?.rus === "string" ? normalize(c.rus) : "";
-      return (
-        eng === uiCountryNorm ||
-        rus === uiCountryNorm ||
-        eng.includes(uiCountryNorm) ||
-        rus.includes(uiCountryNorm)
-      );
+      const fields = Object.values(c).filter((v): v is string => typeof v === "string");
+      return fields.some((f) => {
+        const norm = normalize(f);
+        return norm === uiCountryNorm || norm.includes(uiCountryNorm) || uiCountryNorm.includes(norm);
+      });
     }) ?? null;
 
   const heroService =
     heroServices.find((s: any) => {
-      const nameNorm = typeof s?.name === "string" ? normalize(s.name) : "";
-      return (
-        nameNorm === uiServiceNorm ||
-        nameNorm.includes(uiServiceNorm) ||
-        uiServiceNorm.includes(nameNorm)
-      );
+      const fields = Object.values(s).filter((v): v is string => typeof v === "string");
+      return fields.some((f) => {
+        const norm = normalize(f);
+        return norm === uiServiceNorm || norm.includes(uiServiceNorm) || uiServiceNorm.includes(norm);
+      });
     }) ?? null;
+
+  console.log("Matched country:", heroCountry ? JSON.stringify(heroCountry).slice(0, 200) : "NONE");
+  console.log("Matched service:", heroService ? JSON.stringify(heroService).slice(0, 200) : "NONE");
 
   if (!heroCountry?.id || !heroService?.code) {
     throw new Error(
-      `HeroSMS mapping failed for country="${ui.countryName}" and service="${ui.serviceName}"`
+      `HeroSMS mapping failed for country="${ui.countryName}" and service="${ui.serviceName}". ` +
+      `Country match: ${!!heroCountry}, Service match: ${!!heroService}`
     );
   }
 
