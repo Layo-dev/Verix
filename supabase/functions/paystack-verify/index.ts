@@ -67,12 +67,18 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Validate amount/currency based on server-side pricing for the stored selection
+    // Amount/currency: trust the order row + Paystack (what the customer actually paid).
+    // Do not re-compare to getPricing() here — if USD_TO_NGN or catalog prices change after
+    // paystack-init, repriced getPricing() would differ from order.amount_kobo and verification
+    // would falsely fail with "Amount mismatch".
     const pricing = getPricing({ countryCode: order.country_code, serviceId: order.service_id });
-    if (order.currency !== pricing.currency) return json(400, { error: "Currency mismatch" });
-    if (order.amount_kobo !== pricing.amountKobo) return json(400, { error: "Amount mismatch" });
-    if (tx.currency !== pricing.currency) return json(400, { error: "Paystack currency mismatch" });
-    if (tx.amount !== pricing.amountKobo) return json(400, { error: "Paystack amount mismatch" });
+    if (tx.currency !== order.currency) {
+      return json(400, { error: "Paystack currency mismatch" });
+    }
+    const paidKobo = Number(tx.amount);
+    if (!Number.isFinite(paidKobo) || paidKobo !== order.amount_kobo) {
+      return json(400, { error: "Paystack amount mismatch" });
+    }
 
     // Mark paid (idempotent)
     const { error: paidErr } = await supabase

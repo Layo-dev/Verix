@@ -103,13 +103,41 @@ export async function provisionNumber(
     return null;
   }
 
+  /**
+   * handler_api often returns JSON, but many errors are plain text (NO_NUMBERS, NO_BALANCE, BAD_KEY)
+   * with HTTP 200. Never use Response.json() — it throws SyntaxError on those bodies.
+   */
   const getJson = async (url: string) => {
     const res = await fetch(url, { method: "GET" });
+    const text = await res.text().catch(() => "");
+    const t = text.trim();
     if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`HeroSMS request failed: ${res.status} ${text}`);
+      throw new Error(`HeroSMS request failed: ${res.status} ${t}`);
     }
-    return (await res.json()) as any;
+    if (!t) {
+      throw new Error("HeroSMS returned empty body");
+    }
+
+    const firstLine = (t.split(/\r?\n/)[0] ?? t).trim();
+    if (/^[A-Z][A-Z0-9_]*$/.test(firstLine)) {
+      const hints: Record<string, string> = {
+        NO_BALANCE: "Add credits to your HeroSMS account.",
+        NO_NUMBERS: "No numbers for this country/service; try another combination or retry later.",
+        BAD_KEY: "Check PROVIDER_API_KEY secret.",
+        NO_KEY: "PROVIDER_API_KEY is missing.",
+      };
+      const hint = hints[firstLine] ? ` ${hints[firstLine]}` : "";
+      throw new Error(`HeroSMS: ${firstLine}.${hint}`);
+    }
+    if (firstLine.startsWith("BANNED:") || firstLine.startsWith("WRONG_MAX_PRICE:")) {
+      throw new Error(`HeroSMS: ${firstLine}`);
+    }
+
+    try {
+      return JSON.parse(text) as unknown;
+    } catch {
+      throw new Error(`HeroSMS: ${t.slice(0, 500)}`);
+    }
   };
 
   const apiKeyParam = `api_key=${encodeURIComponent(apiKey)}`;
@@ -217,13 +245,14 @@ export async function provisionNumber(
     getNumberQuery += `&url=${encodeURIComponent(activationWebhookUrl)}`;
   }
 
-  const numberResp = await getJson(`${handlerApiUrl}?${getNumberQuery}`);
+  const numberResp = (await getJson(`${handlerApiUrl}?${getNumberQuery}`)) as Record<
+    string,
+    unknown
+  >;
 
   const activationId = String(numberResp.activationId ?? "");
   const phoneNumber = String(numberResp.phoneNumber ?? "");
-  const activationEndTime = numberResp.activationEndTime as
-    | string
-    | undefined;
+  const activationEndTime = numberResp.activationEndTime as string | undefined;
 
   if (!activationId || !phoneNumber) {
     throw new Error(
