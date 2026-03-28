@@ -1,5 +1,5 @@
 import { corsHeaders } from "../_shared/cors.ts";
-import { createSupabaseAdminClient } from "../_shared/supabase.ts";
+import { createSupabaseAdminClient, getBearerToken } from "../_shared/supabase.ts";
 import { getPricing } from "../_shared/pricing.ts";
 import { paystackInitialize } from "../_shared/paystack.ts";
 
@@ -25,8 +25,11 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json(405, { error: "Method not allowed" });
 
   try {
-    const supabase = createSupabaseAdminClient(req);
-    const { data: authData, error: authError } = await supabase.auth.getUser();
+    const supabase = createSupabaseAdminClient();
+    const accessToken = getBearerToken(req);
+    if (!accessToken) return json(401, { error: "Unauthorized" });
+
+    const { data: authData, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !authData?.user) return json(401, { error: "Unauthorized" });
 
     const body = (await req.json().catch(() => ({}))) as InitBody;

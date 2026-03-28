@@ -1,4 +1,8 @@
 -- Orders/payment tracking for Paystack purchase flow
+--
+-- Apply after 20260319081317 (purchased_numbers must exist for FK).
+-- Some remotes never recorded this file and built `orders` only via 20260319113311; use
+-- 20260328021537_reconcile_skipped_payment_migrations.sql on those databases.
 
 -- Enum for order status
 DO $$

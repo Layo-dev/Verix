@@ -26,7 +26,8 @@ export type Database = {
           purchased_number_id: string | null
           service_id: string
           status: string | null
-          user_id: string | null
+          updated_at: string
+          user_id: string
         }
         Insert: {
           amount_kobo: number
@@ -39,7 +40,8 @@ export type Database = {
           purchased_number_id?: string | null
           service_id: string
           status?: string | null
-          user_id?: string | null
+          updated_at?: string
+          user_id: string
         }
         Update: {
           amount_kobo?: number
@@ -52,7 +54,8 @@ export type Database = {
           purchased_number_id?: string | null
           service_id?: string
           status?: string | null
-          user_id?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -93,6 +96,7 @@ export type Database = {
       }
       purchased_numbers: {
         Row: {
+          activation_id: string | null
           country_code: string
           country_flag: string
           created_at: string
@@ -104,6 +108,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          activation_id?: string | null
           country_code: string
           country_flag?: string
           created_at?: string
@@ -115,6 +120,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          activation_id?: string | null
           country_code?: string
           country_flag?: string
           created_at?: string

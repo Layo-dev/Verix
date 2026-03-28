@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
       return json(400, { error: "Missing required fields" });
     }
 
-    const supabase = createSupabaseAdminClient(req);
+    const supabase = createSupabaseAdminClient();
 
     const { data: purchased, error: lookupError } = await supabase
       .from("purchased_numbers")
