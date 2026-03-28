@@ -86,6 +86,7 @@ Deno.serve(async (req) => {
       amount_kobo: pricing.amountKobo,
     });
   } catch (e) {
+    console.error("paystack-init error:", e);
     return json(500, { error: e instanceof Error ? e.message : "Unknown error" });
   }
 });

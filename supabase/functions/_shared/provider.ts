@@ -13,12 +13,6 @@ export type ProvisionedNumber = {
   country_flag: string;
 };
 
-declare const Deno: {
-  env: {
-    get(key: string): string | undefined;
-  };
-};
-
 function getProviderConfig() {
   const baseUrl = Deno.env.get("PROVIDER_BASE_URL");
   const apiKey = Deno.env.get("PROVIDER_API_KEY");
