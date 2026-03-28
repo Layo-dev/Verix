@@ -63,6 +63,46 @@ export async function provisionNumber(
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "");
 
+  /** HeroSMS / SMS-activate style APIs often use `id` / `code`, or omit them when rows are keyed by id / short code. */
+  function unwrapKeyedRecords(raw: unknown): unknown[] {
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw !== "object" || raw === null) return [];
+    return Object.entries(raw as Record<string, unknown>).map(([key, value]) => {
+      if (value === null || typeof value !== "object") return value;
+      const row = { ...(value as Record<string, unknown>) };
+      if (row.id === undefined && row.country_id === undefined && /^\d+$/.test(key)) {
+        row.id = Number(key);
+      }
+      if (row.code === undefined && row.service === undefined && key.length > 0 && !/^\d+$/.test(key)) {
+        row.code = key;
+      }
+      return row;
+    });
+  }
+
+  function countryRecordId(c: Record<string, unknown>): string | null {
+    const candidates = [
+      c.id,
+      c.country_id,
+      c.countryId,
+      c.CountryId,
+    ];
+    for (const v of candidates) {
+      if (v === undefined || v === null || v === "") continue;
+      return String(v);
+    }
+    return null;
+  }
+
+  function serviceRecordCode(s: Record<string, unknown>): string | null {
+    const candidates = [s.code, s.service, s.service_code, s.short_name, s.shortName];
+    for (const v of candidates) {
+      if (v === undefined || v === null || v === "") continue;
+      return String(v);
+    }
+    return null;
+  }
+
   const getJson = async (url: string) => {
     const res = await fetch(url, { method: "GET" });
     if (!res.ok) {
@@ -82,18 +122,30 @@ export async function provisionNumber(
     `${handlerApiUrl}?action=getServicesList&${apiKeyParam}`
   );
 
-  const heroCountries = Array.isArray(countriesResp)
-    ? countriesResp
-    : typeof countriesResp === "object" && countriesResp !== null
-      ? Object.values(countriesResp)
-      : [];
+  const rawCountriesPayload =
+    (countriesResp as Record<string, unknown> | undefined)?.countries ??
+    (countriesResp as Record<string, unknown> | undefined)?.data ??
+    countriesResp;
 
-  const rawServices = servicesResp?.services ?? servicesResp;
-  const heroServices = Array.isArray(rawServices)
-    ? rawServices
-    : typeof rawServices === "object" && rawServices !== null
-      ? Object.values(rawServices)
-      : [];
+  const heroCountries = unwrapKeyedRecords(
+    Array.isArray(rawCountriesPayload)
+      ? rawCountriesPayload
+      : typeof rawCountriesPayload === "object" && rawCountriesPayload !== null
+        ? rawCountriesPayload
+        : []
+  );
+
+  const rawServices =
+    (servicesResp as Record<string, unknown> | undefined)?.services ??
+    (servicesResp as Record<string, unknown> | undefined)?.data ??
+    servicesResp;
+  const heroServices = unwrapKeyedRecords(
+    Array.isArray(rawServices)
+      ? rawServices
+      : typeof rawServices === "object" && rawServices !== null
+        ? rawServices
+        : []
+  );
 
   const uiCountryNorm = normalize(ui.countryName);
   const uiServiceNorm = normalize(ui.serviceName);
@@ -103,8 +155,11 @@ export async function provisionNumber(
   console.log(`Searching for country="${ui.countryName}" (norm="${uiCountryNorm}"), service="${ui.serviceName}" (norm="${uiServiceNorm}")`);
 
   const heroCountry =
-    heroCountries.find((c: any) => {
-      const fields = Object.values(c).filter((v): v is string => typeof v === "string");
+    heroCountries.find((c: unknown) => {
+      if (c === null || typeof c !== "object") return false;
+      const fields = Object.values(c as Record<string, unknown>).filter(
+        (v): v is string => typeof v === "string"
+      );
       return fields.some((f) => {
         const norm = normalize(f);
         return norm === uiCountryNorm || norm.includes(uiCountryNorm) || uiCountryNorm.includes(norm);
@@ -112,29 +167,57 @@ export async function provisionNumber(
     }) ?? null;
 
   const heroService =
-    heroServices.find((s: any) => {
-      const fields = Object.values(s).filter((v): v is string => typeof v === "string");
+    heroServices.find((s: unknown) => {
+      if (s === null || typeof s !== "object") return false;
+      const fields = Object.values(s as Record<string, unknown>).filter(
+        (v): v is string => typeof v === "string"
+      );
       return fields.some((f) => {
         const norm = normalize(f);
         return norm === uiServiceNorm || norm.includes(uiServiceNorm) || uiServiceNorm.includes(norm);
       });
     }) ?? null;
 
+  const countryRec =
+    heroCountry !== null && typeof heroCountry === "object"
+      ? (heroCountry as Record<string, unknown>)
+      : null;
+  const serviceRec =
+    heroService !== null && typeof heroService === "object"
+      ? (heroService as Record<string, unknown>)
+      : null;
+
+  const resolvedCountryId = countryRec ? countryRecordId(countryRec) : null;
+  const resolvedServiceCode = serviceRec ? serviceRecordCode(serviceRec) : null;
+
   console.log("Matched country:", heroCountry ? JSON.stringify(heroCountry).slice(0, 200) : "NONE");
   console.log("Matched service:", heroService ? JSON.stringify(heroService).slice(0, 200) : "NONE");
+  console.log(
+    `Resolved countryId=${resolvedCountryId ?? "MISSING"} serviceCode=${resolvedServiceCode ?? "MISSING"}`
+  );
 
-  if (!heroCountry?.id || !heroService?.code) {
+  if (!resolvedCountryId || !resolvedServiceCode) {
     throw new Error(
       `HeroSMS mapping failed for country="${ui.countryName}" and service="${ui.serviceName}". ` +
-      `Country match: ${!!heroCountry}, Service match: ${!!heroService}`
+        `Country match: ${!!heroCountry}, Service match: ${!!heroService}. ` +
+        `Could not read country id or service code from API rows (expected id/country_id or code/service). ` +
+        `countryKeys=${countryRec ? Object.keys(countryRec).join(",") : "n/a"} ` +
+        `serviceKeys=${serviceRec ? Object.keys(serviceRec).join(",") : "n/a"}`
     );
   }
 
-  const numberResp = await getJson(
-    `${handlerApiUrl}?action=getNumberV2&${apiKeyParam}&service=${encodeURIComponent(
-      heroService.code
-    )}&country=${encodeURIComponent(heroCountry.id)}`
-  );
+  // HeroSMS uses SMS-Activate–compatible handler_api. Per that protocol, getNumber/getNumberV2 accept an
+  // optional `url` query parameter: HTTPS endpoint to notify when an SMS arrives for this activation.
+  const activationWebhookUrl = Deno.env.get("HERO_SMS_WEBHOOK_URL")?.trim();
+
+  let getNumberQuery =
+    `action=getNumberV2&${apiKeyParam}&service=${encodeURIComponent(resolvedServiceCode)}` +
+    `&country=${encodeURIComponent(resolvedCountryId)}`;
+  if (activationWebhookUrl) {
+    getNumberQuery += `&url=${encodeURIComponent(activationWebhookUrl)}`;
+  }
+
+  const numberResp = await getJson(`${handlerApiUrl}?${getNumberQuery}`);
 
   const activationId = String(numberResp.activationId ?? "");
   const phoneNumber = String(numberResp.phoneNumber ?? "");

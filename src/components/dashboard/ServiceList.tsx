@@ -32,7 +32,7 @@ export interface ServiceItem {
 export const services: ServiceItem[] = [
   { id: "facebook", name: "Facebook", count: 12450, price: 0.15, icon: SiFacebook },
   { id: "google", name: "Google/Gmail", count: 8920, price: 0.25, icon: SiGoogle },
-  { id: "whatsapp", name: "WhatsApp", count: 15600, price: 0.35, icon: SiWhatsapp },
+  { id: "whatsapp", name: "WhatsApp", count: 15600, price: 0.19, icon: SiWhatsapp },
   { id: "telegram", name: "Telegram", count: 22100, price: 0.2, icon: SiTelegram },
   { id: "instagram", name: "Instagram", count: 9800, price: 0.18, icon: SiInstagram },
   { id: "twitter", name: "Twitter/X", count: 7200, price: 0.22, icon: SiX },

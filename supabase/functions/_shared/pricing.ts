@@ -28,13 +28,13 @@ const countries: CountryPricing[] = [
   { country_code: "DE", country_name: "Germany", country_flag: "🇩🇪", price_usd: 2.5 },
   { country_code: "GB", country_name: "United Kingdom", country_flag: "🇬🇧", price_usd: 2.0 },
   { country_code: "US", country_name: "United States", country_flag: "🇺🇸", price_usd: 1.8 },
-  { country_code: "CA", country_name: "Canada", country_flag: "🇨🇦", price_usd: 1.75 },
+  { country_code: "CA", country_name: "Canada", country_flag: "🇨🇦", price_usd: 0.25 },
 ];
 
 const services: ServicePricing[] = [
   { service_id: "facebook", service_name: "Facebook", price_usd: 0.15 },
   { service_id: "google", service_name: "Google/Gmail", price_usd: 0.25 },
-  { service_id: "whatsapp", service_name: "WhatsApp", price_usd: 0.35 },
+  { service_id: "whatsapp", service_name: "WhatsApp", price_usd: 0.19 },
   { service_id: "telegram", service_name: "Telegram", price_usd: 0.2 },
   { service_id: "instagram", service_name: "Instagram", price_usd: 0.18 },
   { service_id: "twitter", service_name: "Twitter/X", price_usd: 0.22 },
