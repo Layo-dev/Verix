@@ -1,46 +1,60 @@
 
 
-# Fix paystack-verify 500 Error
+# Fix HeroSMS Country/Service Name Mapping
 
-## Root Cause Analysis
+## Problem
 
-Two issues identified:
+The HeroSMS API's `getCountries` and `getServicesList` endpoints return data, but the fuzzy name matching fails to find "Russia" and "Facebook". This means either:
+1. The API response format differs from what the code expects (e.g., countries returned as an object/map instead of an array, or fields named differently than `eng`/`rus`)
+2. The service names in the API don't match (e.g., "Facebook" might be listed as "fb" or "Фейсбук")
 
-### Issue 1: CORS headers are incomplete
-The `_shared/cors.ts` file only allows `authorization, x-client-info, apikey, content-type` but the Supabase JS client (v2.95.3) sends additional headers: `x-supabase-client-platform`, `x-supabase-client-platform-version`, `x-supabase-client-runtime`, `x-supabase-client-runtime-version`. This can cause the preflight OPTIONS request to fail, which the browser reports as a network error (sometimes seen as 500).
+## Fix
 
-### Issue 2: `declare const Deno` in provider.ts shadows the global
-`supabase/functions/_shared/provider.ts` lines 16-20 have a `declare const Deno` block. While this is a type-only declaration and shouldn't cause runtime issues in most Deno versions, it's unnecessary in edge functions (where Deno is globally available) and could cause compilation issues in certain Deno versions used by Supabase edge runtime.
+### `supabase/functions/_shared/provider.ts`
 
-### Issue 3: Possible boot crash (no logs = function never started)
-"No logs found" typically means the function crashed during module loading/compilation, not during request handling. The `jsr:@supabase/supabase-js@2` import in `_shared/supabase.ts` or the `declare const Deno` could be causing a module-level crash.
+**Add debug logging** before the mapping failure to capture what the API actually returns, so we can see the real field names and values:
 
-## Fix Plan
-
-### 1. Update CORS headers (`supabase/functions/_shared/cors.ts`)
-Add the missing Supabase client headers:
-```
-"Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version"
-```
-
-### 2. Remove `declare const Deno` from provider.ts
-Delete lines 16-20 in `supabase/functions/_shared/provider.ts`. The Deno global is already available in edge functions and doesn't need to be declared.
-
-### 3. Add error logging to paystack-verify
-Add a `console.error` before returning the 500 in the catch block so future errors are visible in logs:
 ```typescript
-} catch (e) {
-  console.error("paystack-verify error:", e);
-  return json(500, { error: e instanceof Error ? e.message : "Unknown error" });
-}
+console.log("HeroSMS countries sample:", JSON.stringify(heroCountries.slice(0, 3)).slice(0, 500));
+console.log("HeroSMS services sample:", JSON.stringify(heroServices.slice(0, 3)).slice(0, 500));
+console.log(`Searching for country="${ui.countryName}" (norm="${uiCountryNorm}"), service="${ui.serviceName}" (norm="${uiServiceNorm}")`);
 ```
 
-### 4. Redeploy
-After these changes, the edge functions will auto-redeploy. The CORS fix ensures the browser preflight succeeds, and removing the Deno declaration eliminates any potential compilation issue.
+**Handle object-style responses**: The `getCountries` API may return an object like `{ "0": { "eng": "Russia", ... }, "1": { ... } }` instead of an array. Convert it:
 
-## Files Changed
-- `supabase/functions/_shared/cors.ts` -- update CORS headers
-- `supabase/functions/_shared/provider.ts` -- remove `declare const Deno`
-- `supabase/functions/paystack-verify/index.ts` -- add console.error logging
-- `supabase/functions/paystack-init/index.ts` -- add console.error logging (same pattern)
+```typescript
+const heroCountries = Array.isArray(countriesResp) 
+  ? countriesResp 
+  : typeof countriesResp === "object" && countriesResp !== null
+    ? Object.values(countriesResp)
+    : [];
+```
+
+Same for services — `servicesResp` might not have a `.services` property, or it could be an object:
+
+```typescript
+const rawServices = servicesResp?.services ?? servicesResp;
+const heroServices = Array.isArray(rawServices)
+  ? rawServices
+  : typeof rawServices === "object" && rawServices !== null
+    ? Object.values(rawServices)
+    : [];
+```
+
+**Broaden country field matching**: Some SMS APIs use `name`, `title`, or `country_name` instead of `eng`/`rus`. Check all string fields:
+
+```typescript
+const heroCountry = heroCountries.find((c: any) => {
+  const fields = Object.values(c).filter((v): v is string => typeof v === "string");
+  return fields.some(f => {
+    const norm = normalize(f);
+    return norm === uiCountryNorm || norm.includes(uiCountryNorm) || uiCountryNorm.includes(norm);
+  });
+}) ?? null;
+```
+
+**Broaden service matching** similarly — check `name`, `code`, `title`, and any other string fields.
+
+### Files changed
+- `supabase/functions/_shared/provider.ts`
 
