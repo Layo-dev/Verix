@@ -127,6 +127,7 @@ Deno.serve(async (req) => {
 
     return json(200, { ok: true, orderId: order.id, purchasedNumberId: purchased.id });
   } catch (e) {
+    console.error("paystack-verify error:", e);
     return json(500, { error: e instanceof Error ? e.message : "Unknown error" });
   }
 });
