@@ -25,7 +25,7 @@ const countries = [
   { code: "DE", name: "Germany", flag: "🇩🇪", phoneCode: "+49", count: 890, price: 2.50, status: "low" as const },
   { code: "GB", name: "United Kingdom", flag: "🇬🇧", phoneCode: "+44", count: 1200, price: 2.00, status: "low" as const },
   { code: "US", name: "United States", flag: "🇺🇸", phoneCode: "+1", count: 3200, price: 1.80, status: "medium" as const },
-  { code: "CA", name: "Canada", flag: "🇨🇦", phoneCode: "+1", count: 1500, price: 0.25, status: "low" as const },
+  { code: "CA", name: "Canada", flag: "🇨🇦", phoneCode: "+1", count: 1500, price: 0.19, status: "low" as const },
 ];
 
 interface MobileDashboardProps {
