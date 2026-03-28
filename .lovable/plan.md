@@ -1,32 +1,46 @@
 
 
-# Add Sidebar Menu Button to SMS Inbox Mobile Header
+# Fix paystack-verify 500 Error
 
-## Problem
-On mobile, the SMS Inbox page header has no way to open the dashboard sidebar for navigation.
+## Root Cause Analysis
 
-## Solution
-Add a hamburger menu button to the mobile header in `SmsInboxPage.tsx` that opens `DashboardSidebar` in a `Sheet` (same pattern used by `MobileDashboard`).
+Two issues identified:
 
-## Changes
+### Issue 1: CORS headers are incomplete
+The `_shared/cors.ts` file only allows `authorization, x-client-info, apikey, content-type` but the Supabase JS client (v2.95.3) sends additional headers: `x-supabase-client-platform`, `x-supabase-client-platform-version`, `x-supabase-client-runtime`, `x-supabase-client-runtime-version`. This can cause the preflight OPTIONS request to fail, which the browser reports as a network error (sometimes seen as 500).
 
-### `src/pages/SmsInboxPage.tsx`
-- Import `Sheet`, `SheetContent`, `SheetTrigger` and `Menu` icon
-- Import `DashboardSidebar`
-- Add `sidebarOpen` state
-- Replace the empty `<div className="w-7" />` placeholder (line 104) with a `Menu` button that opens a left-side Sheet containing `<DashboardSidebar contentOnly onNavigate={() => setSidebarOpen(false)} />`
-- When a number is selected (back arrow shown), keep the back arrow but also add the menu button — replace the `Settings` button on the right with the `Menu` button, or place menu as the leftmost element
+### Issue 2: `declare const Deno` in provider.ts shadows the global
+`supabase/functions/_shared/provider.ts` lines 16-20 have a `declare const Deno` block. While this is a type-only declaration and shouldn't cause runtime issues in most Deno versions, it's unnecessary in edge functions (where Deno is globally available) and could cause compilation issues in certain Deno versions used by Supabase edge runtime.
 
-**Mobile header layout:**
+### Issue 3: Possible boot crash (no logs = function never started)
+"No logs found" typically means the function crashed during module loading/compilation, not during request handling. The `jsr:@supabase/supabase-js@2` import in `_shared/supabase.ts` or the `declare const Deno` could be causing a module-level crash.
+
+## Fix Plan
+
+### 1. Update CORS headers (`supabase/functions/_shared/cors.ts`)
+Add the missing Supabase client headers:
 ```
-[ ☰ Menu ]  "SMS Inbox"  [ ⚙ Settings ]
+"Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version"
 ```
-When a number is selected:
-```
-[ ← Back ]  "+1234..."   [ ⚙ Settings ]
-```
-The menu button replaces the empty spacer div when no number is selected, and can be accessed via the sidebar from anywhere.
 
-### No changes to `SmsFeed.tsx`
-The menu belongs in the page-level header, not inside the SmsFeed component, since SmsFeed is a reusable content panel.
+### 2. Remove `declare const Deno` from provider.ts
+Delete lines 16-20 in `supabase/functions/_shared/provider.ts`. The Deno global is already available in edge functions and doesn't need to be declared.
+
+### 3. Add error logging to paystack-verify
+Add a `console.error` before returning the 500 in the catch block so future errors are visible in logs:
+```typescript
+} catch (e) {
+  console.error("paystack-verify error:", e);
+  return json(500, { error: e instanceof Error ? e.message : "Unknown error" });
+}
+```
+
+### 4. Redeploy
+After these changes, the edge functions will auto-redeploy. The CORS fix ensures the browser preflight succeeds, and removing the Deno declaration eliminates any potential compilation issue.
+
+## Files Changed
+- `supabase/functions/_shared/cors.ts` -- update CORS headers
+- `supabase/functions/_shared/provider.ts` -- remove `declare const Deno`
+- `supabase/functions/paystack-verify/index.ts` -- add console.error logging
+- `supabase/functions/paystack-init/index.ts` -- add console.error logging (same pattern)
 
