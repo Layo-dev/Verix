@@ -8,7 +8,7 @@ const services = [
   { name: "Facebook", icon: SiFacebook, count: "612487 pcs", price: "$0.03" },
   { name: "TikTok / Douyin", icon: SiTiktok, count: "534892 pcs", price: "$0.04" },
   { name: "Twitter", icon: SiX, count: "498215 pcs", price: "$0.03" },
-  { name: "WhatsApp", icon: SiWhatsapp, count: "421376 pcs", price: "$0.05" },
+  { name: "WhatsApp", icon: SiWhatsapp, count: "421376 pcs", price: "$0.45" },
 ];
 
 const Pricing = () => {

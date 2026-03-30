@@ -11,21 +11,22 @@ import { useBuyNumber } from "@/hooks/useBuyNumber";
 
 // Extended country data with count, price, and status
 const countries = [
-  { code: "RU", name: "Russia", flag: "🇷🇺", phoneCode: "+7", count: 15420, price: 0.50, status: "high" as const },
-  { code: "UA", name: "Ukraine", flag: "🇺🇦", phoneCode: "+380", count: 8900, price: 0.75, status: "high" as const },
+ // { code: "RU", name: "Russia", flag: "🇷🇺", phoneCode: "+7", count: 15420, price: 0.50, status: "high" as const },
+  { code: "UA", name: "Ukraine", flag: "🇺🇦", phoneCode: "+380", count: 8900, price: 0.5, status: "high" as const },
   { code: "KZ", name: "Kazakhstan", flag: "🇰🇿", phoneCode: "+7", count: 5200, price: 0.60, status: "high" as const },
   { code: "ID", name: "Indonesia", flag: "🇮🇩", phoneCode: "+62", count: 12300, price: 0.45, status: "high" as const },
-  { code: "MY", name: "Malaysia", flag: "🇲🇾", phoneCode: "+60", count: 3400, price: 0.85, status: "medium" as const },
-  { code: "MA", name: "Morocco", flag: "🇲🇦", phoneCode: "+212", count: 9977, price: 1.00, status: "high" as const },
+  { code: "MY", name: "Malaysia", flag: "🇲🇾", phoneCode: "+60", count: 3400, price: 0.4, status: "medium" as const },
+  { code: "MA", name: "Morocco", flag: "🇲🇦", phoneCode: "+212", count: 9977, price: 0.2, status: "high" as const },
   { code: "KE", name: "Kenya", flag: "🇰🇪", phoneCode: "+254", count: 2100, price: 0.90, status: "medium" as const },
   { code: "MM", name: "Myanmar", flag: "🇲🇲", phoneCode: "+95", count: 1800, price: 1.20, status: "low" as const },
   { code: "PH", name: "Philippines", flag: "🇵🇭", phoneCode: "+63", count: 7600, price: 0.55, status: "high" as const },
   { code: "VN", name: "Vietnam", flag: "🇻🇳", phoneCode: "+84", count: 6200, price: 0.65, status: "high" as const },
   { code: "TH", name: "Thailand", flag: "🇹🇭", phoneCode: "+66", count: 4500, price: 0.70, status: "high" as const },
   { code: "DE", name: "Germany", flag: "🇩🇪", phoneCode: "+49", count: 890, price: 2.50, status: "low" as const },
-  { code: "GB", name: "United Kingdom", flag: "🇬🇧", phoneCode: "+44", count: 1200, price: 2.00, status: "low" as const },
-  { code: "US", name: "United States", flag: "🇺🇸", phoneCode: "+1", count: 3200, price: 1.80, status: "medium" as const },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧", phoneCode: "+44", count: 1200, price: 0.45, status: "low" as const },
+  { code: "US", name: "United States", flag: "🇺🇸", phoneCode: "+1", count: 3200, price: 2.5, status: "medium" as const },
   { code: "CA", name: "Canada", flag: "🇨🇦", phoneCode: "+1", count: 1500, price: 0.19, status: "low" as const },
+  { code: "SP", name: "Spain", flag: "🇪🇸", phoneCode: "+34", count: 1000, price: 1, status: "low" as const },
 ];
 
 interface MobileDashboardProps {
