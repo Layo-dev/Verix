@@ -5,27 +5,27 @@ const steps = [
   {
     icon: MousePointerClick,
     title: "Selection",
-    description: "Begin by choosing the appropriate service from the numbers page that matches your needs.",
+    description: "Begin by choosing the appropriate service from the Receive SMS page that matches your needs.",
   },
   {
     icon: Settings,
     title: "Configuration",
-    description: "Indicate your preferred country and the quantity of temp numbers you require.",
+    description: "Indicate your preferred country and the quantity of SMS you require.",
   },
   {
     icon: ShoppingCart,
     title: "Purchase",
-    description: "Proceed by clicking the cart icon to secure your number for verification.",
+    description: "Proceed by clicking the Buy Now icon to secure your SMS for verification.",
   },
   {
     icon: Smartphone,
     title: "Activation",
-    description: "Provided temp phone number for verification will be displayed on the Activation page.",
+    description: "Provided SMS for verification will be displayed on the SMS Inbox page.",
   },
   {
     icon: MessageSquare,
     title: "Receiving SMS",
-    description: "The verification code will appear next to your virtual number, ready for use.",
+    description: "The verification code will appear next to your SMS, ready for use.",
   },
 ];
 

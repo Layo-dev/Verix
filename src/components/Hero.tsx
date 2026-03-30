@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Lock, Play } from "lucide-react";
 // import PhoneMockup from "./PhoneMockup";
 import HeroImage from "@/assets/Hero-image.jpeg";
-import { Link } from "@radix-ui/react-navigation-menu";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -27,27 +27,29 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 mb-8">
-              {/*<Link to="#">*/}
-              <Button variant="hero" size="lg" className="gap-2">
-                <Lock size={18} />
-                Open An Account
-              </Button>
-             {/* </Link>*/}
-              <Button variant="heroOutline" size="lg" className="gap-2">
-                <Play size={18} />
-                Buy a Number
-              </Button>
+              <Link to="/signup"> 
+               <Button variant="hero" size="lg" className="gap-2">
+                 <Lock size={18} />
+                 Open An Account
+               </Button>
+              </Link> 
+              <Link to="/dashboard"> 
+                <Button variant="heroOutline" size="lg" className="gap-2">
+                 <Play size={18} />
+                 Buy a Number
+               </Button>
+              </Link> 
             </div>
 
             {/* Trust Points */}
             <div className="flex flex-wrap gap-6">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Check size={16} className="text-accent" />
-                No credit card required
+                Secure and reliable
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Check size={16} className="text-accent" />
-                Fast acceptance
+                Instant payments
               </div>
             </div>
           </div>
