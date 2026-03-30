@@ -11,7 +11,7 @@ const Partners = () => {
   ];
 
   return (
-    <section className="py-16 md:py-20 bg-muted/30 border-y border-border">
+    <section className="py-10 md:py-12 bg-muted/30 border-y border-border">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <p className="text-center text-sm text-muted-foreground mb-10">
           {'{'} We partner with the world's leading brands {'}'}
@@ -41,12 +41,12 @@ const Partners = () => {
           </div>
           <div>
             <p className="text-lg font-semibold text-foreground">
-              The Platform stands alone as the payix customer management solution.
+              Platform for receiving SMS with codes online directly on website.
             </p>
           </div>
           <div>
             <p className="section-description">
-              Most of your app is based on the data you already have, whether it lives in a Google Sheet, an Excel file, or other data sources.
+              Verix is a platform that allows you to receive SMS with codes online directly on our website.
             </p>
           </div>
         </div>

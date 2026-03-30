@@ -30,16 +30,40 @@ const Login = () => {
       email,
       password,
     });
-
+  
     if (error) {
-      toast.error(
-        error.message === "Invalid login credentials"
-          ? "Invalid email or password"
-          : error.message
-      );
+      const getErrorMessage = (err: any) => {
+        // Check offline first
+        if (!navigator.onLine) {
+          return "No internet connection. Please check your network.";
+        }
+    
+        // Match specific errors
+        switch (err.message) {
+          case "Invalid login credentials":
+            return "Invalid email or password";
+          case "Failed to fetch":
+            return "Could not reach the server. Please try again.";
+          case "Timeout":
+            return "Request took too long. Please try again.";
+          default:
+            return err.message || "An error occurred. Please try again.";
+        }
+      };
+    
+      toast.error(getErrorMessage(error));
       setIsLoading(false);
       return;
     }
+    //if (error) {
+    //  toast.error(
+    //    error.message === "Invalid login credentials"
+    //      ? "Invalid email or password"
+    //      : error.message
+    //  );
+    //  setIsLoading(false);
+    //  return;
+    //}
 
     toast.success("Welcome back!");
     navigate("/dashboard", { replace: true });

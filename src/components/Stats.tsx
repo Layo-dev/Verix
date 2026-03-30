@@ -1,12 +1,12 @@
 const Stats = () => {
   const stats = [
-    { value: "160+", label: "Services Available" },
-    { value: "1.8M", label: "Satisfied Customer" },
-    { value: "196+", label: "County Available" },
+    { value: "10+", label: "Services Available" },
+    { value: "100+", label: "Countries Available" },
+    { value: "15+", label: "Satisfied Customer" },
   ];
 
   return (
-    <section className="py-16 md:py-20 border-y border-border bg-background">
+    <section className="py-10 md:py-12 border-y border-border bg-background">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
           {/* Left Text */}

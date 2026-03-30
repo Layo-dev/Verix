@@ -109,7 +109,7 @@ const NumberList = ({ numbers, selectedNumberId, onSelectNumber }: NumberListPro
       <div className="p-3 border-b border-border">
         <div className="flex items-center gap-2 mb-3">
           <Phone className="w-4 h-4 text-accent" />
-          <h2 className="text-sm font-semibold text-foreground">Active Numbers</h2>
+          <h2 className="text-md font-semibold text-foreground">Active Numbers</h2>
           <span className="ml-auto text-xs text-muted-foreground">{numbers.length}</span>
         </div>
         <div className="relative">
