@@ -16,14 +16,14 @@ Deno.serve(async (req) => {
     const supabase = createSupabaseAdminClient();
 
     // Find purchased numbers waiting for OTP for more than 5 minutes with no SMS
-    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const twentyMinAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
 
     const { data: staleNumbers, error: queryErr } = await supabase
       .from("purchased_numbers")
       .select("id, user_id")
       .eq("otp_status", "waiting")
       .eq("status", "active")
-      .lt("created_at", fiveMinAgo);
+      .lt("created_at", twentyMinAgo);
 
     if (queryErr) throw new Error(queryErr.message);
     if (!staleNumbers || staleNumbers.length === 0) {
