@@ -1,6 +1,6 @@
 import { paystackRefund } from "./paystack.ts";
 
-type SupabaseClient = ReturnType<typeof import("jsr:@supabase/supabase-js@2").createClient>;
+type SupabaseClient = ReturnType<typeof import("https://esm.sh/@supabase/supabase-js@2.49.1").createClient>;
 
 export async function processRefund(
   supabase: SupabaseClient,
