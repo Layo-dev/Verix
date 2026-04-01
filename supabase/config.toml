@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.hero-webhook-sms]
 verify_jwt = false
+
+[functions.refund-check]
+verify_jwt = false

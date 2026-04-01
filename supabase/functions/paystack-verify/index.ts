@@ -3,6 +3,7 @@ import { createSupabaseAdminClient, getBearerToken } from "../_shared/supabase.t
 import { paystackVerify } from "../_shared/paystack.ts";
 import { getPricing } from "../_shared/pricing.ts";
 import { provisionNumber } from "../_shared/provider.ts";
+import { processRefund } from "../_shared/refund.ts";
 
 type VerifyBody = { reference?: string };
 
@@ -93,19 +94,31 @@ Deno.serve(async (req) => {
       return json(200, { ok: true, orderId: order.id, purchasedNumberId: order.purchased_number_id });
     }
 
-    const provisioned = await provisionNumber(
-      {
-        countryCode: order.country_code,
-        serviceId: order.service_id,
-        userId: authData.user.id,
-        orderId: order.id,
-      },
-      {
-        serviceName: pricing.service.service_name,
-        countryName: pricing.country.country_name,
-        countryFlag: pricing.country.country_flag,
-      }
-    );
+    let provisioned;
+    try {
+      provisioned = await provisionNumber(
+        {
+          countryCode: order.country_code,
+          serviceId: order.service_id,
+          userId: authData.user.id,
+          orderId: order.id,
+        },
+        {
+          serviceName: pricing.service.service_name,
+          countryName: pricing.country.country_name,
+          countryFlag: pricing.country.country_flag,
+        }
+      );
+    } catch (provErr) {
+      console.error("Provisioning failed, initiating refund:", provErr);
+      const refundResult = await processRefund(supabase, order.id, "Number provisioning failed");
+      console.log("Refund result:", refundResult);
+      return json(200, {
+        ok: false,
+        refunded: refundResult.success,
+        error: provErr instanceof Error ? provErr.message : "Provisioning failed",
+      });
+    }
 
     // Create purchased_numbers row (this is what Inbox reads)
     const { data: purchased, error: pnErr } = await supabase

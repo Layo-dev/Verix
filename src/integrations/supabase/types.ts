@@ -24,6 +24,9 @@ export type Database = {
           paystack_reference: string | null
           provider_status: string | null
           purchased_number_id: string | null
+          refund_reason: string | null
+          refunded: boolean | null
+          refunded_at: string | null
           service_id: string
           status: string | null
           updated_at: string
@@ -38,6 +41,9 @@ export type Database = {
           paystack_reference?: string | null
           provider_status?: string | null
           purchased_number_id?: string | null
+          refund_reason?: string | null
+          refunded?: boolean | null
+          refunded_at?: string | null
           service_id: string
           status?: string | null
           updated_at?: string
@@ -52,6 +58,9 @@ export type Database = {
           paystack_reference?: string | null
           provider_status?: string | null
           purchased_number_id?: string | null
+          refund_reason?: string | null
+          refunded?: boolean | null
+          refunded_at?: string | null
           service_id?: string
           status?: string | null
           updated_at?: string
@@ -102,6 +111,7 @@ export type Database = {
           created_at: string
           expires_at: string
           id: string
+          otp_status: string | null
           phone_number: string
           service_name: string
           status: Database["public"]["Enums"]["number_status"]
@@ -114,6 +124,7 @@ export type Database = {
           created_at?: string
           expires_at: string
           id?: string
+          otp_status?: string | null
           phone_number: string
           service_name: string
           status?: Database["public"]["Enums"]["number_status"]
@@ -126,6 +137,7 @@ export type Database = {
           created_at?: string
           expires_at?: string
           id?: string
+          otp_status?: string | null
           phone_number?: string
           service_name?: string
           status?: Database["public"]["Enums"]["number_status"]
