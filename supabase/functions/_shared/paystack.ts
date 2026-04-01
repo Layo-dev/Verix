@@ -60,6 +60,21 @@ export async function paystackInitialize(args: {
   return json.data;
 }
 
+export async function paystackRefund(reference: string): Promise<void> {
+  const res = await fetch(`${getPaystackBaseUrl()}/refund`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getPaystackSecretKey()}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ transaction: reference }),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.status) {
+    throw new Error(`Paystack refund failed: ${json.message ?? res.statusText}`);
+  }
+}
+
 export async function paystackVerify(reference: string) {
   const res = await fetch(
     `${getPaystackBaseUrl()}/transaction/verify/${encodeURIComponent(reference)}`,
