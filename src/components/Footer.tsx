@@ -19,7 +19,7 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
-              <span className="text-xl font-bold text-foreground leading-none -ml-2">erix.</span>
+              <span className="text-xl font-bold text-foreground leading-none -ml-3">erix.</span>
             </div>
             <p className="text-sm text-muted-foreground">Copyright ©2024. All rights reserved.</p>
           </div>

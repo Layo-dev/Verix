@@ -61,7 +61,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
       <div className="p-6 pb-4">
         <Link to="/" className="inline-flex items-center" onClick={handleNavClick}>
           <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
-          <span className="text-xl font-bold text-foreground leading-none -ml-2">erix.</span>
+          <span className="text-xl font-bold text-foreground leading-none -ml-3">erix.</span>
         </Link>
       </div>
 
