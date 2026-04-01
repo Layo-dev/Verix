@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
 import { SiFacebook, SiTiktok, SiX, SiInstagram, SiTelegram} from "react-icons/si";
+import VerixLogo from "@/assets/verixsms-logo.svg";
 
 const Footer = () => {
   const links = {
@@ -17,10 +18,8 @@ const Footer = () => {
           {/* Logo */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <div className="w-3 h-3 bg-primary-foreground rounded-sm" />
-              </div>
-              <span className="text-xl font-bold text-foreground">Verix.</span>
+              <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
+              <span className="text-xl font-bold text-foreground leading-none -ml-2">erix.</span>
             </div>
             <p className="text-sm text-muted-foreground">Copyright ©2024. All rights reserved.</p>
           </div>

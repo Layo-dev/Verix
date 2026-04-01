@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import VerixLogo from "@/assets/verixsms-logo.svg";
 
 const menuItems = [
   { icon: MessageSquare, label: "Receive SMS", href: "/dashboard" },
@@ -58,11 +59,9 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
     <div className="flex flex-col h-full bg-[hsl(var(--card))] text-card-foreground">
       {/* Logo */}
       <div className="p-6 pb-4">
-        <Link to="/" className="flex items-center gap-2" onClick={handleNavClick}>
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <div className="w-3 h-3 bg-primary-foreground rounded-sm" />
-          </div>
-          <span className="text-xl font-bold text-foreground">Verix.</span>
+        <Link to="/" className="inline-flex items-center" onClick={handleNavClick}>
+          <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
+          <span className="text-xl font-bold text-foreground leading-none -ml-2">erix.</span>
         </Link>
       </div>
 
