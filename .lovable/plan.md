@@ -1,60 +1,92 @@
 
 
-# Fix HeroSMS Country/Service Name Mapping
+# Implement Refund System
 
-## Problem
+## Overview
 
-The HeroSMS API's `getCountries` and `getServicesList` endpoints return data, but the fuzzy name matching fails to find "Russia" and "Facebook". This means either:
-1. The API response format differs from what the code expects (e.g., countries returned as an object/map instead of an array, or fields named differently than `eng`/`rus`)
-2. The service names in the API don't match (e.g., "Facebook" might be listed as "fb" or "Фейсбук")
+Add a Paystack refund capability with two triggers: (1) immediate refund when HeroSMS provisioning fails after payment, and (2) automatic refund when no OTP is received within a timeout window.
 
-## Fix
+## Database Changes
 
-### `supabase/functions/_shared/provider.ts`
+### Migration: Add refund columns to `orders` table
 
-**Add debug logging** before the mapping failure to capture what the API actually returns, so we can see the real field names and values:
+The `orders` table already has `refunded`, `refunded_at`, and `refund_reason` columns (visible in the schema). No new columns needed.
 
-```typescript
-console.log("HeroSMS countries sample:", JSON.stringify(heroCountries.slice(0, 3)).slice(0, 500));
-console.log("HeroSMS services sample:", JSON.stringify(heroServices.slice(0, 3)).slice(0, 500));
-console.log(`Searching for country="${ui.countryName}" (norm="${uiCountryNorm}"), service="${ui.serviceName}" (norm="${uiServiceNorm}")`);
-```
+### Migration: Add `otp_status` column check
 
-**Handle object-style responses**: The `getCountries` API may return an object like `{ "0": { "eng": "Russia", ... }, "1": { ... } }` instead of an array. Convert it:
+The `purchased_numbers` table already has `otp_status` (default `'waiting'`). No new columns needed.
 
-```typescript
-const heroCountries = Array.isArray(countriesResp) 
-  ? countriesResp 
-  : typeof countriesResp === "object" && countriesResp !== null
-    ? Object.values(countriesResp)
-    : [];
-```
+## Backend Changes
 
-Same for services — `servicesResp` might not have a `.services` property, or it could be an object:
+### 1. New shared helper: `supabase/functions/_shared/refund.ts`
+
+Reusable refund function:
 
 ```typescript
-const rawServices = servicesResp?.services ?? servicesResp;
-const heroServices = Array.isArray(rawServices)
-  ? rawServices
-  : typeof rawServices === "object" && rawServices !== null
-    ? Object.values(rawServices)
-    : [];
+export async function processRefund(
+  supabase: SupabaseClient,
+  orderId: string,
+  reason: string
+): Promise<{ success: boolean; error?: string }>
 ```
 
-**Broaden country field matching**: Some SMS APIs use `name`, `title`, or `country_name` instead of `eng`/`rus`. Check all string fields:
+Logic:
+- Fetch the order by ID
+- Guard: skip if already refunded (`refunded = true`) or status is not `paid`
+- Guard: check that no OTP was received (query `sms_messages` for the order's `purchased_number_id` -- if any exist, refuse refund)
+- Call Paystack Refund API: `POST /refund` with `{ transaction: paystackReference }`
+- On success: update order `refunded = true`, `refunded_at = now()`, `refund_reason = reason`, `status = 'refunded'`
+- Update `purchased_numbers` status to `expired` if it exists
+
+### 2. Add `paystackRefund` to `supabase/functions/_shared/paystack.ts`
 
 ```typescript
-const heroCountry = heroCountries.find((c: any) => {
-  const fields = Object.values(c).filter((v): v is string => typeof v === "string");
-  return fields.some(f => {
-    const norm = normalize(f);
-    return norm === uiCountryNorm || norm.includes(uiCountryNorm) || uiCountryNorm.includes(norm);
-  });
-}) ?? null;
+export async function paystackRefund(reference: string): Promise<void>
 ```
 
-**Broaden service matching** similarly — check `name`, `code`, `title`, and any other string fields.
+Calls `POST https://api.paystack.co/refund` with body `{ transaction: reference }` using the secret key.
 
-### Files changed
-- `supabase/functions/_shared/provider.ts`
+### 3. Update `supabase/functions/paystack-verify/index.ts` -- CASE 1
+
+When `provisionNumber()` throws (HeroSMS fails after payment verified):
+- Catch the provisioning error specifically
+- Call `processRefund(supabase, order.id, "Number provisioning failed")`
+- Return `{ ok: false, refunded: true, error: "..." }` to the client
+
+### 4. New edge function: `supabase/functions/refund-check/index.ts` -- CASE 2
+
+Scheduled/callable function for OTP timeout refunds:
+- Query `purchased_numbers` where `otp_status = 'waiting'` and `created_at < now() - interval '5 minutes'`
+- For each, check `sms_messages` count for that number
+- If zero messages: call `processRefund()` with reason "No OTP received within timeout"
+- Update `purchased_numbers.otp_status = 'timeout'`
+
+This can be invoked via a pg_cron job every minute, or called manually.
+
+### 5. Update `supabase/config.toml`
+
+Add `[functions.refund-check]` with `verify_jwt = false`.
+
+## Frontend Changes
+
+### Update `src/pages/PaystackCallback.tsx`
+
+Handle the new `refunded: true` response from paystack-verify:
+- Show a different toast: "Payment refunded -- number could not be assigned"
+- Navigate to dashboard instead of inbox
+
+## Files Changed
+
+1. `supabase/functions/_shared/paystack.ts` -- add `paystackRefund()`
+2. `supabase/functions/_shared/refund.ts` -- new shared refund logic
+3. `supabase/functions/paystack-verify/index.ts` -- catch provisioning failure, auto-refund
+4. `supabase/functions/refund-check/index.ts` -- new function for OTP timeout refunds
+5. `supabase/config.toml` -- register refund-check function
+6. `src/pages/PaystackCallback.tsx` -- handle refund response in UI
+
+## Refund Guards (DO NOT REFUND IF)
+
+- `sms_messages` exist for the purchased number (OTP was delivered)
+- Order is already refunded (`refunded = true`)
+- Order status is not `paid`
 
