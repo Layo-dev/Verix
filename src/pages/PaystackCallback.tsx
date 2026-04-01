@@ -26,10 +26,20 @@ const PaystackCallback = () => {
         body: { reference },
       });
 
-      if (error || !data?.ok) {
+      if (error || (!data?.ok && !data?.refunded)) {
         toast({
           title: "Verification failed",
           description: error?.message || data?.error || "Could not verify payment.",
+          variant: "destructive",
+        });
+        navigate("/dashboard", { replace: true });
+        return;
+      }
+
+      if (data?.refunded) {
+        toast({
+          title: "Payment refunded",
+          description: "Number could not be assigned. Your payment has been refunded.",
           variant: "destructive",
         });
         navigate("/dashboard", { replace: true });
