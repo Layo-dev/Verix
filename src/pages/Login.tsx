@@ -74,9 +74,9 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2">
-          <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
-          <span className="text-xl font-bold text-foreground leading-none -ml-3">erix.</span>
+        <div className="inline-flex items-center justify-center gap-2">
+          <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
+          <span className="text-2xl font-bold text-foreground leading-none -ml-6 -mb-3">erix.</span>
         </div>
 
         {/* Heading */}

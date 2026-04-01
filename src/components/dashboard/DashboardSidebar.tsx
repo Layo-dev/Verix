@@ -60,8 +60,8 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
       {/* Logo */}
       <div className="p-6 pb-4">
         <Link to="/" className="inline-flex items-center" onClick={handleNavClick}>
-          <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
-          <span className="text-xl font-bold text-foreground leading-none -ml-3">erix.</span>
+          <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
+          <span className="text-2xl font-bold text-foreground leading-none -ml-6 -mb-3">erix.</span>
         </Link>
       </div>
 

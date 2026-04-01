@@ -17,9 +17,9 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 pb-12 border-b border-border">
           {/* Logo */}
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
-              <span className="text-xl font-bold text-foreground leading-none -ml-3">erix.</span>
+            <div className="inline-flex items-center mb-2">
+              <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
+              <span className="text-2xl font-bold text-foreground leading-none -ml-6 -mb-3">erix.</span>
             </div>
             <p className="text-sm text-muted-foreground">Copyright ©2024. All rights reserved.</p>
           </div>
