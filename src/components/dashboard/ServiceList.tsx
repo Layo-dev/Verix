@@ -37,14 +37,14 @@ export const services: ServiceItem[] = [
   { id: "instagram", name: "Instagram", count: 9800, price: 0.18, icon: SiInstagram },
   { id: "twitter", name: "Twitter/X", count: 7200, price: 0.22, icon: SiX },
   { id: "tiktok", name: "TikTok", count: 11300, price: 0.28, icon: SiTiktok },
-  { id: "discord", name: "Discord", count: 6500, price: 0.12, icon: SiDiscord },
-  { id: "microsoft", name: "Microsoft", count: 4200, price: 0.3, icon: FaMicrosoft },
-  { id: "apple", name: "Apple", count: 3100, price: 0.45, icon: SiApple },
-  { id: "amazon", name: "Amazon", count: 5600, price: 0.38, icon: SiAmazon },
-  { id: "spotify", name: "Spotify", count: 8100, price: 0.15, icon: SiSpotify },
-  { id: "netflix", name: "Netflix", count: 2900, price: 0.55, icon: SiNetflix },
-  { id: "uber", name: "Uber", count: 4700, price: 0.25, icon: SiUber },
-  { id: "paypal", name: "PayPal", count: 3800, price: 0.42, icon: SiPaypal },
+  //{ id: "discord", name: "Discord", count: 6500, price: 0.12, icon: SiDiscord },
+  //{ id: "microsoft", name: "Microsoft", count: 4200, price: 0.3, icon: FaMicrosoft },
+  //{ id: "apple", name: "Apple", count: 3100, price: 0.45, icon: SiApple },
+  //{ id: "amazon", name: "Amazon", count: 5600, price: 0.38, icon: SiAmazon },
+  //{ id: "spotify", name: "Spotify", count: 8100, price: 0.15, icon: SiSpotify },
+  //{ id: "netflix", name: "Netflix", count: 2900, price: 0.55, icon: SiNetflix },
+  //{ id: "uber", name: "Uber", count: 4700, price: 0.25, icon: SiUber },
+  //{ id: "paypal", name: "PayPal", count: 3800, price: 0.42, icon: SiPaypal },
 ];
 
 interface ServiceListProps {

@@ -6,7 +6,7 @@ import {
   Phone,
   Users,
   Wallet,
-  //Ticket,
+  History,
   Bell,
   ChevronDown,
   Globe,
@@ -26,7 +26,7 @@ const menuItems = [
 
 const secondaryItems = [
   { icon: Wallet, label: "Refill balance", href: "/dashboard/refill" },
- // { icon: Ticket, label: "Tickets", href: "/dashboard/tickets" },
+  { icon: History, label: "History", href: "/dashboard/history" },
 ];
 
 interface DashboardSidebarProps {
