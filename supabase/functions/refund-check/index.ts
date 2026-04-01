@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
       .select("id, user_id")
       .eq("otp_status", "waiting")
       .eq("status", "active")
-      .lt("created_at", fiveMinAgo);
+      .lt("created_at", twentyMinAgo);
 
     if (queryErr) throw new Error(queryErr.message);
     if (!staleNumbers || staleNumbers.length === 0) {
