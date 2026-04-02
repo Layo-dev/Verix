@@ -1,92 +1,65 @@
 
 
-# Implement Refund System
+# Email OTP Signup Flow + Fix Build Errors
 
-## Overview
+## Part 1: Fix Existing Build Errors (3 TypeScript errors)
 
-Add a Paystack refund capability with two triggers: (1) immediate refund when HeroSMS provisioning fails after payment, and (2) automatic refund when no OTP is received within a timeout window.
+The `SupabaseClient` type in `refund.ts` uses a complex `ReturnType` import that doesn't match the actual client passed from other files. Fix by using `any` for the supabase parameter type.
 
-## Database Changes
+**File:** `supabase/functions/_shared/refund.ts` -- change `SupabaseClient` type to `any`
 
-### Migration: Add refund columns to `orders` table
+## Part 2: Create Edge Functions in Codebase
 
-The `orders` table already has `refunded`, `refunded_at`, and `refund_reason` columns (visible in the schema). No new columns needed.
+The `send-otp` and `verify-otp` functions exist in Supabase but not in the project files. Recreate them locally so they deploy consistently.
 
-### Migration: Add `otp_status` column check
+### `supabase/functions/send-otp/index.ts`
+- Accept `{ email }` in POST body
+- Generate 6-digit OTP, hash it, store in `email_otps` table with 10-min expiry
+- Send OTP via email (use Supabase Auth admin API `generateLink` or a simple approach: just store the OTP and let the frontend display it for now -- or use Resend since `RESEND_API_KEY` secret exists)
+- CORS headers included
+- Rate limit: delete old OTPs for same email before inserting
 
-The `purchased_numbers` table already has `otp_status` (default `'waiting'`). No new columns needed.
+### `supabase/functions/verify-otp/index.ts`
+- Accept `{ email, otp }` in POST body
+- Look up `email_otps` where `email` matches, `used = false`, `expires_at > now()`
+- Compare OTP codes
+- If match: mark `used = true`, return `{ valid: true }`
+- If expired: return `{ valid: false, error: "Code expired" }`
+- If wrong: return `{ valid: false, error: "Invalid code" }`
 
-## Backend Changes
+### `supabase/config.toml`
+- Add `[functions.send-otp]` and `[functions.verify-otp]` with `verify_jwt = false`
 
-### 1. New shared helper: `supabase/functions/_shared/refund.ts`
+## Part 3: Redesign Signup Page with Two Steps
 
-Reusable refund function:
+### `src/pages/Signup.tsx` -- Two-step flow
 
-```typescript
-export async function processRefund(
-  supabase: SupabaseClient,
-  orderId: string,
-  reason: string
-): Promise<{ success: boolean; error?: string }>
-```
+**Step 1: Email + Password form** (current form, modified)
+- On submit: validate passwords match, call `send-otp` edge function with email
+- Do NOT call `supabase.auth.signUp` yet
+- Store email + password in component state
+- Transition to Step 2
 
-Logic:
-- Fetch the order by ID
-- Guard: skip if already refunded (`refunded = true`) or status is not `paid`
-- Guard: check that no OTP was received (query `sms_messages` for the order's `purchased_number_id` -- if any exist, refuse refund)
-- Call Paystack Refund API: `POST /refund` with `{ transaction: paystackReference }`
-- On success: update order `refunded = true`, `refunded_at = now()`, `refund_reason = reason`, `status = 'refunded'`
-- Update `purchased_numbers` status to `expired` if it exists
+**Step 2: OTP Verification UI**
+- Show masked email ("Code sent to j***@gmail.com")
+- 6-digit OTP input using the existing `InputOTP` component
+- 60-second countdown timer for resend
+- "Resend Code" button (disabled during countdown, calls `send-otp` again)
+- On OTP submit: call `verify-otp` edge function
+  - If valid: call `supabase.auth.signUp({ email, password })` to create account
+  - If invalid/expired: show error message inline
+- Back button to return to Step 1
 
-### 2. Add `paystackRefund` to `supabase/functions/_shared/paystack.ts`
-
-```typescript
-export async function paystackRefund(reference: string): Promise<void>
-```
-
-Calls `POST https://api.paystack.co/refund` with body `{ transaction: reference }` using the secret key.
-
-### 3. Update `supabase/functions/paystack-verify/index.ts` -- CASE 1
-
-When `provisionNumber()` throws (HeroSMS fails after payment verified):
-- Catch the provisioning error specifically
-- Call `processRefund(supabase, order.id, "Number provisioning failed")`
-- Return `{ ok: false, refunded: true, error: "..." }` to the client
-
-### 4. New edge function: `supabase/functions/refund-check/index.ts` -- CASE 2
-
-Scheduled/callable function for OTP timeout refunds:
-- Query `purchased_numbers` where `otp_status = 'waiting'` and `created_at < now() - interval '5 minutes'`
-- For each, check `sms_messages` count for that number
-- If zero messages: call `processRefund()` with reason "No OTP received within timeout"
-- Update `purchased_numbers.otp_status = 'timeout'`
-
-This can be invoked via a pg_cron job every minute, or called manually.
-
-### 5. Update `supabase/config.toml`
-
-Add `[functions.refund-check]` with `verify_jwt = false`.
-
-## Frontend Changes
-
-### Update `src/pages/PaystackCallback.tsx`
-
-Handle the new `refunded: true` response from paystack-verify:
-- Show a different toast: "Payment refunded -- number could not be assigned"
-- Navigate to dashboard instead of inbox
+**UX details:**
+- Countdown starts at 60s, shows "Resend in 0:45" format
+- Error states: "Invalid code", "Code expired -- request a new one"
+- Loading spinner on verify button during API call
+- Auto-submit when all 6 digits entered
 
 ## Files Changed
-
-1. `supabase/functions/_shared/paystack.ts` -- add `paystackRefund()`
-2. `supabase/functions/_shared/refund.ts` -- new shared refund logic
-3. `supabase/functions/paystack-verify/index.ts` -- catch provisioning failure, auto-refund
-4. `supabase/functions/refund-check/index.ts` -- new function for OTP timeout refunds
-5. `supabase/config.toml` -- register refund-check function
-6. `src/pages/PaystackCallback.tsx` -- handle refund response in UI
-
-## Refund Guards (DO NOT REFUND IF)
-
-- `sms_messages` exist for the purchased number (OTP was delivered)
-- Order is already refunded (`refunded = true`)
-- Order status is not `paid`
+1. `supabase/functions/_shared/refund.ts` -- fix type to `any`
+2. `supabase/functions/send-otp/index.ts` -- new edge function
+3. `supabase/functions/verify-otp/index.ts` -- new edge function  
+4. `supabase/config.toml` -- register new functions
+5. `src/pages/Signup.tsx` -- two-step signup with OTP verification
 
