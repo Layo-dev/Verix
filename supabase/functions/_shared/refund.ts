@@ -1,9 +1,8 @@
 import { paystackRefund } from "./paystack.ts";
 
-type SupabaseClient = ReturnType<typeof import("https://esm.sh/@supabase/supabase-js@2.49.1").createClient>;
-
+// deno-lint-ignore no-explicit-any
 export async function processRefund(
-  supabase: SupabaseClient,
+  supabase: any,
   orderId: string,
   reason: string
 ): Promise<{ success: boolean; error?: string }> {
