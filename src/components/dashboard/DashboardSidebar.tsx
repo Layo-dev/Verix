@@ -4,7 +4,7 @@ import {
   MessageSquare,
   Smartphone,
   Phone,
-  Users,
+  Inbox,
   Wallet,
   History,
   Bell,
@@ -20,9 +20,9 @@ import VerixLogo from "@/assets/verixsms-logo.svg";
 
 const menuItems = [
   { icon: MessageSquare, label: "Receive SMS", href: "/dashboard" },
-  { icon: Smartphone, label: "Mobile proxies", href: "/dashboard/proxies" },
-  { icon: Phone, label: "Number rent", href: "/dashboard/rent" },
-  { icon: Users, label: "SMS Inbox", href: "/dashboard/referral" },
+  //{ icon: Smartphone, label: "Mobile proxies", href: "/dashboard/proxies" },
+  //{ icon: Phone, label: "Number rent", href: "/dashboard/rent" },
+  { icon: Inbox, label: "SMS Inbox", href: "/dashboard/referral" },
 ];
 
 const secondaryItems = [
@@ -132,22 +132,22 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
       </nav>
 
       {/* Show More */}
-      <button className="flex items-center gap-2 px-6 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+      {/*<button className="flex items-center gap-2 px-6 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
         <ChevronDown className="w-4 h-4" />
         Show more
-      </button>
+      </button>*/}
 
       {/* Spacer */}
       <div className="flex-1" />
 
       {/* Language Selector */}
-      <div className="px-6 py-3">
+      {/*<div className="px-6 py-3">
         <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <Globe className="w-5 h-5" />
           <span>🇬🇧 English</span>
           <ChevronDown className="w-4 h-4 ml-auto" />
         </button>
-      </div>
+      </div>*/}
 
       {/* User Profile */}
       <div className="p-6 pt-2 border-t border-border">

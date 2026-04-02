@@ -5,8 +5,8 @@ import VerixLogo from "@/assets/verixsms-logo.svg";
 
 const Footer = () => {
   const links = {
-    home: ["Features", "Pricing", "Personal", "Business"],
-    about: ["Company", "Leadership", "Customers", "Careers"],
+    home: ["Features", "Pricing", "Personal",],
+    about: ["Company", "Customers"],
     resources: ["Blog", "Support", "Partners"],
   };
 
@@ -21,7 +21,7 @@ const Footer = () => {
               <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
               <span className="text-2xl font-bold text-foreground leading-none -ml-6 -mb-3">erix.</span>
             </div>
-            <p className="text-sm text-muted-foreground">Copyright ©2024. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">Copyright ©2026. All rights reserved.</p>
           </div>
 
           {/* CTA Button */}
@@ -95,6 +95,8 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
+            <span>•</span>
+            <a href="#" className="hover:text-foreground transition-colors">Refund Policy</a> 
             <span>•</span>
             <a href="#" className="hover:text-foreground transition-colors">Terms & Conditions</a>
           </div>

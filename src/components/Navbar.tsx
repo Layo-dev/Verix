@@ -21,13 +21,13 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#features" className="text-sm font-medium text-foreground hover:text-foreground transition-colors">
               Receive SMS
             </a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#pricing" className="text-sm font-medium text-foreground hover:text-foreground transition-colors">
               Pricing
             </a>
-            <a href="#reviews" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#reviews" className="text-sm font-medium text-foreground hover:text-foreground transition-colors">
               About Us
             </a>
           </div>

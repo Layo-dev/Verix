@@ -1,19 +1,19 @@
 const Partners = () => {
   const partners = [
-    { name: "GitHub", icon: "○" },
-    { name: "LinkedIn", icon: "in" },
-    { name: "Pipedrive", icon: "▷" },
-    { name: "Slack", icon: "◉" },
-    { name: "Airtable", icon: "⬡" },
-    { name: "PHP", icon: "php" },
-    { name: "Hotjar", icon: "⚡" },
-    { name: "Figma", icon: "◎" },
+    { name: "Twilio", icon: "T" },
+    { name: "HeroSms", icon: "H" },
+    { name: "5SIM", icon: "5" },
+    { name: "RentCode", icon: "R" },
+    { name: "Onlinesim", icon: "O" },
+    { name: "TextNow", icon: "T" },
+    { name: "Dingtone", icon: "D" },
+    { name: "GoogleVoice", icon: "G" },
   ];
 
   return (
-    <section className="py-10 md:py-12 bg-muted/30 border-y border-border">
+    <section className="py-8 md:py-8 bg-muted/30 border-y border-border">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        <p className="text-center text-sm text-muted-foreground mb-10">
+        <p className="text-center text-sm text-accent mb-10">
           {'{'} We partner with the world's leading brands {'}'}
         </p>
 
@@ -22,7 +22,7 @@ const Partners = () => {
           {partners.map((partner, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              className="flex items-center gap-2 text-foreground hover:text-foreground transition-colors cursor-pointer"
             >
               <span className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-xs">
                 {partner.icon}
