@@ -60,9 +60,9 @@ const Signup = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
-        <div className="inline-flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
-          <span className="text-2xl font-bold text-foreground leading-none -ml-6 -mb-3">erix.</span>
+          <span className="text-2xl font-bold text-foreground leading-none -ml-8 -mb-3">erix.</span>
         </div>
 
         {/* Heading */}
