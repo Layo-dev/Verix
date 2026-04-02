@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      email_otps: {
+        Row: {
+          created_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          otp: string
+          used: boolean
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          otp: string
+          used?: boolean
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          otp?: string
+          used?: boolean
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount_kobo: number
