@@ -23,6 +23,7 @@ const countries = [
      { code: "FR", name: "France", flag: "🇫🇷", phoneCode: "+33", count: 1000, price: 1, status: "low" as const },
      { code: "TR", name: "Turkey", flag: "🇹🇷", phoneCode: "+90", count: 1000, price: 1, status: "low" as const },
      { code: "PT", name: "Portugal", flag: "🇵🇹", phoneCode: "+351", count: 1000, price: 1, status: "low" as const },
+     { code: "PE", name: "Peru", flag: "🇵🇪", phoneCode: "+51", count: 1000, price: 1, status: "low" as const }
 ];
 
 interface CountryListProps {
