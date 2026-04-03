@@ -25,7 +25,7 @@ const countries = [
   { code: "DE", name: "Germany", flag: "🇩🇪", phoneCode: "+49", count: 890, price: 1, status: "low" as const },
   { code: "GB", name: "United Kingdom", flag: "🇬🇧", phoneCode: "+44", count: 1200, price: 0.45, status: "low" as const },
   { code: "US", name: "United States", flag: "🇺🇸", phoneCode: "+1", count: 3200, price: 2.5, status: "medium" as const },
-  { code: "CA", name: "Canada", flag: "🇨🇦", phoneCode: "+1", count: 1500, price: 0.19, status: "low" as const },
+  { code: "CA", name: "Canada", flag: "🇨🇦", phoneCode: "+1", count: 1500, price: 0.5, status: "low" as const },
   //{ code: "SP", name: "Spain", flag: "🇪🇸", phoneCode: "+34", count: 1000, price: 1, status: "low" as const },
   { code: "FR", name: "France", flag: "🇫🇷", phoneCode: "+33", count: 1000, price: 1, status: "low" as const },
   { code: "TR", name: "Turkey", flag: "🇹🇷", phoneCode: "+90", count: 1000, price: 1, status: "low" as const },
