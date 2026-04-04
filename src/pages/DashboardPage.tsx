@@ -7,16 +7,18 @@ import MobileDashboard from "@/components/dashboard/MobileDashboard";
 import { Settings } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useBuyNumber } from "@/hooks/useBuyNumber";
+import { useCountryPricing, useServicePricing } from "@/hooks/usePricing";
 
 const DashboardPage = () => {
-  const [selectedCountry, setSelectedCountry] = useState<string | null>("RU");
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const { buyNumber, loading } = useBuyNumber();
+  const { data: countries = [], isLoading: countriesLoading } = useCountryPricing();
+  const { data: services = [], isLoading: servicesLoading } = useServicePricing();
 
   const handleSelectService = (serviceId: string) => {
     setSelectedService(serviceId);
-    // On desktop/tablet, selecting a service triggers payment if country is also selected
     if (selectedCountry && !isMobile) {
       buyNumber({ countryCode: selectedCountry, serviceId });
     }
@@ -36,6 +38,10 @@ const DashboardPage = () => {
         selectedService={selectedService}
         onSelectCountry={setSelectedCountry}
         onSelectService={setSelectedService}
+        countries={countries}
+        services={services}
+        countriesLoading={countriesLoading}
+        servicesLoading={servicesLoading}
       />
     );
   }
@@ -57,6 +63,8 @@ const DashboardPage = () => {
             <CountryList
               selectedCountry={selectedCountry}
               onSelectCountry={setSelectedCountry}
+              countries={countries}
+              loading={countriesLoading}
             />
           </div>
 
@@ -64,7 +72,8 @@ const DashboardPage = () => {
             <ServiceList
               selectedService={selectedService}
               onSelectService={handleSelectService}
-              loading={loading}
+              loading={loading || servicesLoading}
+              services={services}
             />
           </div>
 
