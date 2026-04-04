@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      country_pricing: {
+        Row: {
+          country_code: string | null
+          country_flag: string | null
+          country_name: string | null
+          created_at: string | null
+          hero_id: number | null
+          id: string
+          price_usd: number | null
+        }
+        Insert: {
+          country_code?: string | null
+          country_flag?: string | null
+          country_name?: string | null
+          created_at?: string | null
+          hero_id?: number | null
+          id?: string
+          price_usd?: number | null
+        }
+        Update: {
+          country_code?: string | null
+          country_flag?: string | null
+          country_name?: string | null
+          created_at?: string | null
+          hero_id?: number | null
+          id?: string
+          price_usd?: number | null
+        }
+        Relationships: []
+      }
       email_otps: {
         Row: {
           created_at: string | null
@@ -169,6 +199,33 @@ export type Database = {
           service_name?: string
           status?: Database["public"]["Enums"]["number_status"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      service_pricing: {
+        Row: {
+          created_at: string | null
+          hero_code: string | null
+          id: string
+          price_usd: number | null
+          service_id: string | null
+          service_name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          hero_code?: string | null
+          id?: string
+          price_usd?: number | null
+          service_id?: string | null
+          service_name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          hero_code?: string | null
+          id?: string
+          price_usd?: number | null
+          service_id?: string | null
+          service_name?: string | null
         }
         Relationships: []
       }
