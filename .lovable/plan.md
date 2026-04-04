@@ -1,65 +1,59 @@
 
 
-# Email OTP Signup Flow + Fix Build Errors
+# Fetch Pricing from Database
 
-## Part 1: Fix Existing Build Errors (3 TypeScript errors)
+## Problem
+Country and service pricing is hardcoded in three frontend files (`CountryList.tsx`, `ServiceList.tsx`, `MobileDashboard.tsx`). The DB tables `country_pricing` and `service_pricing` exist but have RLS policies that block all access (`false`).
 
-The `SupabaseClient` type in `refund.ts` uses a complex `ReturnType` import that doesn't match the actual client passed from other files. Fix by using `any` for the supabase parameter type.
+## Changes
 
-**File:** `supabase/functions/_shared/refund.ts` -- change `SupabaseClient` type to `any`
+### 1. Database Migration: Add SELECT RLS policies
+Add `SELECT` policies on `country_pricing` and `service_pricing` for `authenticated` users so the frontend can read them.
 
-## Part 2: Create Edge Functions in Codebase
+```sql
+CREATE POLICY "Authenticated users can read country pricing"
+ON public.country_pricing FOR SELECT TO authenticated USING (true);
 
-The `send-otp` and `verify-otp` functions exist in Supabase but not in the project files. Recreate them locally so they deploy consistently.
+CREATE POLICY "Authenticated users can read service pricing"
+ON public.service_pricing FOR SELECT TO authenticated USING (true);
+```
 
-### `supabase/functions/send-otp/index.ts`
-- Accept `{ email }` in POST body
-- Generate 6-digit OTP, hash it, store in `email_otps` table with 10-min expiry
-- Send OTP via email (use Supabase Auth admin API `generateLink` or a simple approach: just store the OTP and let the frontend display it for now -- or use Resend since `RESEND_API_KEY` secret exists)
-- CORS headers included
-- Rate limit: delete old OTPs for same email before inserting
+### 2. New hook: `src/hooks/usePricing.ts`
+- Fetch `country_pricing` and `service_pricing` from Supabase on mount using `useQuery`
+- Export `useCountryPricing()` and `useServicePricing()` hooks
+- Return `{ data, isLoading }` with typed arrays
+- Map DB rows to the shape the UI components expect (add icon mapping for services, phoneCode/status for countries)
 
-### `supabase/functions/verify-otp/index.ts`
-- Accept `{ email, otp }` in POST body
-- Look up `email_otps` where `email` matches, `used = false`, `expires_at > now()`
-- Compare OTP codes
-- If match: mark `used = true`, return `{ valid: true }`
-- If expired: return `{ valid: false, error: "Code expired" }`
-- If wrong: return `{ valid: false, error: "Invalid code" }`
+### 3. Update `src/components/dashboard/CountryList.tsx`
+- Remove hardcoded `countries` array
+- Accept `countries` and `loading` as props (fetched from hook in parent)
+- Show skeleton/spinner while loading
 
-### `supabase/config.toml`
-- Add `[functions.send-otp]` and `[functions.verify-otp]` with `verify_jwt = false`
+### 4. Update `src/components/dashboard/ServiceList.tsx`
+- Remove hardcoded `services` array and its export
+- Accept `services` and `loading` as props
+- Show skeleton/spinner while loading
 
-## Part 3: Redesign Signup Page with Two Steps
+### 5. Update `src/components/dashboard/MobileDashboard.tsx`
+- Remove hardcoded `countries` array and `services` import
+- Accept `countries` and `services` as props
+- Show skeleton/spinner while loading
 
-### `src/pages/Signup.tsx` -- Two-step flow
+### 6. Update `src/pages/DashboardPage.tsx`
+- Call `useCountryPricing()` and `useServicePricing()` hooks
+- Pass data down to `CountryList`, `ServiceList`, and `MobileDashboard`
 
-**Step 1: Email + Password form** (current form, modified)
-- On submit: validate passwords match, call `send-otp` edge function with email
-- Do NOT call `supabase.auth.signUp` yet
-- Store email + password in component state
-- Transition to Step 2
+### 7. Update `src/components/Pricing.tsx` (landing page)
+- Fetch `service_pricing` from DB (or keep static since landing page may not require auth -- will use the existing hardcoded data as fallback for unauthenticated visitors)
 
-**Step 2: OTP Verification UI**
-- Show masked email ("Code sent to j***@gmail.com")
-- 6-digit OTP input using the existing `InputOTP` component
-- 60-second countdown timer for resend
-- "Resend Code" button (disabled during countdown, calls `send-otp` again)
-- On OTP submit: call `verify-otp` edge function
-  - If valid: call `supabase.auth.signUp({ email, password })` to create account
-  - If invalid/expired: show error message inline
-- Back button to return to Step 1
-
-**UX details:**
-- Countdown starts at 60s, shows "Resend in 0:45" format
-- Error states: "Invalid code", "Code expired -- request a new one"
-- Loading spinner on verify button during API call
-- Auto-submit when all 6 digits entered
+## Icon Mapping Strategy
+Since DB rows don't store icons, create a `serviceIconMap` lookup (`Record<string, IconType>`) mapping `service_id` to react-icons components. Unknown services get a generic icon.
 
 ## Files Changed
-1. `supabase/functions/_shared/refund.ts` -- fix type to `any`
-2. `supabase/functions/send-otp/index.ts` -- new edge function
-3. `supabase/functions/verify-otp/index.ts` -- new edge function  
-4. `supabase/config.toml` -- register new functions
-5. `src/pages/Signup.tsx` -- two-step signup with OTP verification
+1. **Migration** -- RLS SELECT policies for pricing tables
+2. `src/hooks/usePricing.ts` -- new hooks
+3. `src/components/dashboard/CountryList.tsx` -- props-driven
+4. `src/components/dashboard/ServiceList.tsx` -- props-driven
+5. `src/components/dashboard/MobileDashboard.tsx` -- props-driven
+6. `src/pages/DashboardPage.tsx` -- fetch and pass data
 
