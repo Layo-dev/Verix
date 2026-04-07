@@ -136,6 +136,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          balance: number
           created_at: string
           display_name: string | null
           id: string
@@ -144,6 +145,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          balance?: number
           created_at?: string
           display_name?: string | null
           id: string
@@ -152,11 +154,42 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          balance?: number
           created_at?: string
           display_name?: string | null
           id?: string
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      provider_routes: {
+        Row: {
+          country_code: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          priority: number | null
+          provider: string | null
+          service_id: string | null
+        }
+        Insert: {
+          country_code?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          provider?: string | null
+          service_id?: string | null
+        }
+        Update: {
+          country_code?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          provider?: string | null
+          service_id?: string | null
         }
         Relationships: []
       }
@@ -264,12 +297,60 @@ export type Database = {
           },
         ]
       }
+      wallet_transactions: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          reference: string | null
+          status: string | null
+          type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference?: string | null
+          status?: string | null
+          type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference?: string | null
+          status?: string | null
+          type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      credit_wallet_balance: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: number
+      }
+      deduct_wallet_balance: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       number_status: "active" | "expiring" | "expired"

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import DashboardSidebar from "./DashboardSidebar";
 import MyNumbers from "./MyNumbers";
 import SupportButton from "@/components/auth/SupportButton";
+import TopUpModal from "./TopUpModal";
 import { useBuyNumber } from "@/hooks/useBuyNumber";
 import type { CountryItem, ServiceItem } from "@/hooks/usePricing";
 
@@ -38,6 +39,7 @@ const MobileDashboard = ({
   const [countrySearch, setCountrySearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
   const { buyNumber, loading: buyLoading } = useBuyNumber();
+  const [topUpOpen, setTopUpOpen] = useState(false);
 
   const selectedCountryData = countries.find((c) => c.code === selectedCountry);
   const selectedServiceData = services.find((s) => s.id === selectedService);
@@ -76,10 +78,11 @@ const MobileDashboard = ({
 
         <h1 className="text-lg font-bold text-foreground">Receive SMS</h1>
 
-        <div className="flex items-center gap-1 text-foreground">
+        <button onClick={() => setTopUpOpen(true)} className="flex items-center gap-1 text-foreground">
           <Wallet className="w-5 h-5" />
           <span className="font-semibold">$0</span>
-        </div>
+        </button>
+        <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
       </header>
 
       {/* Tab Bar */}
