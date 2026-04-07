@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -7,6 +8,7 @@ const PaystackCallback = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const reference = searchParams.get("reference");
@@ -37,6 +39,7 @@ const PaystackCallback = () => {
       }
 
       if (data?.refunded) {
+        await queryClient.invalidateQueries({ queryKey: ["profile-balance"] });
         toast({
           title: "Payment refunded",
           description: "Number could not be assigned. Your payment has been refunded.",
@@ -46,6 +49,7 @@ const PaystackCallback = () => {
         return;
       }
 
+      await queryClient.invalidateQueries({ queryKey: ["profile-balance"] });
       toast({
         title: "Number purchased!",
         description: "Your number is now active. Check SMS Inbox.",

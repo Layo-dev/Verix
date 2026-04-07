@@ -9,6 +9,7 @@ import MyNumbers from "./MyNumbers";
 import SupportButton from "@/components/auth/SupportButton";
 import TopUpModal from "./TopUpModal";
 import { useBuyNumber } from "@/hooks/useBuyNumber";
+import { useProfileBalance } from "@/hooks/useProfileBalance";
 import type { CountryItem, ServiceItem } from "@/hooks/usePricing";
 
 interface MobileDashboardProps {
@@ -39,6 +40,7 @@ const MobileDashboard = ({
   const [countrySearch, setCountrySearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
   const { buyNumber, loading: buyLoading } = useBuyNumber();
+  const { data: balance = 0 } = useProfileBalance();
   const [topUpOpen, setTopUpOpen] = useState(false);
 
   const selectedCountryData = countries.find((c) => c.code === selectedCountry);
@@ -80,7 +82,7 @@ const MobileDashboard = ({
 
         <button onClick={() => setTopUpOpen(true)} className="flex items-center gap-1 text-foreground">
           <Wallet className="w-5 h-5" />
-          <span className="font-semibold">$0</span>
+          <span className="font-semibold">${balance.toFixed(2)}</span>
         </button>
         <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
       </header>
