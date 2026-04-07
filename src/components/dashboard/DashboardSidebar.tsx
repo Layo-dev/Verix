@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import VerixLogo from "@/assets/verixsms-logo.svg";
+import TopUpModal from "./TopUpModal";
 
 const menuItems = [
   { icon: MessageSquare, label: "Receive SMS", href: "/dashboard" },
@@ -40,6 +41,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [topUpOpen, setTopUpOpen] = useState(false);
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -71,9 +73,10 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
           <p className="text-2xl font-bold text-foreground">$0</p>
           <p className="text-xs text-muted-foreground">Frozen balance: $0</p>
         </div>
-        <Button className="w-full mt-3" variant="accent">
+        <Button className="w-full mt-3" variant="accent" onClick={() => setTopUpOpen(true)}>
           Top up
         </Button>
+        <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
       </div>
 
       {/* Main Menu */}
