@@ -1,52 +1,26 @@
 
 
-# Top Up Modal — Frontend Only
+# Update PaystackCallback for Top-Up Support
 
-## Overview
-Add a "Top Up" dialog modal triggered from the sidebar's "Top up" button (and mobile header wallet icon). The modal lets users enter an amount and kicks off a Paystack payment via the existing `paystack-init` edge function with a new `type: "topup"` payload.
+## Problem
+`PaystackCallback.tsx` currently only handles number purchase verification. With the new top-up flow, the callback needs to distinguish between a successful top-up and a successful number purchase, showing the correct toast message and navigating to the right page.
 
-## UX Flow
+## Approach
+The `paystack-verify` response likely includes a `type` field (or the order metadata distinguishes top-ups from purchases). Update the callback to:
 
-```text
-[Top up button] → Modal opens
-  ┌─────────────────────────────┐
-  │  Top up balance             │
-  │                             │
-  │  Quick amounts:             │
-  │  [$5] [$10] [$20] [$50]    │
-  │                             │
-  │  Or enter custom amount:    │
-  │  ┌─────────────────────┐   │
-  │  │ $                   │   │
-  │  └─────────────────────┘   │
-  │                             │
-  │  [Pay with Paystack]        │
-  └─────────────────────────────┘
-```
+1. Check if the successful response indicates a top-up (`data.type === "topup"` or absence of `purchasedNumberId`)
+2. Show appropriate toast:
+   - Top-up: "Balance topped up!" with the credited amount
+   - Purchase: "Number purchased!" (existing)
+3. Navigate correctly:
+   - Top-up: `/dashboard` (stay on main dashboard)
+   - Purchase: `/dashboard/referral` (SMS inbox, existing behavior)
+4. Invalidate `profile-balance` query in both cases (already done)
 
-- Quick-select preset chips ($5, $10, $20, $50)
-- Custom amount input with validation (min $1, max $500)
-- Single CTA button: "Pay $X.XX" — redirects to Paystack
-- Loading spinner while initializing payment
+## Changes
 
-## Files Changed
-
-### 1. New: `src/components/dashboard/TopUpModal.tsx`
-- Dialog using existing `Dialog` component from `@/components/ui/dialog`
-- Props: `open`, `onOpenChange`
-- State: `amount` (number), `loading` (boolean)
-- Preset amount chips that set amount on click
-- Custom input field (type number, min 1)
-- On submit: call `supabase.functions.invoke("paystack-init", { body: { type: "topup", amount } })` and redirect to `authorization_url`
-- Error handling via toast
-
-### 2. Update: `src/components/dashboard/DashboardSidebar.tsx`
-- Add `useState` for modal open state
-- Wire "Top up" button (line 74) to open the modal
-- Render `<TopUpModal />` inside sidebar
-
-### 3. Update: `src/components/dashboard/MobileDashboard.tsx`
-- Add `useState` for modal open state
-- Make the wallet/`$0` area in the header tappable to open modal
-- Render `<TopUpModal />`
+### `src/pages/PaystackCallback.tsx`
+- After successful verify, check `data.type === "topup"` (or fallback: no `purchasedNumberId`)
+- Branch toast message and navigation accordingly
+- Add a loading spinner (Loader2) for better UX instead of plain text
 
