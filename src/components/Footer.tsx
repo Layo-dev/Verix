@@ -112,7 +112,7 @@ const Footer = () => {
             <a href="https://www.instagram.com/verix.io" target="_blank">
             <SiInstagram className="size-9"/>
             </a>
-            <a href="https://www.telegram.com/@verix.io" target="_blank">
+            <a href="https://t.me/verixsms" target="_blank">
             <SiTelegram className="size-9"/>
             </a>
             <a href="https://www.x.com/verix.io" target="_blank">
