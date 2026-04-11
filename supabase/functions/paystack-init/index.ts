@@ -4,6 +4,10 @@ import { getPricing } from "../_shared/pricing.ts";
 import { paystackInitialize } from "../_shared/paystack.ts";
 
 type InitBody = {
+  /** Wallet top-up: amount in USD (1–500). Requires `type: "topup"`. */
+  type?: string;
+  amount?: number;
+  /** Number purchase via Paystack (legacy): */
   countryCode?: string;
   serviceId?: string;
 };
@@ -15,8 +19,13 @@ function json(status: number, body: unknown) {
   });
 }
 
+function getUsdToNgnRate(): number {
+  const raw = Deno.env.get("USD_TO_NGN");
+  const parsed = raw ? Number(raw) : NaN;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1600;
+}
+
 function createReference(orderId: string) {
-  // Paystack reference must be unique; keep deterministic prefix for debugging.
   return `verix_${orderId.replaceAll("-", "")}_${Date.now()}`;
 }
 
@@ -31,18 +40,76 @@ Deno.serve(async (req) => {
 
     const { data: authData, error: authError } = await supabase.auth.getUser(accessToken);
     if (authError || !authData?.user) return json(401, { error: "Unauthorized" });
+    const user = authData.user;
 
     const body = (await req.json().catch(() => ({}))) as InitBody;
+
+    // --- Wallet top-up (UI sends USD; Paystack charges NGN) ---
+    if (body.type === "topup") {
+      const amountUsd = Number(body.amount);
+      if (!amountUsd || !Number.isFinite(amountUsd) || amountUsd < 1 || amountUsd > 500) {
+        return json(400, { error: "Top-up amount (USD) must be between 1 and 500" });
+      }
+      const rate = getUsdToNgnRate();
+      const amountNgn = Math.round(amountUsd * rate);
+      if (amountNgn < 100) {
+        return json(400, {
+          error: "Top-up is too small after conversion (Paystack requires at least ₦100)",
+        });
+      }
+      const amountKobo = amountNgn * 100;
+      const reference = `verix_topup_${user.id.replaceAll("-", "").slice(0, 12)}_${Date.now()}`;
+
+      const { error: txErr } = await supabase.from("wallet_transactions").insert({
+        user_id: user.id,
+        type: "credit",
+        amount: amountUsd,
+        status: "pending",
+        reference,
+        description: `Wallet top-up — $${amountUsd.toFixed(2)} (≈ ₦${amountNgn.toLocaleString()})`,
+      });
+
+      if (txErr) throw new Error(`Failed to create transaction: ${txErr.message}`);
+
+      const email = user.email ?? "user@example.com";
+      const init = await paystackInitialize({
+        email,
+        amount: amountKobo,
+        currency: "NGN",
+        reference,
+        metadata: {
+          user_id: user.id,
+          type: "wallet_topup",
+          amount_usd: amountUsd,
+          amount_ngn: amountNgn,
+        },
+      });
+
+      return json(200, {
+        type: "topup",
+        reference: init.reference,
+        authorization_url: init.authorization_url,
+        access_code: init.access_code,
+        currency: "NGN",
+        amount_usd: amountUsd,
+        amount_ngn: amountNgn,
+        amount_kobo: amountKobo,
+      });
+    }
+
+    // --- Pay for virtual number (order) ---
     const countryCode = body.countryCode?.trim();
     const serviceId = body.serviceId?.trim();
-    if (!countryCode || !serviceId) return json(400, { error: "countryCode and serviceId are required" });
+    if (!countryCode || !serviceId) {
+      return json(400, { error: "countryCode and serviceId are required (or use type: \"topup\" with amount in USD)" });
+    }
 
     const pricing = getPricing({ countryCode, serviceId });
 
     const { data: order, error: orderErr } = await supabase
       .from("orders")
       .insert({
-        user_id: authData.user.id,
+        user_id: user.id,
         country_code: countryCode,
         service_id: serviceId,
         amount_kobo: pricing.amountKobo,
@@ -56,7 +123,7 @@ Deno.serve(async (req) => {
     if (orderErr || !order) throw new Error(orderErr?.message ?? "Failed to create order");
 
     const reference = createReference(order.id);
-    const email = authData.user.email ?? "user@example.com";
+    const email = user.email ?? "user@example.com";
 
     const init = await paystackInitialize({
       email,
@@ -65,7 +132,7 @@ Deno.serve(async (req) => {
       reference,
       metadata: {
         order_id: order.id,
-        user_id: authData.user.id,
+        user_id: user.id,
         country_code: countryCode,
         service_id: serviceId,
       },
@@ -78,6 +145,7 @@ Deno.serve(async (req) => {
     if (updErr) throw new Error(updErr.message);
 
     return json(200, {
+      type: "number_purchase",
       orderId: order.id,
       reference: init.reference,
       authorization_url: init.authorization_url,
@@ -90,4 +158,3 @@ Deno.serve(async (req) => {
     return json(500, { error: e instanceof Error ? e.message : "Unknown error" });
   }
 });
-
