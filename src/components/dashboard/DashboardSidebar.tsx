@@ -22,14 +22,14 @@ import { useProfileBalance } from "@/hooks/useProfileBalance";
 
 const menuItems = [
   { icon: MessageSquare, label: "Receive SMS", href: "/dashboard" },
-  //{ icon: Smartphone, label: "Mobile proxies", href: "/dashboard/proxies" },
   //{ icon: Phone, label: "Number rent", href: "/dashboard/rent" },
   { icon: Inbox, label: "SMS Inbox", href: "/dashboard/referral" },
+  { icon: History, label: "History", href: "/dashboard/history" }
 ];
 
 const secondaryItems = [
   { icon: Wallet, label: "Refill balance", href: "/dashboard/refill" },
-  { icon: History, label: "History", href: "/dashboard/history" },
+  { icon: Smartphone, label: "Marketplace", href: "/dashboard/products" }
 ];
 
 interface DashboardSidebarProps {

@@ -1,4 +1,5 @@
 import { corsHeaders } from "../_shared/cors.ts";
+import { numberExpiresAt } from "../_shared/number_expiry.ts";
 import { createSupabaseAdminClient, getBearerToken } from "../_shared/supabase.ts";
 
 type BuyBody = { countryCode?: string; serviceId?: string };
@@ -10,10 +11,6 @@ function json(status: number, body: unknown) {
     status,
     headers: { "Content-Type": "application/json", ...corsHeaders },
   });
-}
-
-function addDays(days: number) {
-  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 function buildHandlerApiUrl(rawBase: string): string {
@@ -225,7 +222,7 @@ Deno.serve(async (req) => {
       provisioned = {
         activation_id: `dummy_${userId}_${Date.now()}`,
         phone_number: `+${countryCode}-${Math.floor(1000000 + Math.random() * 9000000)}`,
-        expires_at: addDays(7),
+        expires_at: numberExpiresAt(),
       };
     } else {
       const apiKeyParam = `api_key=${encodeURIComponent(rt.apiKey!)}`;
@@ -275,7 +272,7 @@ Deno.serve(async (req) => {
       provisioned = {
         activation_id: activationId,
         phone_number: phoneNumber.startsWith("+") ? phoneNumber : `+${phoneNumber}`,
-        expires_at: activationEndTime ? new Date(activationEndTime).toISOString() : addDays(7),
+        expires_at: numberExpiresAt(activationEndTime),
       };
     }
 

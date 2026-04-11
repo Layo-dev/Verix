@@ -3,6 +3,7 @@ import { Search, Phone } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { VIRTUAL_NUMBER_TTL_MINUTES } from "@/lib/virtualNumber";
 
 interface PurchasedNumber {
   id: string;
@@ -107,11 +108,14 @@ const NumberList = ({ numbers, selectedNumberId, onSelectNumber }: NumberListPro
   return (
     <div className="h-full flex flex-col bg-card rounded-xl border border-border">
       <div className="p-3 border-b border-border">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-1">
           <Phone className="w-4 h-4 text-accent" />
           <h2 className="text-md font-semibold text-foreground">Active Numbers</h2>
           <span className="ml-auto text-xs text-muted-foreground">{numbers.length}</span>
         </div>
+        <p className="text-[11px] text-muted-foreground mb-3">
+          Numbers expire after {VIRTUAL_NUMBER_TTL_MINUTES} minutes.
+        </p>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <input

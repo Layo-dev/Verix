@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
   try {
     const supabase = createSupabaseAdminClient();
 
-    // Find purchased numbers waiting for OTP for more than 5 minutes with no SMS
+    // Find purchased numbers waiting for OTP for more than 20 minutes with no SMS
     const twentyMinAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
 
     const { data: staleNumbers, error: queryErr } = await supabase

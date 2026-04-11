@@ -1,3 +1,5 @@
+import { numberExpiresAt } from "./number_expiry.ts";
+
 type ProvisionInput = {
   countryCode: string;
   serviceId: string;
@@ -17,10 +19,6 @@ function getProviderConfig() {
   const baseUrl = Deno.env.get("PROVIDER_BASE_URL");
   const apiKey = Deno.env.get("PROVIDER_API_KEY");
   return { baseUrl, apiKey };
-}
-
-function addDays(days: number) {
-  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 function pseudoNumber(countryCode: string) {
@@ -47,7 +45,7 @@ export async function provisionNumber(
     return {
       activation_id: `dummy_${input.orderId}`,
       phone_number: pseudoNumber(input.countryCode),
-      expires_at: addDays(7),
+      expires_at: numberExpiresAt(),
       service_name: ui.serviceName,
       country_flag: ui.countryFlag,
     };
@@ -263,9 +261,7 @@ export async function provisionNumber(
     );
   }
 
-  const expiresAt = activationEndTime
-    ? new Date(activationEndTime).toISOString()
-    : addDays(7);
+  const expiresAt = numberExpiresAt(activationEndTime);
 
   const phoneWithPlus = phoneNumber.startsWith("+")
     ? phoneNumber

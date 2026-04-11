@@ -103,13 +103,13 @@ const Footer = () => {
 
           {/* Social Icons */}
           <div className="flex items-center gap-3">
-            <a href="https://www.facebook.com/verix.io" target="_blank">
+            <a href="https://www.facebook.com/share/1CfrdpjoNb/" target="_blank">
             <SiFacebook className="size-9"/>
             </a>
-            <a href="https://www.tiktok.com/@verix.io" target="_blank">
+            <a href="https://www.tiktok.com/@verixsms?_r=1&_t=ZS-95RDXQw9A0L" target="_blank">
             <SiTiktok className="size-9"/>
             </a>
-            <a href="https://www.instagram.com/verix.io" target="_blank">
+            <a href="https://www.instagram.com/verixsms?igsh=MWxiYzRtejhkNmFxOA==" target="_blank">
             <SiInstagram className="size-9"/>
             </a>
             <a href="https://t.me/verixsms" target="_blank">
