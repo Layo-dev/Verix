@@ -203,8 +203,10 @@ export type Database = {
           id: string
           otp_status: string | null
           phone_number: string
+          price_usd: number
           service_name: string
           status: Database["public"]["Enums"]["number_status"]
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -216,8 +218,10 @@ export type Database = {
           id?: string
           otp_status?: string | null
           phone_number: string
+          price_usd?: number
           service_name: string
           status?: Database["public"]["Enums"]["number_status"]
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -229,8 +233,10 @@ export type Database = {
           id?: string
           otp_status?: string | null
           phone_number?: string
+          price_usd?: number
           service_name?: string
           status?: Database["public"]["Enums"]["number_status"]
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
