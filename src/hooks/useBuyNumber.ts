@@ -18,15 +18,15 @@ type FriendlyBuyError = {
 const NETWORK_ERROR_MESSAGE = "Something went wrong. Check your connection.";
 
 async function parseFunctionError(error: any) {
-  const status = error?.context?.status;
+  const status = error?.context?.status ?? error?.status;
   let payload: Record<string, unknown> | null = null;
 
-  if (error?.context && typeof error.context.json === "function") {
+  if (error?.context && typeof error.context.clone === "function") {
     try {
-      payload = await error.context.json();
+      payload = await error.context.clone().json();
     } catch {
       try {
-        const text = await error.context.text?.();
+        const text = await error.context.clone().text?.();
         payload = text ? { message: text } : null;
       } catch {
         payload = null;
@@ -108,8 +108,15 @@ export function useBuyNumber() {
         body: { countryCode, serviceId },
       });
 
-      if (error || !data?.ok) {
-        throw new Error(error?.message || data?.error || "Failed to buy number");
+      if (error) {
+        throw error;
+      }
+
+      if (!data?.ok) {
+        throw {
+          status: 200,
+          message: data?.error || "Failed to buy number",
+        };
       }
 
       await queryClient.invalidateQueries({ queryKey: ["profile-balance"] });
