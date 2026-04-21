@@ -47,6 +47,21 @@
     --lavender: 270 50% 95%;
     --success: 142 76% 45%;
     --success-light: 142 76% 95%;
+    --warning: 38 92% 50%;
+    --warning-light: 45 100% 95%;
+
+    --toast-info-bg: 222 100% 97%;
+    --toast-info-border: 214 88% 91%;
+    --toast-info-icon: 216 82% 56%;
+    --toast-success-bg: 142 58% 95%;
+    --toast-success-border: 142 40% 85%;
+    --toast-success-icon: 142 69% 38%;
+    --toast-warning-bg: 43 100% 94%;
+    --toast-warning-border: 38 90% 84%;
+    --toast-warning-icon: 32 95% 44%;
+    --toast-error-bg: 0 100% 97%;
+    --toast-error-border: 0 78% 90%;
+    --toast-error-icon: 0 72% 58%;
 
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(270 50% 95%) 0%, hsl(25 100% 95%) 50%, hsl(25 100% 92%) 100%);
@@ -92,6 +107,20 @@
     --border: 240 10% 18%;
     --input: 240 10% 18%;
     --ring: 270 80% 60%;
+    --warning: 38 92% 62%;
+    --warning-light: 38 44% 16%;
+    --toast-info-bg: 222 28% 16%;
+    --toast-info-border: 221 28% 24%;
+    --toast-info-icon: 213 90% 72%;
+    --toast-success-bg: 142 24% 15%;
+    --toast-success-border: 142 24% 24%;
+    --toast-success-icon: 142 70% 70%;
+    --toast-warning-bg: 38 32% 16%;
+    --toast-warning-border: 38 32% 24%;
+    --toast-warning-icon: 41 92% 70%;
+    --toast-error-bg: 0 30% 16%;
+    --toast-error-border: 0 30% 24%;
+    --toast-error-icon: 0 86% 74%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 270 80% 60%;
