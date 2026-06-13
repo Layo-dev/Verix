@@ -92,7 +92,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
               isActive(item.href)
                 ? "bg-[hsl(200,100%,50%)] text-white"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                : "text-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <item.icon className="w-5 h-5" />
@@ -115,7 +115,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
               isActive(item.href)
                 ? "bg-[hsl(200,100%,50%)] text-white"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                : "text-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <item.icon className="w-5 h-5" />

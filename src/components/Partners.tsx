@@ -33,7 +33,7 @@ const Partners = () => {
         </div>
 
         {/* Info Grid */}
-        <div className="grid md:grid-cols-3 gap-8 pt-8 border-t border-border">
+        {/*<div className="grid md:grid-cols-3 gap-8 pt-8 border-t border-border">
           <div>
             <h3 className="text-2xl font-bold text-foreground mb-2">
               Our partners include some of the world's leading brands
@@ -49,7 +49,7 @@ const Partners = () => {
               Verix is a platform that allows you to receive SMS with codes online directly on our website.
             </p>
           </div>
-        </div>
+        </div>*/}
       </div>
     </section>
   );

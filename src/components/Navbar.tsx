@@ -64,13 +64,13 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border animate-fade-in">
             <div className="flex flex-col gap-4">
-              <a href="#receive-sms" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <a href="#receive-sms" className="text-sm font-medium text-foreground hover:text-foreground transition-colors">
                 Receive SMS
               </a>
-              <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <a href="#pricing" className="text-sm font-medium text-foreground hover:text-foreground transition-colors">
                 Pricing
               </a>
-              <a href="#reviews" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <a href="#reviews" className="text-sm font-medium text-foreground hover:text-foreground transition-colors">
                 About Us
               </a>
               <div className="flex gap-2 pt-4">
