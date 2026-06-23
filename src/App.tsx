@@ -53,6 +53,14 @@ const App = () => (
               }
             />
             <Route
+              path="/dashboard/products"
+              element={
+                <ProtectedRoute>
+                  <MarketplacePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/payment/callback"
               element={
                 <ProtectedRoute>
