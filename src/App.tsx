@@ -11,6 +11,7 @@ import Signup from "./pages/Signup";
 import DashboardPage from "./pages/DashboardPage";
 import SmsInboxPage from "./pages/SmsInboxPage";
 import HistoryPage from "./pages/HistoryPage";
+import MarketplacePage from "./pages/MarketplacePage";
 import NotFound from "./pages/NotFound";
 import PaystackCallback from "./pages/PaystackCallback";
 
