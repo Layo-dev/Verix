@@ -44,6 +44,8 @@ const SmsInboxPage = () => {
       const { data } = await supabase
         .from("purchased_numbers")
         .select("*")
+        .eq("user_id", user.id)
+        .eq("status", "active")
         .order("created_at", { ascending: false });
       if (data) setNumbers(data as unknown as PurchasedNumber[]);
     };
