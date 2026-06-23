@@ -1,71 +1,74 @@
-## Create History Page at `/dashboard/history`
+## Create Marketplace Page at `/dashboard/products`
 
 ### Goal
-Build a responsive History page that lists only expired purchased numbers, with date filters, search, status filter, summary stats, and a clean Verix-branded layout matching the wireframe.
+Build a responsive, Verix-branded Marketplace page matching the wireframe. Uses mock data for now (real data wired later).
 
 ### Files
 
-**New: `src/pages/HistoryPage.tsx`**
-- Reuses `DashboardSidebar` (desktop fixed sidebar, mobile sheet) like `SmsInboxPage`.
-- Fetches from `purchased_numbers` where `status = 'expired'` for the current user, ordered by `expires_at desc`.
-- Joins/derives "OTP status" from `otp_status` column to show Received vs No Code.
+**New: `src/pages/MarketplacePage.tsx`**
+- Reuses `DashboardSidebar` pattern (desktop fixed sidebar + mobile sheet via hamburger) like `HistoryPage` and `SmsInboxPage`.
+- Holds local state for search query, category filter, country filter.
+- Renders filtered product grid from a local `MOCK_PRODUCTS` constant.
 
-**New route in `src/App.tsx`**
-- Add `/dashboard/history` → `<HistoryPage />` inside `ProtectedRoute`.
+**Edit: `src/App.tsx`**
+- Add route `/dashboard/products` → `<MarketplacePage />` inside `ProtectedRoute`.
+- The sidebar already links to `/dashboard/products` (Marketplace item), so no sidebar edits needed.
 
 ### Layout (matches wireframe)
 
 ```text
-Header: "History"
+Header:
+  Marketplace
+  Buy accounts, subscriptions and digital products
 ─────────────────────────────
-Date range tabs: Last 7 Days | Last 30 Days | All Time
+Filters row (stacked on mobile, inline on md+):
+  [ Search input ]  [ Category select ]  [ Country select ]
 ─────────────────────────────
-Filters row (stacked on mobile, inline on desktop):
-  • Search number (input)
-  • Search service (input)
-  • Status filter (select: All / Received / No Code)
-─────────────────────────────
-Summary cards (2 columns):
-  • Total Purchases: N
-  • Total Spent: $X.XX
-─────────────────────────────
-Table (desktop) / Stacked cards (mobile):
-  Country | Service | Number | Cost | Status
-  🇺🇸  Telegram  +1xxx  $1.50  Received
-  🇨🇦  Google    +1xxx  $2.00  No Code
+Product grid:
+  Mobile: 2 cols | Tablet: 3 cols | Desktop: 4 cols
+  Card: image, title, country (flag + name), stock, price, "Buy Now" button
 ```
 
-### Behavior
-- Date tabs filter by `expires_at` within range (7d, 30d, all).
-- Number search: substring match on `phone_number`.
-- Service search: substring match on `service_name`.
-- Status filter: maps to `otp_status` ('received' vs other → No Code).
-- Summary recomputes from filtered list (count + sum of `price_usd`, displayed USD).
-- Empty state when no records match.
-- Loading skeleton while fetching.
+### Mock data shape
+```ts
+type Product = {
+  id: string;
+  title: string;        // e.g. "Netflix Premium"
+  image: string;        // placeholder URL or /placeholder.svg
+  category: string;     // Streaming | Social | Gaming | Productivity
+  country: string;      // US, UK, NG, CA...
+  countryFlag: string;  // emoji
+  stock: number;
+  price: number;        // USD
+};
+```
+~8–12 mock entries spanning a few categories and countries so filters are demonstrable.
+
+### Filtering behavior
+- Search: case-insensitive substring match on `title`.
+- Category: "All" + unique categories from mock data.
+- Country: "All" + unique countries from mock data.
+- All client-side, recomputed via `useMemo`.
+- Empty state when no matches.
+
+### Card behavior
+- "Buy Now" button is a stub for now — shows a toast ("Coming soon") via existing `useToast`. No purchase logic.
+- Stock pill: green if >0, muted/red if 0 (button disabled when 0).
 
 ### Design (Verix brand)
-- Uses existing tokens: `bg-background`, `bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`, `accent` for active tab.
-- Rounded `rounded-xl` cards, subtle borders, Inter font (inherited).
-- Status pills: green (`hsl(var(--success))` bg/text) for Received, muted/red for No Code.
-- Date tabs as segmented control: pill-shaped, active = accent bg.
-- Table on `md:` and up; on mobile each row becomes a compact card with flag + number on top, service + cost + status below.
+- Tokens only: `bg-background`, `bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`, `accent`.
+- Cards: `rounded-xl border bg-card` with subtle shadow on hover, square-ish image area on top (`aspect-square` with `bg-muted` placeholder), padded content below.
+- Buttons: existing `Button` component (`variant="accent"` for Buy Now).
+- Filters use existing `Input` + `Select` UI primitives.
+- Inter font (inherited).
 
 ### Responsive
-- Mobile (`<md`): single column, filters stacked, summary side-by-side small cards, rows as cards. Sidebar in sheet via hamburger.
-- Tablet/Desktop (`md+`): filters inline (grid-cols-3), summary as 2 cards, full table.
-
-### Data
-- Single Supabase query on mount:
-  ```ts
-  supabase.from('purchased_numbers')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('status', 'expired')
-    .order('expires_at', { ascending: false })
-  ```
-- All filtering done client-side for snappy UX.
+- `<md`: sidebar in sheet; filters stacked full-width; grid `grid-cols-2 gap-3`.
+- `md`: filters `grid-cols-3`; grid `md:grid-cols-3 gap-4`.
+- `lg+`: full sidebar; grid `lg:grid-cols-4 gap-5`.
+- No horizontal overflow on 390px viewport.
 
 ### Out of scope
-- No edits to edge functions, schema, or other dashboard pages.
-- No export/CSV (can be added later if requested).
+- No real product data, no Supabase tables, no edge functions.
+- No cart, checkout, or purchase flow (Buy Now is a placeholder toast).
+- No product detail page.
