@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Globe,
   LogOut,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -22,14 +23,14 @@ import { useProfileBalance } from "@/hooks/useProfileBalance";
 
 const menuItems = [
   { icon: MessageSquare, label: "Receive SMS", href: "/dashboard" },
-  //{ icon: Phone, label: "Number rent", href: "/dashboard/rent" },
   { icon: Inbox, label: "SMS Inbox", href: "/dashboard/referral" },
   { icon: History, label: "History", href: "/dashboard/history" }
 ];
 
 const secondaryItems = [
   { icon: Wallet, label: "Refill balance", href: "/dashboard/refill" },
-  { icon: Smartphone, label: "Marketplace", href: "/dashboard/products" }
+  { icon: Smartphone, label: "Marketplace", href: "/dashboard/products" },
+  { icon: MessageCircle, label: "Chat with support", href: "/dashboard/support" },
 ];
 
 interface DashboardSidebarProps {
