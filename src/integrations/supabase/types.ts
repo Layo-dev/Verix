@@ -199,11 +199,15 @@ export type Database = {
           country_code: string
           country_flag: string
           created_at: string
+          expired_at: string | null
           expires_at: string
           id: string
           otp_status: string | null
           phone_number: string
           price_usd: number
+          provider: string | null
+          refund_amount: number | null
+          refunded: boolean | null
           service_name: string
           status: Database["public"]["Enums"]["number_status"]
           updated_at: string | null
@@ -214,11 +218,15 @@ export type Database = {
           country_code: string
           country_flag?: string
           created_at?: string
+          expired_at?: string | null
           expires_at: string
           id?: string
           otp_status?: string | null
           phone_number: string
           price_usd?: number
+          provider?: string | null
+          refund_amount?: number | null
+          refunded?: boolean | null
           service_name: string
           status?: Database["public"]["Enums"]["number_status"]
           updated_at?: string | null
@@ -229,11 +237,15 @@ export type Database = {
           country_code?: string
           country_flag?: string
           created_at?: string
+          expired_at?: string | null
           expires_at?: string
           id?: string
           otp_status?: string | null
           phone_number?: string
           price_usd?: number
+          provider?: string | null
+          refund_amount?: number | null
+          refunded?: boolean | null
           service_name?: string
           status?: Database["public"]["Enums"]["number_status"]
           updated_at?: string | null
