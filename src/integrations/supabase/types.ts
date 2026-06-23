@@ -133,6 +133,36 @@ export type Database = {
           },
         ]
       }
+      pricing_rules: {
+        Row: {
+          auto_fallback: boolean | null
+          country_code: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          price_band: string
+          service_id: string
+        }
+        Insert: {
+          auto_fallback?: boolean | null
+          country_code: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          price_band: string
+          service_id: string
+        }
+        Update: {
+          auto_fallback?: boolean | null
+          country_code?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          price_band?: string
+          service_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -369,6 +399,7 @@ export type Database = {
         Args: { p_amount: number; p_user_id: string }
         Returns: boolean
       }
+      expire_stale_numbers: { Args: never; Returns: number }
     }
     Enums: {
       number_status: "active" | "expiring" | "expired"
