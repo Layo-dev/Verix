@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Menu, Search, Package } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -12,7 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 interface Product {
@@ -26,46 +28,117 @@ interface Product {
   price: number;
 }
 
-const MOCK_PRODUCTS: Product[] = [
-  { id: "1", title: "Netflix Premium", image: "", category: "Streaming", country: "United States", countryFlag: "🇺🇸", stock: 12, price: 3.0 },
-  { id: "2", title: "Spotify Family", image: "", category: "Streaming", country: "United Kingdom", countryFlag: "🇬🇧", stock: 8, price: 2.5 },
-  { id: "3", title: "Disney+ Standard", image: "", category: "Streaming", country: "Canada", countryFlag: "🇨🇦", stock: 5, price: 2.75 },
-  { id: "4", title: "Telegram Premium", image: "", category: "Social", country: "Nigeria", countryFlag: "🇳🇬", stock: 20, price: 1.5 },
-  { id: "5", title: "Instagram Aged", image: "", category: "Social", country: "United States", countryFlag: "🇺🇸", stock: 0, price: 4.0 },
-  { id: "6", title: "X Premium", image: "", category: "Social", country: "United Kingdom", countryFlag: "🇬🇧", stock: 15, price: 3.25 },
-  { id: "7", title: "Steam Wallet $10", image: "", category: "Gaming", country: "United States", countryFlag: "🇺🇸", stock: 30, price: 9.5 },
-  { id: "8", title: "PlayStation Plus", image: "", category: "Gaming", country: "Canada", countryFlag: "🇨🇦", stock: 6, price: 7.0 },
-  { id: "9", title: "ChatGPT Plus", image: "", category: "Productivity", country: "United States", countryFlag: "🇺🇸", stock: 10, price: 12.0 },
-  { id: "10", title: "Notion Pro", image: "", category: "Productivity", country: "Germany", countryFlag: "🇩🇪", stock: 4, price: 5.0 },
-  { id: "11", title: "Canva Pro", image: "", category: "Productivity", country: "Nigeria", countryFlag: "🇳🇬", stock: 18, price: 3.5 },
-  { id: "12", title: "YouTube Premium", image: "", category: "Streaming", country: "Germany", countryFlag: "🇩🇪", stock: 9, price: 2.99 },
-];
+interface MarketplaceCategory {
+  id: string;
+  name: string;
+}
+
+interface MarketplaceCountry {
+  country_code: string;
+  country_name: string;
+  country_flag: string;
+}
+
+interface ProductRow {
+  id: string;
+  title: string;
+  image_url: string | null;
+  price_usd: number;
+  stock: number | null;
+  country_code: string | null;
+  marketplace_categories: { name: string } | null;
+}
 
 const MarketplacePage = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<MarketplaceCategory[]>([]);
+  const [countries, setCountries] = useState<MarketplaceCountry[]>([]);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [country, setCountry] = useState<string>("all");
 
-  const categories = useMemo(
-    () => Array.from(new Set(MOCK_PRODUCTS.map((p) => p.category))).sort(),
-    []
-  );
-  const countries = useMemo(
-    () => Array.from(new Set(MOCK_PRODUCTS.map((p) => p.country))).sort(),
-    []
-  );
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      setLoading(true);
+
+      const [productsRes, categoriesRes, countriesRes] = await Promise.all([
+        supabase
+          .from("marketplace_products")
+          .select(
+            "id, title, image_url, price_usd, stock, country_code, marketplace_categories ( name )"
+          )
+          .order("created_at", { ascending: false }),
+        supabase.from("marketplace_categories").select("id, name").order("name"),
+        supabase
+          .from("marketplace_country")
+          .select("country_code, country_name, country_flag")
+          .eq("is_active", true)
+          .order("sort_order"),
+      ]);
+
+      if (cancelled) return;
+
+      if (productsRes.error || categoriesRes.error || countriesRes.error) {
+        toast({
+          title: "Failed to load marketplace",
+          description:
+            productsRes.error?.message ??
+            categoriesRes.error?.message ??
+            countriesRes.error?.message,
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const countryRows = (countriesRes.data ?? []) as MarketplaceCountry[];
+      const countryByCode = new Map(
+        countryRows.map((c) => [c.country_code, c])
+      );
+
+      const mapped = ((productsRes.data ?? []) as ProductRow[]).map((p) => {
+        const countryInfo = p.country_code
+          ? countryByCode.get(p.country_code)
+          : undefined;
+
+        return {
+          id: p.id,
+          title: p.title,
+          image: p.image_url ?? "",
+          category: p.marketplace_categories?.name ?? "Uncategorized",
+          country: countryInfo?.country_name ?? p.country_code ?? "Unknown",
+          countryFlag: countryInfo?.country_flag ?? "🌍",
+          stock: p.stock ?? 0,
+          price: Number(p.price_usd),
+        };
+      });
+
+      setProducts(mapped);
+      setCategories((categoriesRes.data ?? []) as MarketplaceCategory[]);
+      setCountries(countryRows);
+      setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [toast]);
 
   const filtered = useMemo(() => {
-    return MOCK_PRODUCTS.filter((p) => {
-      if (query && !p.title.toLowerCase().includes(query.toLowerCase())) return false;
+    return products.filter((p) => {
+      if (query && !p.title.toLowerCase().includes(query.toLowerCase()))
+        return false;
       if (category !== "all" && p.category !== category) return false;
       if (country !== "all" && p.country !== country) return false;
       return true;
     });
-  }, [query, category, country]);
+  }, [products, query, category, country]);
 
   const handleBuy = (p: Product) => {
     toast({
@@ -94,8 +167,8 @@ const MarketplacePage = () => {
           <SelectContent>
             <SelectItem value="all">All categories</SelectItem>
             {categories.map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
+              <SelectItem key={c.id} value={c.name}>
+                {c.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -107,8 +180,8 @@ const MarketplacePage = () => {
           <SelectContent>
             <SelectItem value="all">All countries</SelectItem>
             {countries.map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
+              <SelectItem key={c.country_code} value={c.country_name}>
+                {c.country_flag} {c.country_name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -116,7 +189,23 @@ const MarketplacePage = () => {
       </div>
 
       {/* Grid */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-card border border-border rounded-xl overflow-hidden"
+            >
+              <Skeleton className="aspect-square w-full rounded-none" />
+              <div className="p-3 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="bg-card border border-border rounded-xl p-10 flex flex-col items-center text-center">
           <Package className="w-10 h-10 text-muted-foreground mb-3" />
           <p className="text-sm font-medium text-foreground">No products found</p>
@@ -135,7 +224,11 @@ const MarketplacePage = () => {
               >
                 <div className="aspect-square bg-muted flex items-center justify-center text-3xl">
                   {p.image ? (
-                    <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <span aria-hidden>{p.countryFlag}</span>
                   )}
