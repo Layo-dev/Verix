@@ -1,141 +1,71 @@
+## Create History Page at `/dashboard/history`
 
-## Improve Buy Number Error Handling on the Frontend
+### Goal
+Build a responsive History page that lists only expired purchased numbers, with date filters, search, status filter, summary stats, and a clean Verix-branded layout matching the wireframe.
 
-## Goal
-Keep the existing `buy-number` edge function, but make the frontend translate its failures into clear, friendly toasts that match the requested UX:
+### Files
+
+**New: `src/pages/HistoryPage.tsx`**
+- Reuses `DashboardSidebar` (desktop fixed sidebar, mobile sheet) like `SmsInboxPage`.
+- Fetches from `purchased_numbers` where `status = 'expired'` for the current user, ordered by `expires_at desc`.
+- Joins/derives "OTP status" from `otp_status` column to show Received vs No Code.
+
+**New route in `src/App.tsx`**
+- Add `/dashboard/history` → `<HistoryPage />` inside `ProtectedRoute`.
+
+### Layout (matches wireframe)
 
 ```text
-User clicks buy
-↓
-Frontend shows loading
-↓
-Backend validates
-↓
-If error → proper status + message
-↓
-Frontend shows friendly toast
+Header: "History"
+─────────────────────────────
+Date range tabs: Last 7 Days | Last 30 Days | All Time
+─────────────────────────────
+Filters row (stacked on mobile, inline on desktop):
+  • Search number (input)
+  • Search service (input)
+  • Status filter (select: All / Received / No Code)
+─────────────────────────────
+Summary cards (2 columns):
+  • Total Purchases: N
+  • Total Spent: $X.XX
+─────────────────────────────
+Table (desktop) / Stacked cards (mobile):
+  Country | Service | Number | Cost | Status
+  🇺🇸  Telegram  +1xxx  $1.50  Received
+  🇨🇦  Google    +1xxx  $2.00  No Code
 ```
 
-## What is happening now
-- The buy button is already calling the correct edge function: `supabase.functions.invoke("buy-number", ...)`.
-- The backend is already returning useful HTTP statuses and JSON bodies.
-- Current issue: `useBuyNumber.ts` only uses `error.message`, so users see generic Edge Function errors instead of the backend’s real message.
-- Network trace confirms one real failure case:
-  - `POST /functions/v1/buy-number`
-  - Status `402`
-  - Body: `{"error":"Insufficient wallet balance","currency":"USD","balance":0.44,"required":0.65,"shortfall":0.21}`
+### Behavior
+- Date tabs filter by `expires_at` within range (7d, 30d, all).
+- Number search: substring match on `phone_number`.
+- Service search: substring match on `service_name`.
+- Status filter: maps to `otp_status` ('received' vs other → No Code).
+- Summary recomputes from filtered list (count + sum of `price_usd`, displayed USD).
+- Empty state when no records match.
+- Loading skeleton while fetching.
 
-## Frontend-only implementation
+### Design (Verix brand)
+- Uses existing tokens: `bg-background`, `bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`, `accent` for active tab.
+- Rounded `rounded-xl` cards, subtle borders, Inter font (inherited).
+- Status pills: green (`hsl(var(--success))` bg/text) for Received, muted/red for No Code.
+- Date tabs as segmented control: pill-shaped, active = accent bg.
+- Table on `md:` and up; on mobile each row becomes a compact card with flag + number on top, service + cost + status below.
 
-### 1. Update `src/hooks/useBuyNumber.ts`
-Add a small frontend error-normalization layer inside the hook.
+### Responsive
+- Mobile (`<md`): single column, filters stacked, summary side-by-side small cards, rows as cards. Sidebar in sheet via hamburger.
+- Tablet/Desktop (`md+`): filters inline (grid-cols-3), summary as 2 cards, full table.
 
-#### Responsibilities
-- Keep `loading` behavior exactly as-is.
-- Read the real error payload from the edge function response when status is non-2xx.
-- Map backend/server/network failures to user-friendly toast content.
-- Use semantic toast variants:
-  - insufficient balance → `warning`
-  - unavailable/provider/network failures → `destructive`
+### Data
+- Single Supabase query on mount:
+  ```ts
+  supabase.from('purchased_numbers')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('status', 'expired')
+    .order('expires_at', { ascending: false })
+  ```
+- All filtering done client-side for snappy UX.
 
-#### Error mapping rules
-Map backend responses to these friendly messages:
-
-- **Insufficient balance**
-  - Trigger when:
-    - HTTP `402`, or
-    - backend message includes `Insufficient wallet balance`
-  - Toast:
-    - Title: `Insufficient balance`
-    - Description: `Please top up your wallet to continue`
-    - Variant: `warning`
-
-- **No number available**
-  - Trigger when backend message includes signals like:
-    - `NO_NUMBERS`
-    - `No numbers available`
-    - `Unsupported country/service` only if that state reflects unavailable inventory in the UI flow
-  - Toast:
-    - Title: `No number available`
-    - Description: `No number available right now. Try again shortly.`
-    - Variant: `destructive`
-
-- **Provider failed**
-  - Trigger when backend message includes signals like:
-    - provider labels/errors such as `HeroSMS`, `GrizzlySMS`
-    - `BAD_KEY`, `BANNED`, `ERROR_SQL`, `unexpected payload`
-    - `failed: HTTP`
-  - Toast:
-    - Title: `Provider failed`
-    - Description: `Service temporarily unavailable. Try again.`
-    - Variant: `destructive`
-
-- **Network error**
-  - Trigger when:
-    - fetch/invoke fails without a parsed backend body
-    - browser is offline / request never reaches backend
-    - generic function error has no useful JSON payload
-  - Toast:
-    - Title: `Network error`
-    - Description: `Something went wrong. Check your connection.`
-    - Variant: `destructive`
-
-- **Fallback**
-  - For anything uncategorized:
-    - Title: `Purchase error`
-    - Description: parsed backend message if available, otherwise generic network text
-    - Variant: `destructive`
-
-### 2. Extract backend error body correctly
-In `useBuyNumber.ts`, after `supabase.functions.invoke("buy-number")`:
-- If `error` exists, attempt to parse `error.context` as JSON.
-- Prefer:
-  1. parsed JSON `error`
-  2. parsed JSON `message`
-  3. `error.message`
-- Use the parsed status/message to feed the mapping rules above.
-
-This is the key fix that allows the frontend to show the real backend validation result instead of the generic Supabase Functions error string.
-
-### 3. Keep success flow unchanged
-On success:
-- continue invalidating `["profile-balance"]`
-- keep the success toast
-- keep navigation to `/dashboard/referral`
-
-Optional polish:
-- mark the success toast as `success` so it uses the new redesigned success styling automatically.
-
-## Files to update
-
-### `src/hooks/useBuyNumber.ts`
-Implement:
-- response/error parsing
-- status-aware and message-aware mapping
-- friendly toast titles/descriptions
-- optional success variant
-
-## Technical notes
-- No backend changes required.
-- The buy button is already wired correctly on both desktop and mobile through `useBuyNumber`.
-- The backend already returns meaningful status codes; the missing piece is frontend interpretation.
-- Current toast system already supports `warning`, `success`, and `destructive`, so no toast component redesign is needed for this task.
-
-## Expected result
-When the user taps buy:
-- loading state remains visible
-- backend validation still runs normally
-- failures become readable and trustworthy
-
-Example outcomes:
-- `402 Insufficient wallet balance` → `Insufficient balance` / `Please top up your wallet to continue`
-- availability/provider issues → clear service message
-- network/invoke failures → connection-friendly fallback
-
-## QA checklist
-- Try purchase with wallet below required amount and confirm warning toast appears
-- Try a country/service combo that returns no availability and confirm “No number available” toast
-- Simulate a provider-style failure and confirm “Service temporarily unavailable. Try again.”
-- Simulate a disconnected/failed request and confirm network error toast
-- Confirm success purchase still navigates to `/dashboard/referral`
-- Confirm loading state still disables repeat submissions during the request
+### Out of scope
+- No edits to edge functions, schema, or other dashboard pages.
+- No export/CSV (can be added later if requested).
