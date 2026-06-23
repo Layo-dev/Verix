@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import DashboardPage from "./pages/DashboardPage";
 import SmsInboxPage from "./pages/SmsInboxPage";
+import HistoryPage from "./pages/HistoryPage";
 import NotFound from "./pages/NotFound";
 import PaystackCallback from "./pages/PaystackCallback";
 
