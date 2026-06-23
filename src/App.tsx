@@ -44,6 +44,14 @@ const App = () => (
               }
             />
             <Route
+              path="/dashboard/history"
+              element={
+                <ProtectedRoute>
+                  <HistoryPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/payment/callback"
               element={
                 <ProtectedRoute>
