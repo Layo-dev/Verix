@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import ProductDetailsModal, { type ProductDetails } from "@/components/marketplace/ProductDetailsModal";
+import PurchaseSuccessModal, { type PurchaseResult } from "@/components/marketplace/PurchaseSuccessModal";
 import TopUpModal from "@/components/dashboard/TopUpModal";
 import { useProfileBalance } from "@/hooks/useProfileBalance";
 type Product = ProductDetails;
