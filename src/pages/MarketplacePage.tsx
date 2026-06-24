@@ -282,6 +282,13 @@ const MarketplacePage = () => {
           })}
         </div>
       )}
+
+      <ProductDetailsModal
+        product={selected}
+        open={!!selected}
+        onOpenChange={(o) => !o && setSelected(null)}
+        onBuy={handleBuy}
+      />
     </div>
   );
 
