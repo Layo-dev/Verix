@@ -57,6 +57,7 @@ const MarketplacePage = () => {
   const [category, setCategory] = useState<string>("all");
   const [country, setCountry] = useState<string>("all");
   const [selected, setSelected] = useState<Product | null>(null);
+  const [purchase, setPurchase] = useState<PurchaseResult | null>(null);
   const { data: balance = 0 } = useProfileBalance();
   const [topUpOpen, setTopUpOpen] = useState(false);
 
