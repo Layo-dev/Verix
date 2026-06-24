@@ -101,6 +101,12 @@ const MarketplacePage = () => {
           ? countryByCode.get(p.country_code)
           : undefined;
 
+        const deliveryItems = Array.isArray(p.delivery_items)
+          ? (p.delivery_items as unknown[]).filter(
+              (x): x is string => typeof x === "string"
+            )
+          : [];
+
         return {
           id: p.id,
           title: p.title,
@@ -110,6 +116,8 @@ const MarketplacePage = () => {
           countryFlag: countryInfo?.country_flag ?? "🌍",
           stock: p.stock ?? 0,
           price: Number(p.price_usd),
+          description: p.description,
+          deliveryItems,
         };
       });
 
