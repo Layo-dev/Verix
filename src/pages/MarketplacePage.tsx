@@ -16,17 +16,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import ProductDetailsModal, { type ProductDetails } from "@/components/marketplace/ProductDetailsModal";
 
-interface Product {
-  id: string;
-  title: string;
-  image: string;
-  category: string;
-  country: string;
-  countryFlag: string;
-  stock: number;
-  price: number;
-}
+type Product = ProductDetails;
 
 interface MarketplaceCategory {
   id: string;
@@ -46,6 +38,8 @@ interface ProductRow {
   price_usd: number;
   stock: number | null;
   country_code: string | null;
+  description: string | null;
+  delivery_items: unknown;
   marketplace_categories: { name: string } | null;
 }
 
