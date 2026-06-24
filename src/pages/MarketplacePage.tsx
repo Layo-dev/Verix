@@ -150,9 +150,20 @@ const MarketplacePage = () => {
 
   const handleBuy = (p: Product) => {
     setSelected(null);
-    toast({
-      title: "Coming soon",
-      description: `Purchase flow for ${p.title} isn't live yet.`,
+
+    // Mock delivery data — real fulfillment will be wired in later.
+    const mockItems = [
+      { label: "Email", value: "netflix123@gmail.com" },
+      { label: "Password", value: "Pass123456" },
+      { label: "Profile", value: "Profile 2", copyable: false },
+    ];
+
+    const orderId = `VX-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    setPurchase({
+      productTitle: p.title,
+      orderId,
+      items: mockItems,
     });
   };
 
