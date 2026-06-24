@@ -631,6 +631,14 @@ export type Database = {
         Returns: boolean
       }
       expire_stale_numbers: { Args: never; Returns: number }
+      purchase_marketplace_product: {
+        Args: {
+          p_inventory_id: string
+          p_product_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       number_status: "active" | "expiring" | "expired"
