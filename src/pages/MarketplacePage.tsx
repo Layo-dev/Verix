@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import ProductDetailsModal, { type ProductDetails } from "@/components/marketplace/ProductDetailsModal";
+import PurchaseSuccessModal, { type PurchaseResult } from "@/components/marketplace/PurchaseSuccessModal";
 import TopUpModal from "@/components/dashboard/TopUpModal";
 import { useProfileBalance } from "@/hooks/useProfileBalance";
 type Product = ProductDetails;
@@ -56,6 +57,7 @@ const MarketplacePage = () => {
   const [category, setCategory] = useState<string>("all");
   const [country, setCountry] = useState<string>("all");
   const [selected, setSelected] = useState<Product | null>(null);
+  const [purchase, setPurchase] = useState<PurchaseResult | null>(null);
   const { data: balance = 0 } = useProfileBalance();
   const [topUpOpen, setTopUpOpen] = useState(false);
 
@@ -148,9 +150,20 @@ const MarketplacePage = () => {
 
   const handleBuy = (p: Product) => {
     setSelected(null);
-    toast({
-      title: "Coming soon",
-      description: `Purchase flow for ${p.title} isn't live yet.`,
+
+    // Mock delivery data — real fulfillment will be wired in later.
+    const mockItems = [
+      { label: "Email", value: "netflix123@gmail.com" },
+      { label: "Password", value: "Pass123456" },
+      { label: "Profile", value: "Profile 2", copyable: false },
+    ];
+
+    const orderId = `VX-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    setPurchase({
+      productTitle: p.title,
+      orderId,
+      items: mockItems,
     });
   };
 
@@ -291,6 +304,12 @@ const MarketplacePage = () => {
         open={!!selected}
         onOpenChange={(o) => !o && setSelected(null)}
         onBuy={handleBuy}
+      />
+
+      <PurchaseSuccessModal
+        result={purchase}
+        open={!!purchase}
+        onOpenChange={(o) => !o && setPurchase(null)}
       />
     </div>
   );
