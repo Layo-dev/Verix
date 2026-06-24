@@ -16,17 +16,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import ProductDetailsModal, { type ProductDetails } from "@/components/marketplace/ProductDetailsModal";
 
-interface Product {
-  id: string;
-  title: string;
-  image: string;
-  category: string;
-  country: string;
-  countryFlag: string;
-  stock: number;
-  price: number;
-}
+type Product = ProductDetails;
 
 interface MarketplaceCategory {
   id: string;
@@ -46,6 +38,8 @@ interface ProductRow {
   price_usd: number;
   stock: number | null;
   country_code: string | null;
+  description: string | null;
+  delivery_items: unknown;
   marketplace_categories: { name: string } | null;
 }
 
@@ -60,6 +54,7 @@ const MarketplacePage = () => {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [country, setCountry] = useState<string>("all");
+  const [selected, setSelected] = useState<Product | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,7 +66,7 @@ const MarketplacePage = () => {
         supabase
           .from("marketplace_products")
           .select(
-            "id, title, image_url, price_usd, stock, country_code, marketplace_categories ( name )"
+            "id, title, image_url, price_usd, stock, country_code, description, delivery_items, marketplace_categories ( name )"
           )
           .order("created_at", { ascending: false }),
         supabase.from("marketplace_categories").select("id, name").order("name"),
@@ -107,6 +102,12 @@ const MarketplacePage = () => {
           ? countryByCode.get(p.country_code)
           : undefined;
 
+        const deliveryItems = Array.isArray(p.delivery_items)
+          ? (p.delivery_items as unknown[]).filter(
+              (x): x is string => typeof x === "string"
+            )
+          : [];
+
         return {
           id: p.id,
           title: p.title,
@@ -116,6 +117,8 @@ const MarketplacePage = () => {
           countryFlag: countryInfo?.country_flag ?? "🌍",
           stock: p.stock ?? 0,
           price: Number(p.price_usd),
+          description: p.description,
+          deliveryItems,
         };
       });
 
@@ -141,6 +144,7 @@ const MarketplacePage = () => {
   }, [products, query, category, country]);
 
   const handleBuy = (p: Product) => {
+    setSelected(null);
     toast({
       title: "Coming soon",
       description: `Purchase flow for ${p.title} isn't live yet.`,
@@ -218,9 +222,11 @@ const MarketplacePage = () => {
           {filtered.map((p) => {
             const inStock = p.stock > 0;
             return (
-              <div
+              <button
                 key={p.id}
-                className="bg-card border border-border rounded-xl overflow-hidden flex flex-col transition-shadow hover:shadow-md"
+                type="button"
+                onClick={() => setSelected(p)}
+                className="bg-card border border-border rounded-xl overflow-hidden flex flex-col transition-shadow hover:shadow-md text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <div className="aspect-square bg-muted flex items-center justify-center text-3xl">
                   {p.image ? (
@@ -263,16 +269,26 @@ const MarketplacePage = () => {
                     size="sm"
                     className="w-full mt-1"
                     disabled={!inStock}
-                    onClick={() => handleBuy(p)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleBuy(p);
+                    }}
                   >
                     Buy Now
                   </Button>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
       )}
+
+      <ProductDetailsModal
+        product={selected}
+        open={!!selected}
+        onOpenChange={(o) => !o && setSelected(null)}
+        onBuy={handleBuy}
+      />
     </div>
   );
 
