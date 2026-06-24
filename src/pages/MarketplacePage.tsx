@@ -222,9 +222,11 @@ const MarketplacePage = () => {
           {filtered.map((p) => {
             const inStock = p.stock > 0;
             return (
-              <div
+              <button
                 key={p.id}
-                className="bg-card border border-border rounded-xl overflow-hidden flex flex-col transition-shadow hover:shadow-md"
+                type="button"
+                onClick={() => setSelected(p)}
+                className="bg-card border border-border rounded-xl overflow-hidden flex flex-col transition-shadow hover:shadow-md text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <div className="aspect-square bg-muted flex items-center justify-center text-3xl">
                   {p.image ? (
