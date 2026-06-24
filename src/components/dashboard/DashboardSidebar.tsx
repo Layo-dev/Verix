@@ -12,6 +12,7 @@ import {
   Globe,
   LogOut,
   MessageCircle,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -28,8 +29,8 @@ const menuItems = [
 ];
 
 const secondaryItems = [
-  { icon: Wallet, label: "Refill balance", href: "/dashboard/refill" },
   { icon: Smartphone, label: "Marketplace", href: "/dashboard/products" },
+  { icon: Package, label: "Orders", href: "/dashboard/orders" },
   { icon: MessageCircle, label: "Chat with support", href: "/dashboard/support" },
 ];
 

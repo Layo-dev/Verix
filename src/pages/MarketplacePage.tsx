@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Menu, Search, Package } from "lucide-react";
+import { Menu, Search, Package, Wallet } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -17,7 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import ProductDetailsModal, { type ProductDetails } from "@/components/marketplace/ProductDetailsModal";
-
+import TopUpModal from "@/components/dashboard/TopUpModal";
+import { useProfileBalance } from "@/hooks/useProfileBalance";
 type Product = ProductDetails;
 
 interface MarketplaceCategory {
@@ -55,6 +56,8 @@ const MarketplacePage = () => {
   const [category, setCategory] = useState<string>("all");
   const [country, setCountry] = useState<string>("all");
   const [selected, setSelected] = useState<Product | null>(null);
+  const { data: balance = 0 } = useProfileBalance();
+  const [topUpOpen, setTopUpOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -299,7 +302,7 @@ const MarketplacePage = () => {
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Menu className="w-5 h-5" />
+                <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-64 border-r border-border">
@@ -310,6 +313,11 @@ const MarketplacePage = () => {
             Marketplace
           </h1>
           <div className="w-8" />
+        <button onClick={() => setTopUpOpen(true)} className="flex items-center gap-1 text-foreground">
+          <Wallet className="w-5 h-5" />
+          <span className="font-semibold">${balance.toFixed(2)}</span>
+        </button>
+        <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
         </header>
         <main className="flex-1 p-4">
           <p className="text-sm text-muted-foreground mb-4">
