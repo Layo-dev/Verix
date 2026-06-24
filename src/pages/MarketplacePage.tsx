@@ -144,6 +144,7 @@ const MarketplacePage = () => {
   }, [products, query, category, country]);
 
   const handleBuy = (p: Product) => {
+    setSelected(null);
     toast({
       title: "Coming soon",
       description: `Purchase flow for ${p.title} isn't live yet.`,
