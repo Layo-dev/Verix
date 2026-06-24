@@ -1,74 +1,73 @@
-## Create Marketplace Page at `/dashboard/products`
+## Product Details Modal
 
-### Goal
-Build a responsive, Verix-branded Marketplace page matching the wireframe. Uses mock data for now (real data wired later).
+Create a clean, Verix-branded product details surface that opens when a user clicks a product card on the Marketplace page. Responsive — centered Dialog on desktop, bottom Sheet on mobile.
 
 ### Files
 
-**New: `src/pages/MarketplacePage.tsx`**
-- Reuses `DashboardSidebar` pattern (desktop fixed sidebar + mobile sheet via hamburger) like `HistoryPage` and `SmsInboxPage`.
-- Holds local state for search query, category filter, country filter.
-- Renders filtered product grid from a local `MOCK_PRODUCTS` constant.
+**New: `src/components/marketplace/ProductDetailsModal.tsx`**
+- Props: `product: Product | null`, `open: boolean`, `onOpenChange(open: boolean)`, `onBuy(product)`.
+- Renders nothing when `product` is null.
+- Uses `Dialog` on desktop (`md+`) and `Sheet` (side `bottom`) on mobile via `useIsMobile`, so the layout matches the wireframes.
 
-**Edit: `src/App.tsx`**
-- Add route `/dashboard/products` → `<MarketplacePage />` inside `ProtectedRoute`.
-- The sidebar already links to `/dashboard/products` (Marketplace item), so no sidebar edits needed.
+**Edit: `src/pages/MarketplacePage.tsx`**
+- Extend the Supabase products query to also select `description` and `delivery_items`.
+- Extend the `Product` / `ProductRow` types with `description: string | null` and `deliveryItems: string[]`.
+- Track selected product in state: `const [selected, setSelected] = useState<Product | null>(null)`.
+- Make the whole product card clickable (button wrapper) to open the modal. Keep the existing "Buy Now" button inside the card but stop event propagation so it still triggers `handleBuy` directly without opening the modal.
+- Render `<ProductDetailsModal product={selected} open={!!selected} onOpenChange={(o) => !o && setSelected(null)} onBuy={handleBuy} />`.
 
-### Layout (matches wireframe)
+### Modal Layout (matches wireframes)
 
 ```text
-Header:
-  Marketplace
-  Buy accounts, subscriptions and digital products
-─────────────────────────────
-Filters row (stacked on mobile, inline on md+):
-  [ Search input ]  [ Category select ]  [ Country select ]
-─────────────────────────────
-Product grid:
-  Mobile: 2 cols | Tablet: 3 cols | Desktop: 4 cols
-  Card: image, title, country (flag + name), stock, price, "Buy Now" button
+Desktop (Dialog, max-w-lg, scrollable body):
+┌────────────────────────────────┐
+│   [Product image, aspect-video]│
+├────────────────────────────────┤
+│ Netflix Premium                │
+│ 🇺🇸 United States · Streaming  │
+│                                │
+│ Description                    │
+│ Premium Netflix account...     │
+│                                │
+│ What You'll Receive            │
+│ ✓ Email                        │
+│ ✓ Password                     │
+│ ✓ Profile Access               │
+│                                │
+│ Stock: 12     Price: $5.99     │
+│ [        Buy Now            ]  │
+└────────────────────────────────┘
+
+Mobile (Sheet, side="bottom", rounded-t-2xl, max-h-[90vh] scrollable):
+Same sections stacked full-width, sticky footer holding the Buy Now button.
 ```
 
-### Mock data shape
+### Section details
+- **Image**: `aspect-video` on desktop / `aspect-[16/10]` on mobile, `bg-muted` fallback with country flag emoji centered when no `image_url`.
+- **Title row**: `text-xl` title, muted-foreground subline showing `{flag} {country} · {category}`.
+- **Description**: small heading `Description` + paragraph from `product.description` (fallback: "No description provided.").
+- **What You'll Receive**: small heading + vertical list. Items pulled from `delivery_items` (JSON array of strings). Render with a green check icon (`Check` from lucide) + label. Fallback when array empty: hide the section entirely.
+- **Stock + Price**: two inline blocks. Stock pill uses same success/destructive treatment as the card. Price is bold `$X.XX`.
+- **Buy Now**: full-width `Button variant="accent"`, disabled when out of stock. On click, calls `onBuy(product)` which (currently) shows the "Coming soon" toast and closes the modal.
+
+### Delivery items parsing
 ```ts
-type Product = {
-  id: string;
-  title: string;        // e.g. "Netflix Premium"
-  image: string;        // placeholder URL or /placeholder.svg
-  category: string;     // Streaming | Social | Gaming | Productivity
-  country: string;      // US, UK, NG, CA...
-  countryFlag: string;  // emoji
-  stock: number;
-  price: number;        // USD
-};
+const deliveryItems = Array.isArray(p.delivery_items)
+  ? (p.delivery_items as unknown[]).filter((x): x is string => typeof x === "string")
+  : [];
 ```
-~8–12 mock entries spanning a few categories and countries so filters are demonstrable.
 
-### Filtering behavior
-- Search: case-insensitive substring match on `title`.
-- Category: "All" + unique categories from mock data.
-- Country: "All" + unique countries from mock data.
-- All client-side, recomputed via `useMemo`.
-- Empty state when no matches.
-
-### Card behavior
-- "Buy Now" button is a stub for now — shows a toast ("Coming soon") via existing `useToast`. No purchase logic.
-- Stock pill: green if >0, muted/red if 0 (button disabled when 0).
-
-### Design (Verix brand)
-- Tokens only: `bg-background`, `bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`, `accent`.
-- Cards: `rounded-xl border bg-card` with subtle shadow on hover, square-ish image area on top (`aspect-square` with `bg-muted` placeholder), padded content below.
-- Buttons: existing `Button` component (`variant="accent"` for Buy Now).
-- Filters use existing `Input` + `Select` UI primitives.
-- Inter font (inherited).
+### Design (Verix tokens only)
+- `bg-background`, `bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`, `accent`, `success`, `destructive`.
+- Rounded `rounded-2xl` for the mobile sheet, default Dialog radius on desktop.
+- No hardcoded color utilities.
 
 ### Responsive
-- `<md`: sidebar in sheet; filters stacked full-width; grid `grid-cols-2 gap-3`.
-- `md`: filters `grid-cols-3`; grid `md:grid-cols-3 gap-4`.
-- `lg+`: full sidebar; grid `lg:grid-cols-4 gap-5`.
-- No horizontal overflow on 390px viewport.
+- `<md`: Sheet side `bottom`, full-width, scrollable body, sticky footer Buy Now button.
+- `md+`: Dialog centered, `max-w-lg`, scrollable inner body when content overflows viewport.
+- 390px viewport: no horizontal overflow; image, title, and lists all wrap properly.
 
 ### Out of scope
-- No real product data, no Supabase tables, no edge functions.
-- No cart, checkout, or purchase flow (Buy Now is a placeholder toast).
-- No product detail page.
+- No real purchase flow (Buy Now still shows the "Coming soon" toast).
+- No product detail page/route.
+- No edits to `marketplace_products` schema.
