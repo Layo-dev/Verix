@@ -54,6 +54,7 @@ const MarketplacePage = () => {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [country, setCountry] = useState<string>("all");
+  const [selected, setSelected] = useState<Product | null>(null);
 
   useEffect(() => {
     let cancelled = false;
