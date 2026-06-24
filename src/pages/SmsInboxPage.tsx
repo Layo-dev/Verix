@@ -108,9 +108,9 @@ const SmsInboxPage = () => {
           ) : (
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <button className="p-2 -ml-2 text-foreground" onClick={() => setSidebarOpen(true)}>
                   <Menu className="w-6 h-6" />
-                </Button>
+                </button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-64 border-r border-border">
                 <DashboardSidebar contentOnly onNavigate={() => setSidebarOpen(false)} />
