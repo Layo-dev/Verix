@@ -305,6 +305,12 @@ const MarketplacePage = () => {
         onOpenChange={(o) => !o && setSelected(null)}
         onBuy={handleBuy}
       />
+
+      <PurchaseSuccessModal
+        result={purchase}
+        open={!!purchase}
+        onOpenChange={(o) => !o && setPurchase(null)}
+      />
     </div>
   );
 
