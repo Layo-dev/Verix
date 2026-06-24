@@ -127,7 +127,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
 
         {/* Notifications Toggle */}
         <div className="flex items-center justify-between px-3 py-2.5">
-          <div className="flex items-center gap-3 text-muted-foreground">
+          <div className="flex items-center gap-3 text-foreground">
             <Bell className="w-5 h-5" />
             <span className="text-sm font-medium">Notifications</span>
           </div>
