@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Menu, Search, Package, Wallet } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -15,6 +15,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { usePurchaseMarketplaceProduct } from "@/hooks/usePurchaseMarketplaceProduct";
 import { cn } from "@/lib/utils";
 import ProductDetailsModal, { type ProductDetails } from "@/components/marketplace/ProductDetailsModal";
 import PurchaseSuccessModal, { type PurchaseResult } from "@/components/marketplace/PurchaseSuccessModal";
@@ -47,7 +49,9 @@ interface ProductRow {
 
 const MarketplacePage = () => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
   const { toast } = useToast();
+  const { purchase: submitPurchase, loading: purchasing } = usePurchaseMarketplaceProduct();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
@@ -57,86 +61,92 @@ const MarketplacePage = () => {
   const [category, setCategory] = useState<string>("all");
   const [country, setCountry] = useState<string>("all");
   const [selected, setSelected] = useState<Product | null>(null);
-  const [purchase, setPurchase] = useState<PurchaseResult | null>(null);
+  const [purchaseResult, setPurchaseResult] = useState<PurchaseResult | null>(null);
   const { data: balance = 0 } = useProfileBalance();
   const [topUpOpen, setTopUpOpen] = useState(false);
+
+  const loadProducts = useCallback(async () => {
+    const [productsRes, categoriesRes, countriesRes] = await Promise.all([
+      supabase
+        .from("marketplace_products")
+        .select(
+          "id, title, image_url, price_usd, stock, country_code, description, delivery_items, marketplace_categories ( name )"
+        )
+        .order("created_at", { ascending: false }),
+      supabase.from("marketplace_categories").select("id, name").order("name"),
+      supabase
+        .from("marketplace_country")
+        .select("country_code, country_name, country_flag")
+        .eq("is_active", true)
+        .order("sort_order"),
+    ]);
+
+    if (productsRes.error || categoriesRes.error || countriesRes.error) {
+      throw new Error(
+        productsRes.error?.message ??
+          categoriesRes.error?.message ??
+          countriesRes.error?.message
+      );
+    }
+
+    const countryRows = (countriesRes.data ?? []) as MarketplaceCountry[];
+    const countryByCode = new Map(countryRows.map((c) => [c.country_code, c]));
+
+    const mapped = ((productsRes.data ?? []) as ProductRow[]).map((p) => {
+      const countryInfo = p.country_code
+        ? countryByCode.get(p.country_code)
+        : undefined;
+
+      const deliveryItems = Array.isArray(p.delivery_items)
+        ? (p.delivery_items as unknown[]).filter(
+            (x): x is string => typeof x === "string"
+          )
+        : [];
+
+      return {
+        id: p.id,
+        title: p.title,
+        image: p.image_url ?? "",
+        category: p.marketplace_categories?.name ?? "Uncategorized",
+        country: countryInfo?.country_name ?? p.country_code ?? "Unknown",
+        countryFlag: countryInfo?.country_flag ?? "🌍",
+        stock: p.stock ?? 0,
+        price: Number(p.price_usd),
+        description: p.description,
+        deliveryItems,
+      };
+    });
+
+    setProducts(mapped);
+    setCategories((categoriesRes.data ?? []) as MarketplaceCategory[]);
+    setCountries(countryRows);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       setLoading(true);
-
-      const [productsRes, categoriesRes, countriesRes] = await Promise.all([
-        supabase
-          .from("marketplace_products")
-          .select(
-            "id, title, image_url, price_usd, stock, country_code, description, delivery_items, marketplace_categories ( name )"
-          )
-          .order("created_at", { ascending: false }),
-        supabase.from("marketplace_categories").select("id, name").order("name"),
-        supabase
-          .from("marketplace_country")
-          .select("country_code, country_name, country_flag")
-          .eq("is_active", true)
-          .order("sort_order"),
-      ]);
-
-      if (cancelled) return;
-
-      if (productsRes.error || categoriesRes.error || countriesRes.error) {
-        toast({
-          title: "Failed to load marketplace",
-          description:
-            productsRes.error?.message ??
-            categoriesRes.error?.message ??
-            countriesRes.error?.message,
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
+      try {
+        await loadProducts();
+      } catch (err) {
+        if (!cancelled) {
+          toast({
+            title: "Failed to load marketplace",
+            description:
+              err instanceof Error ? err.message : "Please try again.",
+            variant: "destructive",
+          });
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-
-      const countryRows = (countriesRes.data ?? []) as MarketplaceCountry[];
-      const countryByCode = new Map(
-        countryRows.map((c) => [c.country_code, c])
-      );
-
-      const mapped = ((productsRes.data ?? []) as ProductRow[]).map((p) => {
-        const countryInfo = p.country_code
-          ? countryByCode.get(p.country_code)
-          : undefined;
-
-        const deliveryItems = Array.isArray(p.delivery_items)
-          ? (p.delivery_items as unknown[]).filter(
-              (x): x is string => typeof x === "string"
-            )
-          : [];
-
-        return {
-          id: p.id,
-          title: p.title,
-          image: p.image_url ?? "",
-          category: p.marketplace_categories?.name ?? "Uncategorized",
-          country: countryInfo?.country_name ?? p.country_code ?? "Unknown",
-          countryFlag: countryInfo?.country_flag ?? "🌍",
-          stock: p.stock ?? 0,
-          price: Number(p.price_usd),
-          description: p.description,
-          deliveryItems,
-        };
-      });
-
-      setProducts(mapped);
-      setCategories((categoriesRes.data ?? []) as MarketplaceCategory[]);
-      setCountries(countryRows);
-      setLoading(false);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [toast]);
+  }, [loadProducts, toast]);
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
@@ -148,23 +158,29 @@ const MarketplacePage = () => {
     });
   }, [products, query, category, country]);
 
-  const handleBuy = (p: Product) => {
-    setSelected(null);
+  const handleBuy = async (p: Product) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to purchase products.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // Mock delivery data — real fulfillment will be wired in later.
-    const mockItems = [
-      { label: "Email", value: "netflix123@gmail.com" },
-      { label: "Password", value: "Pass123456" },
-      { label: "Profile", value: "Profile 2", copyable: false },
-    ];
-
-    const orderId = `VX-${Math.floor(10000 + Math.random() * 90000)}`;
-
-    setPurchase({
+    const outcome = await submitPurchase({
+      productId: p.id,
       productTitle: p.title,
-      orderId,
-      items: mockItems,
     });
+
+    if (outcome.ok === false) {
+      if (outcome.insufficientBalance) setTopUpOpen(true);
+      return;
+    }
+
+    setSelected(null);
+    setPurchaseResult(outcome.result);
+    await loadProducts().catch(() => undefined);
   };
 
   const content = (
@@ -284,13 +300,13 @@ const MarketplacePage = () => {
                     variant="accent"
                     size="sm"
                     className="w-full mt-1"
-                    disabled={!inStock}
+                    disabled={!inStock || purchasing}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleBuy(p);
+                      void handleBuy(p);
                     }}
                   >
-                    Buy Now
+                    {purchasing ? "Processing…" : "Buy Now"}
                   </Button>
                 </div>
               </button>
@@ -304,12 +320,13 @@ const MarketplacePage = () => {
         open={!!selected}
         onOpenChange={(o) => !o && setSelected(null)}
         onBuy={handleBuy}
+        buying={purchasing}
       />
 
       <PurchaseSuccessModal
-        result={purchase}
-        open={!!purchase}
-        onOpenChange={(o) => !o && setPurchase(null)}
+        result={purchaseResult}
+        open={!!purchaseResult}
+        onOpenChange={(o) => !o && setPurchaseResult(null)}
       />
     </div>
   );
@@ -360,6 +377,7 @@ const MarketplacePage = () => {
         </div>
         {content}
       </main>
+      <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
     </div>
   );
 };

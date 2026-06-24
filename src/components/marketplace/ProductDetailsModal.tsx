@@ -27,10 +27,21 @@ interface Props {
   product: ProductDetails | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onBuy: (product: ProductDetails) => void;
+  onBuy: (product: ProductDetails) => void | Promise<void>;
+  buying?: boolean;
 }
 
-const Body = ({ product, onBuy, isMobile }: { product: ProductDetails; onBuy: (p: ProductDetails) => void; isMobile: boolean }) => {
+const Body = ({
+  product,
+  onBuy,
+  isMobile,
+  buying = false,
+}: {
+  product: ProductDetails;
+  onBuy: (p: ProductDetails) => void | Promise<void>;
+  isMobile: boolean;
+  buying?: boolean;
+}) => {
   const inStock = product.stock > 0;
   return (
     <div className={cn("flex flex-col", isMobile ? "h-full" : "")}>
@@ -125,17 +136,17 @@ const Body = ({ product, onBuy, isMobile }: { product: ProductDetails; onBuy: (p
           variant="accent"
           size="lg"
           className="w-full"
-          disabled={!inStock}
-          onClick={() => onBuy(product)}
+          disabled={!inStock || buying}
+          onClick={() => void onBuy(product)}
         >
-          Buy Now
+          {buying ? "Processing…" : "Buy Now"}
         </Button>
       </div>
     </div>
   );
 };
 
-const ProductDetailsModal = ({ product, open, onOpenChange, onBuy }: Props) => {
+const ProductDetailsModal = ({ product, open, onOpenChange, onBuy, buying = false }: Props) => {
   const isMobile = useIsMobile();
 
   if (!product) return null;
@@ -151,7 +162,7 @@ const ProductDetailsModal = ({ product, open, onOpenChange, onBuy }: Props) => {
           <SheetDescription className="sr-only">
             {product.category} from {product.country}
           </SheetDescription>
-          <Body product={product} onBuy={onBuy} isMobile />
+          <Body product={product} onBuy={onBuy} isMobile buying={buying} />
         </SheetContent>
       </Sheet>
     );
@@ -164,7 +175,7 @@ const ProductDetailsModal = ({ product, open, onOpenChange, onBuy }: Props) => {
         <DialogDescription className="sr-only">
           {product.category} from {product.country}
         </DialogDescription>
-        <Body product={product} onBuy={onBuy} isMobile={false} />
+        <Body product={product} onBuy={onBuy} isMobile={false} buying={buying} />
       </DialogContent>
     </Dialog>
   );
