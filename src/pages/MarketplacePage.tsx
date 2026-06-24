@@ -269,12 +269,15 @@ const MarketplacePage = () => {
                     size="sm"
                     className="w-full mt-1"
                     disabled={!inStock}
-                    onClick={() => handleBuy(p)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleBuy(p);
+                    }}
                   >
                     Buy Now
                   </Button>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
