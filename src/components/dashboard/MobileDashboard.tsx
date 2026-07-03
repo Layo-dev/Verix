@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, Wallet, Settings, Star, Search, ArrowUpDown, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -37,8 +37,12 @@ const MobileDashboard = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [countrySheetOpen, setCountrySheetOpen] = useState(false);
   const [serviceSheetOpen, setServiceSheetOpen] = useState(false);
+  const [countrySearchOpen, setCountrySearchOpen] = useState(false);
+  const [serviceSearchOpen, setServiceSearchOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
+  const serviceSearchInputRef = useRef<HTMLInputElement>(null);
+  const countrySearchInputRef = useRef<HTMLInputElement>(null);
   const { buyNumber, loading: buyLoading } = useBuyNumber();
   const { data: balance = 0 } = useProfileBalance();
   const [topUpOpen, setTopUpOpen] = useState(false);
@@ -57,6 +61,18 @@ const MobileDashboard = ({
   const filteredServices = services.filter((service) =>
     service.name.toLowerCase().includes(serviceSearch.toLowerCase())
   );
+
+  useEffect(() => {
+    if (serviceSearchOpen) {
+      serviceSearchInputRef.current?.focus();
+    }
+  }, [serviceSearchOpen]);
+
+  useEffect(() => {
+    if (countrySearchOpen) {
+      countrySearchInputRef.current?.focus();
+    }
+  }, [countrySearchOpen]);
 
   const orders: Array<{
     id: string;
@@ -134,7 +150,16 @@ const MobileDashboard = ({
               )}
               <span>{selectedServiceData?.name || "Select service"}</span>
             </button>
-            <Sheet open={serviceSheetOpen} onOpenChange={setServiceSheetOpen}>
+            <Sheet
+              open={serviceSheetOpen}
+              onOpenChange={(open) => {
+                setServiceSheetOpen(open);
+                if (!open) {
+                  setServiceSearchOpen(false);
+                  setServiceSearch("");
+                }
+              }}
+            >
               <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
                 <SheetHeader className="p-4 border-b border-border">
                   <div className="flex items-center justify-between">
@@ -142,16 +167,28 @@ const MobileDashboard = ({
                   </div>
                 </SheetHeader>
                 <div className="p-4 border-b border-border">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Find a site or service"
-                      value={serviceSearch}
-                      onChange={(e) => setServiceSearch(e.target.value)}
-                      className="w-full h-10 pl-10 pr-4 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
+                  {serviceSearchOpen ? (
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <input
+                        ref={serviceSearchInputRef}
+                        type="text"
+                        placeholder="Find a site or service"
+                        value={serviceSearch}
+                        onChange={(e) => setServiceSearch(e.target.value)}
+                        className="w-full h-10 pl-10 pr-4 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setServiceSearchOpen(true)}
+                      className="flex h-10 w-full items-center justify-start gap-2 rounded-lg border border-input bg-background px-3 text-sm text-muted-foreground"
+                    >
+                      <Search className="w-4 h-4" />
+                      <span>Search services</span>
+                    </button>
+                  )}
                 </div>
                 <ScrollArea className="h-[calc(85vh-140px)]">
                   <div className="p-2">
@@ -212,7 +249,16 @@ const MobileDashboard = ({
               </span>
               <Settings className="w-5 h-5 text-muted-foreground" />
             </button>
-            <Sheet open={countrySheetOpen} onOpenChange={setCountrySheetOpen}>
+            <Sheet
+              open={countrySheetOpen}
+              onOpenChange={(open) => {
+                setCountrySheetOpen(open);
+                if (!open) {
+                  setCountrySearchOpen(false);
+                  setCountrySearch("");
+                }
+              }}
+            >
               <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
                 <SheetHeader className="p-4 border-b border-border">
                   <div className="flex items-center justify-between">
@@ -220,16 +266,28 @@ const MobileDashboard = ({
                   </div>
                 </SheetHeader>
                 <div className="p-4 border-b border-border flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Find a country"
-                      value={countrySearch}
-                      onChange={(e) => setCountrySearch(e.target.value)}
-                      className="w-full h-10 pl-10 pr-4 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
+                  {countrySearchOpen ? (
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <input
+                        ref={countrySearchInputRef}
+                        type="text"
+                        placeholder="Find a country"
+                        value={countrySearch}
+                        onChange={(e) => setCountrySearch(e.target.value)}
+                        className="w-full h-10 pl-10 pr-4 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setCountrySearchOpen(true)}
+                      className="flex h-10 flex-1 items-center justify-start gap-2 rounded-lg border border-input bg-background px-3 text-sm text-muted-foreground"
+                    >
+                      <Search className="w-4 h-4" />
+                      <span>Search countries</span>
+                    </button>
+                  )}
                   <button className="h-10 w-10 flex items-center justify-center rounded-lg border border-input bg-background">
                     <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
                   </button>

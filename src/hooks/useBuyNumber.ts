@@ -75,7 +75,7 @@ function mapBuyNumberError(status?: number, message?: string): FriendlyBuyError 
   ) {
     return {
       title: "Provider failed",
-      description: "Service temporarily unavailable. Try again.",
+      description: "Service temporarily unavailable. Try again later.",
       variant: "destructive",
     };
   }
