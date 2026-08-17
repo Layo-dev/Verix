@@ -157,8 +157,9 @@
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight tracking-tight;
+    @apply text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground leading-tight tracking-tight;
   }
+
 
   .section-description {
     @apply text-base md:text-lg text-muted-foreground leading-relaxed;
