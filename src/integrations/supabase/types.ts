@@ -20,6 +20,7 @@ export type Database = {
           country_flag: string | null
           country_name: string | null
           created_at: string | null
+          grizzly_country_id: number | null
           hero_id: number | null
           id: string
           price_usd: number | null
@@ -29,6 +30,7 @@ export type Database = {
           country_flag?: string | null
           country_name?: string | null
           created_at?: string | null
+          grizzly_country_id?: number | null
           hero_id?: number | null
           id?: string
           price_usd?: number | null
@@ -38,6 +40,7 @@ export type Database = {
           country_flag?: string | null
           country_name?: string | null
           created_at?: string | null
+          grizzly_country_id?: number | null
           hero_id?: number | null
           id?: string
           price_usd?: number | null
@@ -517,6 +520,7 @@ export type Database = {
       service_pricing: {
         Row: {
           created_at: string | null
+          grizzly_code: string | null
           hero_code: string | null
           id: string
           price_usd: number | null
@@ -525,6 +529,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          grizzly_code?: string | null
           hero_code?: string | null
           id?: string
           price_usd?: number | null
@@ -533,6 +538,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          grizzly_code?: string | null
           hero_code?: string | null
           id?: string
           price_usd?: number | null
