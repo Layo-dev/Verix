@@ -71,7 +71,7 @@ const PhoneMockup = () => {
 
             {/* User Row */}
             <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/30 to-peach flex items-center justify-center text-sm font-semibold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/30 to-orange/30 flex items-center justify-center text-sm font-semibold">
                 SK
               </div>
               <div className="flex-1">

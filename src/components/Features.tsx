@@ -27,7 +27,7 @@ const Features = () => {
           {services.map((service) => (
             <div key={service.name} className="card-feature group">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/20 to-peach/50 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/20 to-orange/20 flex items-center justify-center">
                   <service.icon size={20} className={service.color} />
                 </div>
                 <div>

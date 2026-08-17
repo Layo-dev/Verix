@@ -68,7 +68,7 @@ const DeliveryItem = ({ item }: { item: PurchaseDelivery }) => {
           <button
             type="button"
             onClick={handleCopy}
-            className="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-violet-dark transition-colors px-2 py-1 rounded-md hover:bg-accent/10"
+            className="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-orange-dark transition-colors px-2 py-1 rounded-md hover:bg-accent/10"
             aria-label={`Copy ${item.label}`}
           >
             {copied ? (

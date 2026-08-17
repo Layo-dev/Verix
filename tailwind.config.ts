@@ -57,24 +57,22 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        violet: {
-          DEFAULT: "hsl(var(--violet))",
-          light: "hsl(var(--violet-light))",
-          dark: "hsl(var(--violet-dark))",
+        orange: {
+          DEFAULT: "hsl(var(--orange))",
+          light: "hsl(var(--orange-light))",
+          dark: "hsl(var(--orange-dark))",
         },
-        peach: {
-          DEFAULT: "hsl(var(--peach))",
-          dark: "hsl(var(--peach-dark))",
-        },
-        lavender: "hsl(var(--lavender))",
+        "off-white": "hsl(var(--off-white))",
+        "dark-gray": "hsl(var(--dark-gray))",
         success: {
           DEFAULT: "hsl(var(--success))",
           light: "hsl(var(--success-light))",
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', 'sans-serif'],
       },
+
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
