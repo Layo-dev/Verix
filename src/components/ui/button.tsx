@@ -16,10 +16,11 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent/10 hover:text-accent",
         link: "text-primary underline-offset-4 hover:underline",
         hero: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl hover:-translate-y-0.5",
-        heroOutline: "border-2 border-border bg-background hover:bg-muted text-foreground",
+        heroOutline: "border-2 border-border bg-background text-foreground hover:border-accent hover:text-accent",
         accent: "bg-accent text-accent-foreground hover:bg-orange-dark shadow-md hover:shadow-lg",
-        nav: "bg-muted text-foreground hover:bg-muted/80 font-medium",
-        navActive: "bg-primary text-primary-foreground font-medium",
+        nav: "bg-muted text-foreground hover:bg-muted/80 font-semibold",
+        navActive: "bg-primary text-primary-foreground font-semibold",
+
       },
       size: {
         default: "h-10 px-5 py-2",
