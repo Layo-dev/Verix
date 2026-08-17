@@ -59,7 +59,7 @@ const Testimonials = () => {
 
               <div className="flex items-center justify-between pt-4 border-t border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/30 to-peach flex items-center justify-center text-sm font-semibold">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/30 to-orange/30 flex items-center justify-center text-sm font-semibold">
                     {testimonial.avatar}
                   </div>
                   <div>
