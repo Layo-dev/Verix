@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import VerixLogo from "@/assets/verixsms-logo.svg";
-import SupportButton from "@/components/auth/SupportButton";
+
 
 const Wordmark = ({ className = "" }: { className?: string }) => (
   <div className={`flex items-center ${className}`}>
@@ -58,7 +58,6 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         </div>
       </main>
 
-      <SupportButton />
     </div>
   );
 };
