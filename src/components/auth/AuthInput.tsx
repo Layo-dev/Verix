@@ -9,22 +9,30 @@ interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
-  ({ className, type, label, helperText, error, ...props }, ref) => {
+  ({ className, type, label, helperText, error, id, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const isPassword = type === "password";
+    const generatedId = React.useId();
+    const inputId = id ?? generatedId;
 
     return (
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {label && (
-          <label className="text-sm font-medium text-foreground">{label}</label>
+          <label
+            htmlFor={inputId}
+            className="block text-sm font-semibold text-foreground"
+          >
+            {label}
+          </label>
         )}
         <div className="relative">
           <input
+            id={inputId}
             type={isPassword && showPassword ? "text" : type}
             className={cn(
-              "flex h-12 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+              "flex h-12 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm font-normal text-foreground ring-offset-background transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50",
               isPassword && "pr-12",
-              error && "border-destructive focus-visible:ring-destructive",
+              error && "border-destructive focus-visible:ring-destructive/40",
               className
             )}
             ref={ref}
@@ -33,6 +41,7 @@ const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
           {isPassword && (
             <button
               type="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
