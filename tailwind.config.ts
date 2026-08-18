@@ -62,6 +62,10 @@ export default {
           light: "hsl(var(--orange-light))",
           dark: "hsl(var(--orange-dark))",
         },
+        surface: {
+          DEFAULT: "hsl(var(--surface))",
+          strong: "hsl(var(--surface-strong))",
+        },
         "off-white": "hsl(var(--off-white))",
         "dark-gray": "hsl(var(--dark-gray))",
         success: {

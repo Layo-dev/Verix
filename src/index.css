@@ -13,6 +13,8 @@
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 9%;
+    --surface: 0 0% 98%;
+    --surface-strong: 0 0% 100%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
@@ -89,8 +91,10 @@
   .dark {
     --background: 0 0% 9%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 15%;
+    --card: 0 0% 13%;
     --card-foreground: 0 0% 98%;
+    --surface: 0 0% 16%;
+    --surface-strong: 0 0% 14%;
     --popover: 0 0% 15%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
@@ -193,5 +197,22 @@
 
   .gradient-accent {
     background: var(--gradient-accent);
+  }
+}
+
+@layer components {
+  /* Decorative treatment for the auth brand panel */
+  .auth-brand-panel {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(120% 90% at 12% 8%, hsl(var(--accent) / 0.22) 0%, transparent 55%),
+      radial-gradient(80% 60% at 90% 100%, hsl(var(--accent) / 0.12) 0%, transparent 60%),
+      repeating-linear-gradient(
+        135deg,
+        hsl(0 0% 100% / 0.03) 0px,
+        hsl(0 0% 100% / 0.03) 1px,
+        transparent 1px,
+        transparent 14px
+      );
   }
 }

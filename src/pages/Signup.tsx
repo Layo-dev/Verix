@@ -6,11 +6,10 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 import AuthInput from "@/components/auth/AuthInput";
-import SupportButton from "@/components/auth/SupportButton";
+import AuthLayout from "@/components/auth/AuthLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import VerixLogo from "@/assets/verixsms-logo.svg";
 
 function maskEmail(email: string) {
   const [local, domain] = email.split("@");
@@ -148,154 +147,178 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2">
-          <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
-          <span className="text-2xl font-bold text-foreground leading-none -ml-8 -mb-3">erix.</span>
-        </div>
+    <AuthLayout>
+      {step === 1 ? (
+        <div className="space-y-7">
+          <header className="space-y-2">
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+              Create your Verix account
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Start receiving SMS verification numbers in minutes.
+            </p>
+          </header>
 
-        {step === 1 ? (
-          <>
-            {/* Heading */}
-            <h1 className="text-3xl font-bold text-foreground text-center">Sign Up</h1>
+          <SocialLoginButtons />
 
-            {/* Social Login */}
-            <SocialLoginButtons />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase tracking-wider">
+              <span className="bg-card px-3 text-muted-foreground lg:bg-background">
+                Or
+              </span>
+            </div>
+          </div>
 
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or</span>
-              </div>
+          <form onSubmit={handleStep1Submit} className="space-y-5">
+            <AuthInput
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              helperText="We'll send a verification code"
+              autoComplete="email"
+              required
+            />
+            <AuthInput
+              label="Password"
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+            <AuthInput
+              label="Confirm password"
+              type="password"
+              placeholder="Repeat your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              error={errors.confirmPassword}
+              autoComplete="new-password"
+              required
+            />
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="terms"
+                checked={agreedToTerms}
+                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                className="mt-0.5"
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm text-muted-foreground leading-snug"
+              >
+                I agree to the{" "}
+                <Link to="/terms" className="text-accent hover:underline">
+                  Terms
+                </Link>{" "}
+                &amp;{" "}
+                <Link to="/privacy" className="text-accent hover:underline">
+                  Privacy Policy
+                </Link>
+              </label>
             </div>
 
-            {/* Signup Form */}
-            <form onSubmit={handleStep1Submit} className="space-y-4">
-              <AuthInput
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                helperText="We'll send a verification code"
-                required
-              />
-              <AuthInput
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <AuthInput
-                type="password"
-                placeholder="Repeat password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                error={errors.confirmPassword}
-                required
-              />
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-bold"
+              variant="accent"
+              disabled={!agreedToTerms || isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Create account"
+              )}
+            </Button>
+          </form>
 
-              {/* Terms Checkbox */}
-              <div className="flex items-start gap-3">
-                <Checkbox
-                  id="terms"
-                  checked={agreedToTerms}
-                  onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                  className="mt-0.5"
-                />
-                <label htmlFor="terms" className="text-sm text-muted-foreground leading-snug">
-                  By continuing, you agree to our{" "}
-                  <Link to="/terms" className="text-accent hover:underline">Terms of Service</Link>,{" "}
-                  <Link to="/privacy" className="text-accent hover:underline">Privacy Policy</Link>, and{" "}
-                  <Link to="/refund" className="text-accent hover:underline">Refund Policy</Link>
-                </label>
-              </div>
+          <p className="text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link to="/login" className="text-accent font-semibold hover:underline">
+              Login
+            </Link>
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-7">
+          <button
+            type="button"
+            onClick={() => {
+              setStep(1);
+              setOtpValue("");
+              setOtpError("");
+            }}
+            className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
 
-              <Button
-                type="submit"
-                className="w-full h-12"
-                variant="accent"
-                disabled={!agreedToTerms || isLoading}
-              >
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Continue"}
-              </Button>
-            </form>
-
-            <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link to="/login" className="text-accent font-medium hover:underline">Login</Link>
+          <header className="space-y-2">
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
+              Verify your email
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Code sent to{" "}
+              <span className="font-semibold text-foreground">
+                {maskEmail(email)}
+              </span>
             </p>
-          </>
-        ) : (
-          <>
-            {/* Step 2: OTP Verification */}
-            <div className="space-y-6">
+          </header>
+
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={6}
+              value={otpValue}
+              onChange={handleOtpChange}
+              disabled={isLoading}
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+
+          {otpError && (
+            <p className="text-center text-sm text-destructive">{otpError}</p>
+          )}
+
+          {isLoading && (
+            <div className="flex justify-center">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          )}
+
+          <div className="text-center">
+            {countdown > 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Resend in {formatCountdown(countdown)}
+              </p>
+            ) : (
               <button
                 type="button"
-                onClick={() => { setStep(1); setOtpValue(""); setOtpError(""); }}
-                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={handleResend}
+                disabled={isLoading}
+                className="text-sm text-accent font-semibold hover:underline disabled:opacity-50"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                Resend Code
               </button>
-
-              <div className="text-center space-y-2">
-                <h1 className="text-2xl font-bold text-foreground">Verify your email</h1>
-                <p className="text-sm text-muted-foreground">
-                  Code sent to <span className="font-medium text-foreground">{maskEmail(email)}</span>
-                </p>
-              </div>
-
-              <div className="flex justify-center">
-                <InputOTP maxLength={6} value={otpValue} onChange={handleOtpChange} disabled={isLoading}>
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-
-              {otpError && (
-                <p className="text-center text-sm text-destructive">{otpError}</p>
-              )}
-
-              {isLoading && (
-                <div className="flex justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-                </div>
-              )}
-
-              <div className="text-center">
-                {countdown > 0 ? (
-                  <p className="text-sm text-muted-foreground">
-                    Resend in {formatCountdown(countdown)}
-                  </p>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    disabled={isLoading}
-                    className="text-sm text-accent font-medium hover:underline disabled:opacity-50"
-                  >
-                    Resend Code
-                  </button>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      <SupportButton />
-    </div>
+            )}
+          </div>
+        </div>
+      )}
+    </AuthLayout>
   );
 };
 
