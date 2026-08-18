@@ -199,3 +199,20 @@
     background: var(--gradient-accent);
   }
 }
+
+@layer components {
+  /* Decorative treatment for the auth brand panel */
+  .auth-brand-panel {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(120% 90% at 12% 8%, hsl(var(--accent) / 0.22) 0%, transparent 55%),
+      radial-gradient(80% 60% at 90% 100%, hsl(var(--accent) / 0.12) 0%, transparent 60%),
+      repeating-linear-gradient(
+        135deg,
+        hsl(0 0% 100% / 0.03) 0px,
+        hsl(0 0% 100% / 0.03) 1px,
+        transparent 1px,
+        transparent 14px
+      );
+  }
+}
