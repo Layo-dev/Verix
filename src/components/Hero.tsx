@@ -45,7 +45,7 @@ const Hero = () => {
         <div className="relative mx-auto mt-14 max-w-5xl md:mt-20">
           <div className="relative overflow-hidden rounded-3xl border border-border">
             <img
-              src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1600&q=80"
+              src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1600&q=80"
               alt="Person checking SMS verification codes on a smartphone"
               loading="lazy"
               className="aspect-[16/9] w-full object-cover"
