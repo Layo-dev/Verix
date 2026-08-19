@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, Lock, Play } from "lucide-react";
-// import PhoneMockup from "./PhoneMockup";
-import HeroImage from "@/assets/Hero-image.jpeg";
 import { Link } from "react-router-dom";
+
 
 const Hero = () => {
   return (
@@ -54,11 +53,6 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Right Content - Phone Mockup */}
-          <div className="relative flex justify-center lg:justify-end pb-16 sm:pb-16">
-            {/* <PhoneMockup /> */}
-            <img src={HeroImage} alt="Verix virtual number app" className="w-96 md:w-96 object-contain animate-float" />
-          </div>
         </div>
       </div>
     </section>
