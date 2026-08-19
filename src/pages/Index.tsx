@@ -1,8 +1,9 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
-import Features from "@/components/Features";
+import VirtualNumbers from "@/components/VirtualNumbers";
 import Partners from "@/components/Partners";
+import Marketplace from "@/components/Marketplace";
 import Dashboard from "@/components/Dashboard";
 import WhyChoose from "@/components/WhyChoose";
 import Pricing from "@/components/Pricing";
@@ -16,8 +17,9 @@ const Index = () => {
       <main>
         <Hero />
         <Stats />
-        <Features />
+        <VirtualNumbers />
         <Partners />
+        <Marketplace />
         <Dashboard />
         <WhyChoose />
         <Pricing />
