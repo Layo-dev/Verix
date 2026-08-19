@@ -27,13 +27,13 @@ const Hero = () => {
 
           <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
             <Link to="/signup">
-              <Button variant="hero" size="lg" className="gap-2">
+              <Button variant="accent" size="lg" className="gap-2 rounded-full">
                 <Lock size={18} />
                 Open An Account
               </Button>
             </Link>
             <Link to="/dashboard">
-              <Button variant="heroOutline" size="lg" className="gap-2">
+              <Button variant="heroOutline" size="lg" className="gap-2 rounded-full">
                 <Play size={18} />
                 Buy a Number
               </Button>

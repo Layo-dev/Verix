@@ -39,15 +39,15 @@ const Navbar = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-2">
             {!loading && user ? (
-              <Button variant="navActive" size="sm" asChild>
+              <Button variant="accent" size="sm"  asChild>
                 <Link to="/dashboard">Dashboard</Link>
               </Button>
             ) : (
               <>
-                <Button variant="nav" size="sm" asChild>
+                <Button variant="ghost" size="sm" asChild>
                   <Link to="/login">Login</Link>
                 </Button>
-                <Button variant="navActive" size="sm" asChild>
+                <Button variant="accent" size="sm"  asChild>
                   <Link to="/signup">Sign Up</Link>
                 </Button>
               </>
@@ -79,15 +79,15 @@ const Navbar = () => {
               </a>
               <div className="flex gap-2 pt-4">
                 {!loading && user ? (
-                  <Button variant="navActive" size="sm" className="flex-1" asChild>
+                  <Button variant="accent" size="sm"  className="flex-1" asChild>
                     <Link to="/dashboard">Dashboard</Link>
                   </Button>
                 ) : (
                   <>
-                    <Button variant="nav" size="sm" className="flex-1" asChild>
+                    <Button variant="ghost" size="sm" className="flex-1" asChild>
                       <Link to="/login">Login</Link>
                     </Button>
-                    <Button variant="navActive" size="sm" className="flex-1" asChild>
+                    <Button variant="accent" size="sm"  className="flex-1" asChild>
                       <Link to="/signup">Sign Up</Link>
                     </Button>
                   </>
