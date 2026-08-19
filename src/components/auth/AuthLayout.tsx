@@ -4,7 +4,7 @@ import VerixLogo from "@/assets/verixsms-logo.svg";
 
 const Wordmark = ({ className = "" }: { className?: string }) => (
   <div className={`flex items-center ${className}`}>
-    <img src={VerixLogo} alt="Verix logo" className="h-12 w-auto block" />
+    <img src={VerixLogo} alt="Verix logo" className="h-12 w-auto block invert" />
     <span className="text-xl font-extrabold text-foreground leading-none -ml-6 -mb-2">
       erix.
     </span>
