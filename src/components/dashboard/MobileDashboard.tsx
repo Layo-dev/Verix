@@ -14,7 +14,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import MobileHeader from "./mobile/MobileHeader";
 import BottomNav from "./mobile/BottomNav";
-import SupportButton from "@/components/auth/SupportButton";
 import { useBuyNumber } from "@/hooks/useBuyNumber";
 import type { CountryItem, ServiceItem } from "@/hooks/usePricing";
 
@@ -322,7 +321,6 @@ const MobileDashboard = ({
         </SheetContent>
       </Sheet>
 
-      <SupportButton />
       <BottomNav />
     </div>
   );
