@@ -1,27 +1,50 @@
 import { useEffect, useRef, useState } from "react";
-import { Menu, Wallet, Settings, Star, Search, ArrowUpDown, Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Search01Icon,
+  Cancel01Icon,
+  ArrowRight01Icon,
+  Loading03Icon,
+  Globe02Icon,
+  SmartPhone01Icon,
+} from "@hugeicons/core-free-icons";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import DashboardSidebar from "./DashboardSidebar";
-import MyNumbers from "./MyNumbers";
+import MobileHeader from "./mobile/MobileHeader";
+import BottomNav from "./mobile/BottomNav";
 import SupportButton from "@/components/auth/SupportButton";
-import TopUpModal from "./TopUpModal";
 import { useBuyNumber } from "@/hooks/useBuyNumber";
-import { useProfileBalance } from "@/hooks/useProfileBalance";
 import type { CountryItem, ServiceItem } from "@/hooks/usePricing";
 
 interface MobileDashboardProps {
   selectedCountry: string | null;
   selectedService: string | null;
-  onSelectCountry: (code: string) => void;
-  onSelectService: (id: string) => void;
+  onSelectCountry: (code: string | null) => void;
+  onSelectService: (id: string | null) => void;
   countries: CountryItem[];
   services: ServiceItem[];
   countriesLoading?: boolean;
   servicesLoading?: boolean;
 }
+
+const StepCard = ({
+  index,
+  title,
+  children,
+}: {
+  index: number;
+  title: string;
+  children: React.ReactNode;
+}) => (
+  <section className="rounded-2xl border border-border bg-card p-4">
+    <h2 className="text-base font-bold text-foreground mb-3">
+      {index}. {title}
+    </h2>
+    {children}
+  </section>
+);
 
 const MobileDashboard = ({
   selectedCountry,
@@ -33,19 +56,13 @@ const MobileDashboard = ({
   countriesLoading,
   servicesLoading,
 }: MobileDashboardProps) => {
-  const [activeTab, setActiveTab] = useState<"buy" | "numbers">("buy");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [countrySheetOpen, setCountrySheetOpen] = useState(false);
   const [serviceSheetOpen, setServiceSheetOpen] = useState(false);
-  const [countrySearchOpen, setCountrySearchOpen] = useState(false);
-  const [serviceSearchOpen, setServiceSearchOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
   const serviceSearchInputRef = useRef<HTMLInputElement>(null);
   const countrySearchInputRef = useRef<HTMLInputElement>(null);
   const { buyNumber, loading: buyLoading } = useBuyNumber();
-  const { data: balance = 0 } = useProfileBalance();
-  const [topUpOpen, setTopUpOpen] = useState(false);
 
   const selectedCountryData = countries.find((c) => c.code === selectedCountry);
   const selectedServiceData = services.find((s) => s.id === selectedService);
@@ -63,306 +80,250 @@ const MobileDashboard = ({
   );
 
   useEffect(() => {
-    if (serviceSearchOpen) {
-      serviceSearchInputRef.current?.focus();
-    }
-  }, [serviceSearchOpen]);
+    if (serviceSheetOpen) serviceSearchInputRef.current?.focus();
+  }, [serviceSheetOpen]);
 
   useEffect(() => {
-    if (countrySearchOpen) {
-      countrySearchInputRef.current?.focus();
-    }
-  }, [countrySearchOpen]);
-
-  const orders: Array<{
-    id: string;
-    number: string;
-    service: string;
-    expiresAt: Date;
-  }> = [];
+    if (countrySheetOpen) countrySearchInputRef.current?.focus();
+  }, [countrySheetOpen]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Mobile Header */}
-      <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
-        <button className="p-2 -ml-2 text-foreground" onClick={() => setSidebarOpen(true)}>
-          <Menu className="w-6 h-6" />
-        </button>
-        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetContent side="left" className="p-0 w-[280px]">
-            <DashboardSidebar contentOnly onNavigate={() => setSidebarOpen(false)} />
-          </SheetContent>
-        </Sheet>
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <MobileHeader title="Receive SMS" />
 
-        <h1 className="text-lg font-bold text-foreground">Receive SMS</h1>
-
-        <button onClick={() => setTopUpOpen(true)} className="flex items-center gap-1 text-foreground">
-          <Wallet className="w-5 h-5" />
-          <span className="font-semibold">${balance.toFixed(2)}</span>
-        </button>
-        <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
-      </header>
-
-      {/* Tab Bar */}
-      <div className="p-4 pb-0">
-        <div className="bg-muted rounded-full p-1 flex">
-          <button
-            onClick={() => setActiveTab("buy")}
-            className={cn(
-              "flex-1 py-2.5 text-sm font-medium rounded-full transition-colors",
-              activeTab === "buy"
-                ? "bg-card text-[hsl(200,100%,50%)] shadow-sm"
-                : "text-muted-foreground"
-            )}
-          >
-            Buy a number
-          </button>
-          <button
-            onClick={() => setActiveTab("numbers")}
-            className={cn(
-              "flex-1 py-2.5 text-sm font-medium rounded-full transition-colors",
-              activeTab === "numbers"
-                ? "bg-card text-[hsl(200,100%,50%)] shadow-sm"
-                : "text-muted-foreground"
-            )}
-          >
-            My numbers
-          </button>
-        </div>
-      </div>
-
-      {/* Content Area */}
-      <div className="flex-1 p-4">
-        {activeTab === "buy" ? (
-          <div className="space-y-4">
-            {/* Service Selection Chip */}
+      <main className="px-4 pt-4 pb-28 space-y-4">
+        {/* Step 1 — service */}
+        <StepCard index={1} title="Choose service">
+          {selectedServiceData ? (
+            <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3">
+              <selectedServiceData.icon className="h-5 w-5 shrink-0 text-foreground" />
+              <span className="flex-1 text-sm font-semibold text-foreground truncate">
+                {selectedServiceData.name}
+              </span>
+              <button
+                aria-label="Clear service"
+                onClick={() => onSelectService(null)}
+                className="text-muted-foreground"
+              >
+                <HugeiconsIcon icon={Cancel01Icon} size={18} />
+              </button>
+            </div>
+          ) : (
             <button
               onClick={() => setServiceSheetOpen(true)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-full bg-[hsl(200,100%,95%)] text-[hsl(200,100%,40%)] font-medium"
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-muted px-4 py-3 text-left"
             >
-              {selectedServiceData ? (
-                (() => {
-                  const Icon = selectedServiceData.icon;
-                  return <Icon className="h-6 w-6 shrink-0" />;
-                })()
-              ) : (
-                <span className="text-xl">📱</span>
-              )}
-              <span>{selectedServiceData?.name || "Select service"}</span>
+              <span className="flex w-8 h-8 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                <HugeiconsIcon icon={SmartPhone01Icon} size={18} />
+              </span>
+              <span className="flex-1 text-sm font-medium text-muted-foreground">
+                Search by service
+              </span>
+              <HugeiconsIcon icon={ArrowRight01Icon} size={18} className="text-muted-foreground" />
             </button>
-            <Sheet
-              open={serviceSheetOpen}
-              onOpenChange={(open) => {
-                setServiceSheetOpen(open);
-                if (!open) {
-                  setServiceSearchOpen(false);
-                  setServiceSearch("");
-                }
-              }}
-            >
-              <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
-                <SheetHeader className="p-4 border-b border-border">
-                  <div className="flex items-center justify-between">
-                    <SheetTitle className="text-lg font-bold">Website or service</SheetTitle>
-                  </div>
-                </SheetHeader>
-                <div className="p-4 border-b border-border">
-                  {serviceSearchOpen ? (
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <input
-                        ref={serviceSearchInputRef}
-                        type="text"
-                        placeholder="Find a site or service"
-                        value={serviceSearch}
-                        onChange={(e) => setServiceSearch(e.target.value)}
-                        className="w-full h-10 pl-10 pr-4 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setServiceSearchOpen(true)}
-                      className="flex h-10 w-full items-center justify-start gap-2 rounded-lg border border-input bg-background px-3 text-sm text-muted-foreground"
-                    >
-                      <Search className="w-4 h-4" />
-                      <span>Search services</span>
-                    </button>
-                  )}
-                </div>
-                <ScrollArea className="h-[calc(85vh-140px)]">
-                  <div className="p-2">
-                    {servicesLoading
-                      ? Array.from({ length: 5 }).map((_, i) => (
-                          <div key={i} className="flex items-center gap-3 px-3 py-3">
-                            <Skeleton className="w-5 h-5 rounded" />
-                            <Skeleton className="h-4 flex-1" />
-                            <Skeleton className="h-4 w-10" />
-                          </div>
-                        ))
-                      : filteredServices.map((service) => {
-                          const Icon = service.icon;
-                          return (
-                            <button
-                              key={service.id}
-                              onClick={() => {
-                                onSelectService(service.id);
-                                setServiceSheetOpen(false);
-                              }}
-                              className={cn(
-                                "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-colors",
-                                selectedService === service.id
-                                  ? "bg-[hsl(200,100%,95%)]"
-                                  : "hover:bg-muted"
-                              )}
-                            >
-                              <Icon className="h-5 w-5 shrink-0" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{service.name}</p>
-                              </div>
-                              <span
-                                className={cn(
-                                  "text-sm font-semibold",
-                                  selectedService === service.id
-                                    ? "text-white"
-                                    : "text-accent"
-                                )}
-                              >
-                                ${service.price.toFixed(2)}
-                              </span>
-                            </button>
-                          );
-                        })}
-                  </div>
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
+          )}
+        </StepCard>
 
-            {/* Country Selection Chip */}
+        {/* Step 2 — country */}
+        <StepCard index={2} title="Choose country">
+          {selectedCountryData ? (
+            <div className="flex items-center gap-3 rounded-xl bg-muted px-4 py-3">
+              <span className="text-xl">{selectedCountryData.flag}</span>
+              <span className="flex-1 text-sm font-semibold text-foreground truncate">
+                {selectedCountryData.name}
+                <span className="ml-1 text-xs font-medium text-muted-foreground">
+                  {selectedCountryData.phoneCode}
+                </span>
+              </span>
+              <button
+                aria-label="Clear country"
+                onClick={() => onSelectCountry(null)}
+                className="text-muted-foreground"
+              >
+                <HugeiconsIcon icon={Cancel01Icon} size={18} />
+              </button>
+            </div>
+          ) : (
             <button
               onClick={() => setCountrySheetOpen(true)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-muted text-foreground"
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-muted px-4 py-3 text-left"
             >
-              <span className="text-xl">{selectedCountryData?.flag || "🌍"}</span>
-              <span className="flex-1 text-left font-medium">
-                {selectedCountryData?.phoneCode || "Select country"}
+              <span className="flex w-8 h-8 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                <HugeiconsIcon icon={Globe02Icon} size={18} />
               </span>
-              <Settings className="w-5 h-5 text-muted-foreground" />
+              <span className="flex-1 text-sm font-medium text-muted-foreground">
+                Search by country
+              </span>
+              <HugeiconsIcon icon={ArrowRight01Icon} size={18} className="text-muted-foreground" />
             </button>
-            <Sheet
-              open={countrySheetOpen}
-              onOpenChange={(open) => {
-                setCountrySheetOpen(open);
-                if (!open) {
-                  setCountrySearchOpen(false);
-                  setCountrySearch("");
-                }
-              }}
-            >
-              <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
-                <SheetHeader className="p-4 border-b border-border">
-                  <div className="flex items-center justify-between">
-                    <SheetTitle className="text-lg font-bold">Country</SheetTitle>
-                  </div>
-                </SheetHeader>
-                <div className="p-4 border-b border-border flex gap-2">
-                  {countrySearchOpen ? (
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <input
-                        ref={countrySearchInputRef}
-                        type="text"
-                        placeholder="Find a country"
-                        value={countrySearch}
-                        onChange={(e) => setCountrySearch(e.target.value)}
-                        className="w-full h-10 pl-10 pr-4 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                      />
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setCountrySearchOpen(true)}
-                      className="flex h-10 flex-1 items-center justify-start gap-2 rounded-lg border border-input bg-background px-3 text-sm text-muted-foreground"
-                    >
-                      <Search className="w-4 h-4" />
-                      <span>Search countries</span>
-                    </button>
-                  )}
-                  <button className="h-10 w-10 flex items-center justify-center rounded-lg border border-input bg-background">
-                    <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <ScrollArea className="h-[calc(85vh-140px)]">
-                  <div className="p-2">
-                    {countriesLoading
-                      ? Array.from({ length: 5 }).map((_, i) => (
-                          <div key={i} className="flex items-center gap-3 px-3 py-3">
-                            <Skeleton className="w-6 h-6 rounded" />
-                            <Skeleton className="h-4 flex-1" />
-                            <Skeleton className="h-3 w-10" />
-                          </div>
-                        ))
-                      : filteredCountries.map((country) => (
-                          <button
-                            key={country.code}
-                            onClick={() => {
-                              onSelectCountry(country.code);
-                              setCountrySheetOpen(false);
-                            }}
-                            className={cn(
-                              "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-colors",
-                              selectedCountry === country.code
-                                ? "bg-[hsl(200,100%,95%)]"
-                                : "hover:bg-muted"
-                            )}
-                          >
-                            <Star className="w-5 h-5 text-muted-foreground" />
-                            <span className="text-xl">{country.flag}</span>
-                            <div className="flex-1 min-w-0">
-                              <span className="text-sm font-medium">{country.name}</span>
-                              <span className="text-xs text-muted-foreground ml-1">
-                                {country.phoneCode}
-                              </span>
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              ${country.price.toFixed(2)}
-                            </span>
-                          </button>
-                        ))}
-                  </div>
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
+          )}
+        </StepCard>
 
-            {/* Buy Button */}
+        {/* Step 3 — buy */}
+        {selectedCountry && selectedService && (
+          <StepCard index={3} title="Buy">
             <button
-              className="w-full py-4 rounded-full bg-[hsl(200,100%,50%)] text-white font-semibold text-base disabled:opacity-50"
-              disabled={!selectedCountry || !selectedService || buyLoading}
-              onClick={() => {
-                if (selectedCountry && selectedService) {
-                  buyNumber({ countryCode: selectedCountry, serviceId: selectedService });
-                }
-              }}
+              onClick={() =>
+                buyNumber({ countryCode: selectedCountry, serviceId: selectedService })
+              }
+              disabled={buyLoading}
+              className="w-full rounded-full bg-accent py-3.5 text-base font-semibold text-accent-foreground disabled:opacity-60"
             >
               {buyLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <HugeiconsIcon icon={Loading03Icon} size={18} className="animate-spin" />
                   Processing...
                 </span>
               ) : (
-                `Buy a number for $${totalPrice.toFixed(2)}`
+                `Buy for $${totalPrice.toFixed(2)}`
               )}
             </button>
-          </div>
-        ) : (
-          <div className="h-full">
-            <MyNumbers orders={orders} />
-          </div>
+            <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
+              If the code is not received, the funds are automatically refunded to your balance
+              after 20 minutes.
+            </p>
+          </StepCard>
         )}
-      </div>
+      </main>
 
-      {/* Support FAB */}
+      {/* Service sheet */}
+      <Sheet
+        open={serviceSheetOpen}
+        onOpenChange={(open) => {
+          setServiceSheetOpen(open);
+          if (!open) setServiceSearch("");
+        }}
+      >
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
+          <SheetHeader className="p-4 border-b border-border">
+            <SheetTitle className="text-lg font-bold text-left">Website or service</SheetTitle>
+          </SheetHeader>
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <HugeiconsIcon
+                icon={Search01Icon}
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                ref={serviceSearchInputRef}
+                type="text"
+                placeholder="Search by service"
+                value={serviceSearch}
+                onChange={(e) => setServiceSearch(e.target.value)}
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+          <ScrollArea className="h-[calc(85vh-150px)]">
+            <div className="p-2">
+              {servicesLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 px-3 py-3">
+                      <Skeleton className="w-6 h-6 rounded" />
+                      <Skeleton className="h-4 flex-1" />
+                      <Skeleton className="h-4 w-12" />
+                    </div>
+                  ))
+                : filteredServices.map((service) => {
+                    const Icon = service.icon;
+                    return (
+                      <button
+                        key={service.id}
+                        onClick={() => {
+                          onSelectService(service.id);
+                          setServiceSheetOpen(false);
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-colors",
+                          selectedService === service.id ? "bg-accent/10" : "hover:bg-muted"
+                        )}
+                      >
+                        <Icon className="h-5 w-5 shrink-0 text-foreground" />
+                        <p className="flex-1 min-w-0 text-sm font-medium text-foreground truncate">
+                          {service.name}
+                        </p>
+                        <span className="text-sm font-semibold text-accent">
+                          from ${service.price.toFixed(2)}
+                        </span>
+                      </button>
+                    );
+                  })}
+            </div>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+
+      {/* Country sheet */}
+      <Sheet
+        open={countrySheetOpen}
+        onOpenChange={(open) => {
+          setCountrySheetOpen(open);
+          if (!open) setCountrySearch("");
+        }}
+      >
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl p-0">
+          <SheetHeader className="p-4 border-b border-border">
+            <SheetTitle className="text-lg font-bold text-left">Country</SheetTitle>
+          </SheetHeader>
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <HugeiconsIcon
+                icon={Search01Icon}
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                ref={countrySearchInputRef}
+                type="text"
+                placeholder="Search by country"
+                value={countrySearch}
+                onChange={(e) => setCountrySearch(e.target.value)}
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+          <ScrollArea className="h-[calc(85vh-150px)]">
+            <div className="p-2">
+              {countriesLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 px-3 py-3">
+                      <Skeleton className="w-6 h-6 rounded" />
+                      <Skeleton className="h-4 flex-1" />
+                      <Skeleton className="h-4 w-12" />
+                    </div>
+                  ))
+                : filteredCountries.map((country) => (
+                    <button
+                      key={country.code}
+                      onClick={() => {
+                        onSelectCountry(country.code);
+                        setCountrySheetOpen(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-colors",
+                        selectedCountry === country.code ? "bg-accent/10" : "hover:bg-muted"
+                      )}
+                    >
+                      <span className="text-xl">{country.flag}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {country.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{country.phoneCode}</p>
+                      </div>
+                      <span className="text-sm font-semibold text-accent">
+                        from ${country.price.toFixed(2)}
+                      </span>
+                    </button>
+                  ))}
+            </div>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+
       <SupportButton />
+      <BottomNav />
     </div>
   );
 };
