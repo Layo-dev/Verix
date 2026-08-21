@@ -4,7 +4,6 @@ import BalanceCard from "./BalanceCard";
 import QuickActions from "./QuickActions";
 import RecentActivity from "./RecentActivity";
 import MarketplacePreview from "./MarketplacePreview";
-import SupportButton from "@/components/auth/SupportButton";
 
 const MobileHome = () => {
   return (
@@ -17,8 +16,7 @@ const MobileHome = () => {
         <RecentActivity />
         <MarketplacePreview />
       </main>
-
-      <SupportButton />
+      
       <BottomNav />
     </div>
   );
