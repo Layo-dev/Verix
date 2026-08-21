@@ -1,51 +1,38 @@
-import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  MessageSquare,
-  Smartphone,
-  Phone,
-  Inbox,
-  Wallet,
-  History,
-  Bell,
-  ChevronDown,
-  Globe,
-  LogOut,
-  MessageCircle,
-  Package,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+  UserIcon,
+  Notification03Icon,
+  Settings01Icon,
+  CustomerSupportIcon,
+  Logout02Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import VerixLogo from "@/assets/verixsms-logo.svg";
-import TopUpModal from "./TopUpModal";
-import { useProfileBalance } from "@/hooks/useProfileBalance";
-
-const menuItems = [
-  { icon: MessageSquare, label: "Receive SMS", href: "/dashboard" },
-  { icon: Inbox, label: "SMS Inbox", href: "/dashboard/referral" },
-  { icon: History, label: "History", href: "/dashboard/history" }
-];
-
-const secondaryItems = [
-  { icon: Smartphone, label: "Marketplace", href: "/dashboard/products" },
-  { icon: Package, label: "Orders", href: "/dashboard/orders" },
-  { icon: MessageCircle, label: "Chat with support", href: "/dashboard/support" },
-];
+import { useState } from "react";
 
 interface DashboardSidebarProps {
   contentOnly?: boolean;
   onNavigate?: () => void;
 }
 
+const accountItems = [
+  { icon: UserIcon, label: "Profile", href: "/dashboard/profile" },
+  { icon: Notification03Icon, label: "Notifications", href: "/dashboard/notifications", hasToggle: true },
+  { icon: Settings01Icon, label: "Settings", href: "/dashboard/settings" },
+];
+
+const supportItems = [
+  { icon: CustomerSupportIcon, label: "Help & Support", href: "/dashboard/support" },
+];
+
 const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { data: balance = 0 } = useProfileBalance();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [topUpOpen, setTopUpOpen] = useState(false);
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -61,115 +48,106 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
     onNavigate?.();
   };
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-[hsl(var(--card))] text-card-foreground">
-      {/* Logo */}
-      <div className="p-6 pb-4">
-        <Link to="/" className="inline-flex items-center" onClick={handleNavClick}>
-          <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
-          <span className="text-2xl font-bold text-foreground leading-none -ml-6 -mb-3">erix.</span>
+  const MenuItem = ({
+    item,
+  }: {
+    item: {
+      icon: typeof UserIcon;
+      label: string;
+      href: string;
+      hasToggle?: boolean;
+    };
+  }) => {
+    const active = isActive(item.href);
+
+    return (
+      <div
+        className={cn(
+          "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors",
+          active
+            ? "bg-accent text-white"
+            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-white"
+        )}
+      >
+        <HugeiconsIcon
+          icon={item.icon}
+          size={20}
+          className={cn("shrink-0", active ? "text-white" : "text-sidebar-foreground")}
+        />
+        <Link
+          to={item.href}
+          onClick={handleNavClick}
+          className="flex-1 text-sm font-semibold"
+        >
+          {item.label}
         </Link>
-      </div>
-
-      {/* Balance */}
-      <div className="px-6 pb-4">
-        <div className="space-y-1">
-          <p className="text-2xl font-bold text-foreground">${balance.toFixed(2)}</p>
-          <p className="text-xs text-muted-foreground">Frozen balance: $0.00</p>
-        </div>
-        <Button className="w-full mt-3" variant="accent" onClick={() => setTopUpOpen(true)}>
-          Top up
-        </Button>
-        <TopUpModal open={topUpOpen} onOpenChange={setTopUpOpen} />
-      </div>
-
-      {/* Main Menu */}
-      <nav className="px-3 py-2">
-        {menuItems.map((item) => (
-          <Link
-            key={item.label}
-            to={item.href}
-            onClick={handleNavClick}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-              isActive(item.href)
-                ? "bg-[hsl(200,100%,50%)] text-white"
-                : "text-foreground hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <item.icon className="w-5 h-5" />
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-
-      {/* Separator */}
-      <div className="mx-6 my-2 border-t border-border" />
-
-      {/* Secondary Menu */}
-      <nav className="px-3 py-2">
-        {secondaryItems.map((item) => (
-          <Link
-            key={item.label}
-            to={item.href}
-            onClick={handleNavClick}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-              isActive(item.href)
-                ? "bg-[hsl(200,100%,50%)] text-white"
-                : "text-foreground hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <item.icon className="w-5 h-5" />
-            {item.label}
-          </Link>
-        ))}
-
-        {/* Notifications Toggle */}
-        <div className="flex items-center justify-between px-3 py-2.5">
-          <div className="flex items-center gap-3 text-foreground">
-            <Bell className="w-5 h-5" />
-            <span className="text-sm font-medium">Notifications</span>
-          </div>
+        {item.hasToggle && (
           <Switch
             checked={notificationsEnabled}
             onCheckedChange={setNotificationsEnabled}
+            className="shrink-0"
           />
-        </div>
-      </nav>
+        )}
+      </div>
+    );
+  };
 
-      {/* Show More */}
-      {/*<button className="flex items-center gap-2 px-6 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ChevronDown className="w-4 h-4" />
-        Show more
-      </button>*/}
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Language Selector */}
-      {/*<div className="px-6 py-3">
-        <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <Globe className="w-5 h-5" />
-          <span>🇬🇧 English</span>
-          <ChevronDown className="w-4 h-4 ml-auto" />
-        </button>
-      </div>*/}
-
-      {/* User Profile */}
-      <div className="p-6 pt-2 border-t border-border">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-foreground">{displayName}</p>
-            <p className="text-xs text-muted-foreground">ID: {userId}</p>
-          </div>
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
+      {/* Close button — only inside the mobile Sheet */}
+      {onNavigate && (
+        <div className="flex justify-end px-4 pt-4 pb-2">
           <button
-            onClick={handleLogout}
-            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Close menu"
+            onClick={handleNavClick}
+            className="p-2 -mr-2 text-sidebar-foreground hover:text-white transition-colors"
           >
-            <LogOut className="w-5 h-5" />
+            <HugeiconsIcon icon={Cancel01Icon} size={22} />
           </button>
         </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto px-4 py-2">
+        {/* Account */}
+        <div className="mb-6">
+          <p className="px-3 mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Account
+          </p>
+          <nav className="space-y-1">
+            {accountItems.map((item) => (
+              <MenuItem key={item.label} item={item} />
+            ))}
+          </nav>
+        </div>
+
+        {/* Support */}
+        <div className="mb-6">
+          <p className="px-3 mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Support
+          </p>
+          <nav className="space-y-1">
+            {supportItems.map((item) => (
+              <MenuItem key={item.label} item={item} />
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 pb-6 pt-2 border-t border-sidebar-border">
+        <div className="py-4">
+          <p className="text-sm font-bold text-white">{displayName}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Account ID</p>
+          <p className="text-xs font-mono text-muted-foreground">{userId}</p>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 px-3 py-3 rounded-xl text-sidebar-foreground hover:bg-sidebar-accent hover:text-white transition-colors"
+        >
+          <HugeiconsIcon icon={Logout02Icon} size={20} />
+          <span className="text-sm font-semibold">Log out</span>
+        </button>
       </div>
     </div>
   );
@@ -179,7 +157,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
   }
 
   return (
-    <aside className="hidden lg:flex w-64 flex-col border-r border-border flex-shrink-0">
+    <aside className="hidden lg:flex w-64 flex-col border-r border-sidebar-border flex-shrink-0">
       <SidebarContent />
     </aside>
   );
