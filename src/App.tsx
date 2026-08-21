@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import DashboardPage from "./pages/DashboardPage";
+import ReceiveSmsPage from "./pages/ReceiveSmsPage";
+import WalletPage from "./pages/WalletPage";
 import SmsInboxPage from "./pages/SmsInboxPage";
 import HistoryPage from "./pages/HistoryPage";
 import MarketplacePage from "./pages/MarketplacePage";
@@ -37,6 +39,22 @@ const App = () => (
               }
             />
             <Route
+              path="/dashboard/buy"
+              element={
+                <ProtectedRoute>
+                  <ReceiveSmsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/wallet"
+              element={
+                <ProtectedRoute>
+                  <WalletPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/dashboard/referral"
               element={
                 <ProtectedRoute>
@@ -44,6 +62,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/dashboard/history"
               element={
