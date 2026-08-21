@@ -3,7 +3,6 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import VerixLogo from "@/assets/verixsms-logo.svg";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,8 +14,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo */}
           <Link to="/" className="inline-flex items-center">
-            <img src={VerixLogo} alt="Verix logo" className="h-14 w-auto block invert" />
-            <span className="text-xl font-extrabold text-foreground leading-none -ml-5 -mb-2">erix.</span>
+            <span className="text-xl font-extrabold text-foreground leading-none -ml-5 -mb-2">Verix.</span>
           </Link>
 
           {/* Desktop Navigation */}
