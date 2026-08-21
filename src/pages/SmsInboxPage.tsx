@@ -3,6 +3,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import BottomNav from "@/components/dashboard/mobile/BottomNav";
 import NumberList from "@/components/dashboard/NumberList";
 import SmsFeed from "@/components/dashboard/SmsFeed";
 import { Settings, ArrowLeft, Menu } from "lucide-react";
@@ -144,6 +145,7 @@ const SmsInboxPage = () => {
             </div>
           )}
         </div>
+        <BottomNav />
       </div>
     );
   }
