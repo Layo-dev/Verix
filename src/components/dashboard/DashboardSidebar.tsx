@@ -95,7 +95,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       {/* Close button — only inside the mobile Sheet */}
-      {onNavigate && (
+      {/*{onNavigate && (
         <div className="flex justify-end px-4 pt-4 pb-2">
           <button
             aria-label="Close menu"
@@ -105,7 +105,7 @@ const DashboardSidebar = ({ contentOnly, onNavigate }: DashboardSidebarProps) =>
             <HugeiconsIcon icon={Cancel01Icon} size={22} />
           </button>
         </div>
-      )}
+      )}*/}
 
       <div className="flex-1 overflow-y-auto px-4 py-2">
         {/* Account */}
