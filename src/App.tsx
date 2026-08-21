@@ -39,6 +39,22 @@ const App = () => (
               }
             />
             <Route
+              path="/dashboard/buy"
+              element={
+                <ProtectedRoute>
+                  <ReceiveSmsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/wallet"
+              element={
+                <ProtectedRoute>
+                  <WalletPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/dashboard/referral"
               element={
                 <ProtectedRoute>
@@ -46,6 +62,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/dashboard/history"
               element={
