@@ -1,18 +1,31 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PlusSignIcon, Call02Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { useProfileBalance } from "@/hooks/useProfileBalance";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import TopUpModal from "../TopUpModal";
 
-interface BalanceCardProps {
-  transactions?: number;
-}
-
-const BalanceCard = ({ transactions = 0 }: BalanceCardProps) => {
+const BalanceCard = () => {
   const { data: balance = 0 } = useProfileBalance();
+  const { user } = useAuth();
   const [topUpOpen, setTopUpOpen] = useState(false);
   const navigate = useNavigate();
+  const { data: transactionCount, isLoading: transactionsLoading } = useQuery({
+    queryKey: ["wallet-transaction-count", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("wallet_transactions")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id);
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
 
   return (
     <div className="rounded-3xl bg-surface border border-border p-5 overflow-hidden">
@@ -26,7 +39,9 @@ const BalanceCard = ({ transactions = 0 }: BalanceCardProps) => {
         </div>
         <div className="text-right shrink-0">
           <p className="text-xs font-medium text-muted-foreground">Transactions</p>
-          <p className="text-xl font-bold text-foreground mt-1">{transactions}</p>
+          <p className="text-xl font-bold text-foreground mt-1">
+            {transactionsLoading ? "..." : transactionCount ?? 0}
+          </p>
         </div>
       </div>
 

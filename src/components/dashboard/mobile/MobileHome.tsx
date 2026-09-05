@@ -11,7 +11,7 @@ const MobileHome = () => {
       <MobileHeader />
 
       <main className="px-4 pt-4 pb-28 space-y-6">
-        <BalanceCard transactions={24} />
+        <BalanceCard />
         <QuickActions />
         <RecentActivity />
         <ExploreMarketplace />
