@@ -3,7 +3,7 @@ import BottomNav from "./BottomNav";
 import BalanceCard from "./BalanceCard";
 import QuickActions from "./QuickActions";
 import RecentActivity from "./RecentActivity";
-import MarketplacePreview from "./MarketplacePreview";
+import ExploreMarketplace from "./ExploreMarketplace";
 
 const MobileHome = () => {
   return (
@@ -14,7 +14,7 @@ const MobileHome = () => {
         <BalanceCard transactions={24} />
         <QuickActions />
         <RecentActivity />
-        <MarketplacePreview />
+        <ExploreMarketplace />
       </main>
       
       <BottomNav />

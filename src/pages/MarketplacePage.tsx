@@ -72,6 +72,7 @@ const MarketplacePage = () => {
         .select(
           "id, title, image_url, price_usd, stock, country_code, description, delivery_items, marketplace_categories ( name )"
         )
+        .eq("is_active", true)
         .order("created_at", { ascending: false }),
       supabase.from("marketplace_categories").select("id, name").order("name"),
       supabase
