@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Stats from "@/components/Stats";
+//import Stats from "@/components/Stats";
 import VirtualNumbers from "@/components/VirtualNumbers";
 import Partners from "@/components/Partners";
 import Dashboard from "@/components/Dashboard";
@@ -15,7 +15,7 @@ const Index = () => {
       <Navbar />
       <main>
         <Hero />
-        <Stats />
+        {/*<Stats />*/}
         <VirtualNumbers />
         <Partners />
         <Dashboard />
