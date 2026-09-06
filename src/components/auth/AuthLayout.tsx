@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
-import VerixLogo from "@/assets/verixsms-logo.svg";
+import VerixLogo from "@/assets/VerixLogo.svg";
 
 
 const Wordmark = ({ className = "" }: { className?: string }) => (
-  <div className={`flex items-center ${className}`}>
-    <img src={VerixLogo} alt="Verix logo" className="h-12 w-auto block invert" />
-    <span className="text-xl font-extrabold text-foreground leading-none -ml-6 -mb-2">
-      erix.
+  <div className={`flex items-center gap-1.5 ${className}`}>
+    <img src={VerixLogo} alt="Verix logo" className="h-7 w-auto block" />
+    <span className="text-xl font-extrabold text-foreground leading-none">
+      Verix.
     </span>
   </div>
 );
