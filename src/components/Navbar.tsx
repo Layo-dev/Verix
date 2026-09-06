@@ -15,9 +15,9 @@ const Navbar = () => {
       <div className="container mx-auto rounded-2xl border border-border bg-card/90 px-4 backdrop-blur-md md:rounded-full md:px-6">
         <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo */}
-          <Link to="/" className="inline-flex items-center gap-1.5">
-            <img src={VerixLogo} alt="Verix logo" className="h-7 w-auto block" />
-            <span className="text-xl font-extrabold text-foreground leading-none">Verix.</span>
+          <Link to="/" className="inline-flex items-center gap-2">
+            <img src={VerixLogo} alt="Verix logo" className="h-9 w-auto block" />
+            <span className="text-2xl font-extrabold text-foreground leading-none">Verix.</span>
           </Link>
 
           {/* Desktop Navigation */}

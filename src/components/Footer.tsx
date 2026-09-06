@@ -19,7 +19,7 @@ const Footer = () => {
           {/* Logo */}
           <div>
             <div className="inline-flex items-center gap-2 mb-2">
-              <img src={VerixLogo} alt="Verix logo" className="h-8 w-auto block" />
+              <img src={VerixLogo} alt="Verix logo" className="h-10 w-auto block" />
               <span className="text-2xl font-bold text-foreground leading-none">Verix.</span>
             </div>
             <p className="text-sm text-muted-foreground">Copyright ©2026. All rights reserved.</p>
