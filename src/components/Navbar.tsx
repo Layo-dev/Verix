@@ -16,7 +16,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-2">
-            <img src={VerixLogo} alt="Verix logo" className="h-9 w-auto block" />
+            <img src={VerixLogo} alt="Verix logo" className="h-12 w-auto block" />
             <span className="text-2xl font-extrabold text-foreground leading-none">Verix.</span>
           </Link>
 
