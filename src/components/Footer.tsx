@@ -82,7 +82,7 @@ const Footer = () => {
                 placeholder="Enter your mail"
                 className="flex-1 min-w-0 px-4 py-2 rounded-full border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-accent"
               />
-              <Button variant="default" size="default" className="flex-shrink-0">
+              <Button variant="accent" size="default" className="flex-shrink-0">
                 Subscribe
               </Button>
             </div>
