@@ -1,4 +1,5 @@
-import { Star } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { StarIcon } from "@hugeicons/core-free-icons";
 
 const Testimonials = () => {
   const testimonials = [
@@ -69,7 +70,7 @@ const Testimonials = () => {
                 </div>
                 {testimonial.rating && (
                   <div className="flex items-center gap-1">
-                    <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                    <HugeiconsIcon icon={StarIcon} size={14} className="fill-accent text-accent" />
                     <span className="text-sm font-medium">{testimonial.rating}</span>
                   </div>
                 )}

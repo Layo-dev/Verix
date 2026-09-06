@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Lock, Play, Sparkles } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { SquareLock02Icon, PlayIcon, SparklesIcon } from "@hugeicons/core-free-icons";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
@@ -11,7 +12,7 @@ const Hero = () => {
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-muted-foreground sm:text-sm">
-            <Sparkles size={14} className="text-accent" />
+            <HugeiconsIcon icon={SparklesIcon} size={14} className="text-accent" />
             Trusted by thousands of users
           </span>
 
@@ -28,13 +29,13 @@ const Hero = () => {
           <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
             <Link to="/signup">
               <Button variant="accent" size="lg" className="gap-2 rounded-full">
-                <Lock size={18} />
+                <HugeiconsIcon icon={SquareLock02Icon} size={18} />
                 Open An Account
               </Button>
             </Link>
             <Link to="/dashboard">
               <Button variant="heroOutline" size="lg" className="gap-2 rounded-full">
-                <Play size={18} />
+                <HugeiconsIcon icon={PlayIcon} size={18} />
                 Buy a Number
               </Button>
             </Link>

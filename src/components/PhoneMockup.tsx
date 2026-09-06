@@ -1,4 +1,5 @@
-import { ArrowUpRight, Edit, Wallet } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowUpRight01Icon, Edit02Icon, Wallet01Icon } from "@hugeicons/core-free-icons";
 
 const PhoneMockup = () => {
   return (
@@ -36,7 +37,7 @@ const PhoneMockup = () => {
                   <span className="text-sm align-top">$</span>4,4089
                 </p>
                 <button className="flex items-center gap-1 text-xs bg-background rounded-full px-3 py-1.5 border border-border">
-                  <Edit size={12} />
+                  <HugeiconsIcon icon={Edit02Icon} size={12} />
                   Edit
                 </button>
               </div>
@@ -45,7 +46,7 @@ const PhoneMockup = () => {
             {/* Action Tabs */}
             <div className="flex gap-2">
               <button className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-full py-2.5 text-sm font-medium">
-                <Wallet size={14} />
+                <HugeiconsIcon icon={Wallet01Icon} size={14} />
                 Payout
               </button>
               <button className="flex-1 text-center py-2.5 text-sm text-muted-foreground">
@@ -90,7 +91,7 @@ const PhoneMockup = () => {
             <p className="text-xs text-muted-foreground mb-1">Total Income</p>
             <p className="text-sm md:text-lg font-bold">90,560.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
             <p className="text-xs text-success flex items-center gap-1 mt-1">
-              <ArrowUpRight size={12} />
+              <HugeiconsIcon icon={ArrowUpRight01Icon} size={12} />
               60% increase
             </p>
           </div>
@@ -98,7 +99,7 @@ const PhoneMockup = () => {
             <p className="text-xs text-muted-foreground mb-1">Total Expense</p>
             <p className="text-sm md:text-lg font-bold">19,760.00<span className="text-xs text-muted-foreground ml-1">(USD)</span></p>
             <p className="text-xs text-destructive flex items-center gap-1 mt-1">
-              <ArrowUpRight size={12} className="rotate-90" />
+              <HugeiconsIcon icon={ArrowUpRight01Icon} size={12} className="rotate-90" />
               40% decrease
             </p>
           </div>

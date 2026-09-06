@@ -1,9 +1,10 @@
 import { SiAmazon, SiFacebook, SiTiktok, SiX, SiWhatsapp, SiGoogle } from "react-icons/si";
-import { Ticket } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Ticket01Icon } from "@hugeicons/core-free-icons";
 
 const services = [
   { name: "Amazon", icon: SiAmazon, count: "967761 pcs", price: "$0.03" },
-  { name: "Ticketmaster", icon: Ticket, count: "845320 pcs", price: "$0.05" },
+  { name: "Ticketmaster", icon: Ticket01Icon, count: "845320 pcs", price: "$0.05" },
   { name: "Google / YouTube / Gmail", icon: SiGoogle, count: "723194 pcs", price: "$0.04" },
   { name: "Facebook", icon: SiFacebook, count: "612487 pcs", price: "$0.03" },
   { name: "TikTok / Douyin", icon: SiTiktok, count: "534892 pcs", price: "$0.04" },

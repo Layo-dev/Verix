@@ -1,23 +1,24 @@
-import { Globe, Zap, MessageSquareText, Wallet } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Globe02Icon, FlashIcon, Message01Icon, Wallet01Icon } from "@hugeicons/core-free-icons";
 
 const features = [
   {
-    icon: Globe,
+    icon: Globe02Icon,
     title: "Global Coverage",
     description: "Numbers from multiple countries.",
   },
   {
-    icon: Zap,
+    icon: FlashIcon,
     title: "Fast Activation",
     description: "Get your number in seconds.",
   },
   {
-    icon: MessageSquareText,
+    icon: Message01Icon,
     title: "Real-Time SMS",
     description: "Receive verification codes directly in your dashboard.",
   },
   {
-    icon: Wallet,
+    icon: Wallet01Icon,
     title: "Pay As You Go",
     description: "Only pay for the numbers you need.",
   },
@@ -45,7 +46,7 @@ const VirtualNumbers = () => {
               className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-accent/40"
             >
               <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-accent/10">
-                <feature.icon size={20} className="text-accent" />
+                <HugeiconsIcon icon={feature.icon} size={20} className="text-accent" />
               </div>
               <h3 className="mb-2 text-lg font-bold text-foreground">
                 {feature.title}
