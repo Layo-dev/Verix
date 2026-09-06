@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Menu01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import VerixLogo from "@/assets/VerixLogo.svg";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,8 +15,9 @@ const Navbar = () => {
       <div className="container mx-auto rounded-2xl border border-border bg-card/90 px-4 backdrop-blur-md md:rounded-full md:px-6">
         <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo */}
-          <Link to="/" className="inline-flex items-center">
-            <span className="text-xl font-extrabold text-foreground leading-none -ml-5 -mb-2">Verix.</span>
+          <Link to="/" className="inline-flex items-center gap-1.5">
+            <img src={VerixLogo} alt="Verix logo" className="h-7 w-auto block" />
+            <span className="text-xl font-extrabold text-foreground leading-none">Verix.</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -58,7 +61,7 @@ const Navbar = () => {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <HugeiconsIcon icon={Cancel01Icon} size={24} /> : <HugeiconsIcon icon={Menu01Icon} size={24} />}
           </button>
         </div>
 

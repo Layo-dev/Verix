@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { SquareLock02Icon } from "@hugeicons/core-free-icons";
 import { SiFacebook, SiTiktok, SiX, SiInstagram, SiTelegram} from "react-icons/si";
-import VerixLogo from "@/assets/verixsms-logo.svg";
+import VerixLogo from "@/assets/VerixLogo.svg";
 
 const Footer = () => {
   const links = {
@@ -17,16 +18,16 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 pb-12 border-b border-border">
           {/* Logo */}
           <div>
-            <div className="inline-flex items-center mb-2">
-              <img src={VerixLogo} alt="Verix logo" className="h-16 w-auto block" />
-              <span className="text-2xl font-bold text-foreground leading-none -ml-6 -mb-3">erix.</span>
+            <div className="inline-flex items-center gap-2 mb-2">
+              <img src={VerixLogo} alt="Verix logo" className="h-8 w-auto block" />
+              <span className="text-2xl font-bold text-foreground leading-none">Verix.</span>
             </div>
             <p className="text-sm text-muted-foreground">Copyright ©2026. All rights reserved.</p>
           </div>
 
           {/* CTA Button */}
           <Button variant="hero" size="lg" className="gap-2">
-            <Lock size={18} />
+            <HugeiconsIcon icon={SquareLock02Icon} size={18} />
             Open An Account
           </Button>
         </div>
