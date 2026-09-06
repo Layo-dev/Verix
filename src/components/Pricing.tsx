@@ -4,7 +4,7 @@ import { Ticket01Icon } from "@hugeicons/core-free-icons";
 
 const services = [
   { name: "Amazon", icon: SiAmazon, count: "967761 pcs", price: "$0.03" },
-  { name: "Ticketmaster", icon: Ticket01Icon, count: "845320 pcs", price: "$0.05" },
+  { name: "Ticketmaster", icon: Ticket01Icon, hugeicon: true, count: "845320 pcs", price: "$0.05" },
   { name: "Google / YouTube / Gmail", icon: SiGoogle, count: "723194 pcs", price: "$0.04" },
   { name: "Facebook", icon: SiFacebook, count: "612487 pcs", price: "$0.03" },
   { name: "TikTok / Douyin", icon: SiTiktok, count: "534892 pcs", price: "$0.04" },
@@ -34,7 +34,11 @@ const Pricing = () => {
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-                  <service.icon size={20} className="text-accent" />
+                  {"hugeicon" in service ? (
+                    <HugeiconsIcon icon={service.icon as never} size={20} className="text-accent" />
+                  ) : (
+                    <service.icon size={20} className="text-accent" />
+                  )}
                 </div>
                 <div>
                   <p className="font-medium text-foreground text-sm">{service.name}</p>
