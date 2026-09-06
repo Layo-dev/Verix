@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Menu, Search, Package, Wallet } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import ButtomNav from "@/components/dashboard/mobile/ButtomNav";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
