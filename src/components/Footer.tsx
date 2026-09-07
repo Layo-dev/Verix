@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SquareLock02Icon } from "@hugeicons/core-free-icons";
@@ -95,11 +96,11 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
+            <Link to="/legal" className="hover:text-foreground transition-colors">Privacy Policy</Link>
             <span>•</span>
-            <a href="#" className="hover:text-foreground transition-colors">Refund Policy</a> 
+            <Link to="/legal" className="hover:text-foreground transition-colors">Refund Policy</Link>
             <span>•</span>
-            <a href="#" className="hover:text-foreground transition-colors">Terms & Conditions</a>
+            <Link to="/legal" className="hover:text-foreground transition-colors">Terms & Conditions</Link>
           </div>
 
           {/* Social Icons */}

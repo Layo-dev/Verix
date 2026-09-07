@@ -16,6 +16,9 @@ import HistoryPage from "./pages/HistoryPage";
 import MarketplacePage from "./pages/MarketplacePage";
 import NotFound from "./pages/NotFound";
 import PaystackCallback from "./pages/PaystackCallback";
+import SupportPage from "./pages/SupportPage";
+import LegalPage from "./pages/LegalPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +33,18 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/legal" element={<LegalPage />} />
+            <Route path="/terms" element={<LegalPage />} />
+            <Route path="/privacy" element={<LegalPage />} />
+            <Route
+              path="/dashboard/support"
+              element={
+                <ProtectedRoute>
+                  <SupportPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard"
               element={
