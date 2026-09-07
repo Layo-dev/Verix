@@ -16,7 +16,7 @@ import supportIllustration from "@/assets/support-illustration.png";
 const channels = [
   {
     label: "WhatsApp",
-    href: "https://wa.me/",
+    href: "https://wa.me/+2347026150575",
     icon: SiWhatsapp,
     iconClass: "text-[#25D366]",
     ringClass: "bg-[#25D366]/15",
