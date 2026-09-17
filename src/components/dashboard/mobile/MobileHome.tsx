@@ -2,7 +2,7 @@ import MobileHeader from "./MobileHeader";
 import BottomNav from "./BottomNav";
 import BalanceCard from "./BalanceCard";
 import QuickActions from "./QuickActions";
-import RecentActivity from "./RecentActivity";
+//import RecentActivity from "./RecentActivity";
 import ExploreMarketplace from "./ExploreMarketplace";
 
 const MobileHome = () => {
@@ -13,7 +13,7 @@ const MobileHome = () => {
       <main className="px-4 pt-4 pb-28 space-y-6">
         <BalanceCard />
         <QuickActions />
-        <RecentActivity />
+        {/* <RecentActivity /> */}
         <ExploreMarketplace />
       </main>
       
