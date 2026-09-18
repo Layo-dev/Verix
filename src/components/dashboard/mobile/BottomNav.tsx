@@ -4,7 +4,7 @@ import {
   Home01Icon,
   Message01Icon,
   InboxIcon,
-  Wallet01Icon,
+  WorkHistoryIcon,
 } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,7 @@ const items = [
   { label: "Home", href: "/dashboard", icon: Home01Icon },
   { label: "Receive", href: "/dashboard/buy", icon: Message01Icon },
   { label: "Inbox", href: "/dashboard/referral", icon: InboxIcon },
-  { label: "History", href: "/dashboard/history", icon: Wallet01Icon },
+  { label: "History", href: "/dashboard/history", icon: WorkHistoryIcon },
 ];
 
 const BottomNav = () => {
