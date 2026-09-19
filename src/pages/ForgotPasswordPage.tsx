@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import AuthInput from "@/components/auth/AuthInput";
 import AuthLayout from "@/components/auth/AuthLayout";
@@ -9,10 +10,26 @@ import { ArrowLeft02Icon, MailValidation01Icon } from "@hugeicons/core-free-icon
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // UI only for now — no request is sent.
+  
+    setLoading(true);
+    setError("");
+  
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+  
+    setLoading(false);
+  
+    if (error) {
+      setError("Something went wrong. Please try again.");
+      return;
+    }
+  
     setSent(true);
   };
 
@@ -78,13 +95,19 @@ const ForgotPasswordPage = () => {
               required
             />
 
-            <Button
-              type="submit"
-              variant="accent"
-              className="h-12 w-full text-base font-bold"
-            >
-              Send reset link
-            </Button>
+            {error && (
+              <p className="text-sm text-destructive">
+                {error}
+              </p>
+            )}
+          <Button
+            type="submit"
+            variant="accent"
+            disabled={loading}
+            className="h-12 w-full text-base font-bold"
+          >
+            {loading ? "Sending..." : "Send reset link"}
+          </Button>
           </form>
 
           <Link
