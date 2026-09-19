@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -10,19 +10,34 @@ import {
   LockPasswordIcon,
   CheckmarkCircle02Icon,
   ArrowLeft02Icon,
+  Loading03Icon,
 } from "@hugeicons/core-free-icons";
 
 import { supabase } from "@/integrations/supabase/client";
 
+const SESSION_DETECTION_TIMEOUT = 5000;
+
+const passwordStrengthHint = (password: string): string => {
+  if (!password) return "";
+  const hasLength = password.length >= 8;
+  const hasNumber = /\d/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password);
+  if (hasLength && hasNumber && hasSymbol) return "Strong password.";
+  if (hasLength && (hasNumber || hasSymbol)) return "Good — add a number and symbol to make it stronger.";
+  return "Use at least 8 characters with a number and a symbol.";
+};
+
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
 
+  const [checking, setChecking] = useState(true);
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const {
@@ -30,11 +45,21 @@ const ResetPasswordPage = () => {
     } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setReady(true);
+        setChecking(false);
       }
     });
 
+    const timeout = setTimeout(() => {
+      setChecking((current) => {
+        if (current) setReady(false);
+        return false;
+      });
+    }, SESSION_DETECTION_TIMEOUT);
+
     return () => {
       subscription.unsubscribe();
+      clearTimeout(timeout);
+      if (redirectTimer.current) clearTimeout(redirectTimer.current);
     };
   }, []);
 
@@ -67,6 +92,7 @@ const ResetPasswordPage = () => {
     }
 
     setSuccess(true);
+    redirectTimer.current = setTimeout(() => navigate("/login"), 3000);
   };
 
   if (success) {
@@ -85,8 +111,9 @@ const ResetPasswordPage = () => {
               Password updated
             </h1>
 
-            <p className="text-sm text-muted-foreground">
-              Your Verix password has been successfully changed.
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              Your Verix password has been successfully changed. Redirecting you
+              to login…
             </p>
           </header>
 
@@ -123,9 +150,21 @@ const ResetPasswordPage = () => {
           </p>
         </header>
 
-        {!ready ? (
+        {checking ? (
+          <div
+            className="flex items-center gap-3 text-sm text-muted-foreground"
+            aria-live="polite"
+          >
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              size={18}
+              className="animate-spin"
+            />
+            Verifying your recovery link…
+          </div>
+        ) : !ready ? (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground" aria-live="polite">
               This password reset link is invalid or has expired.
             </p>
 
@@ -149,6 +188,7 @@ const ResetPasswordPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
+              helperText={passwordStrengthHint(password)}
               required
             />
 
@@ -163,7 +203,7 @@ const ResetPasswordPage = () => {
             />
 
             {error && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" role="alert">
                 {error}
               </p>
             )}
