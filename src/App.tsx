@@ -19,7 +19,7 @@ import PaystackCallback from "./pages/PaystackCallback";
 import SupportPage from "./pages/SupportPage";
 import LegalPage from "./pages/LegalPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -34,6 +34,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/legal" element={<LegalPage />} />
             <Route path="/terms" element={<LegalPage />} />
             <Route path="/privacy" element={<LegalPage />} />
