@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,30 +7,48 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft02Icon, MailValidation01Icon } from "@hugeicons/core-free-icons";
 
+const RESEND_COOLDOWN = 60;
+
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cooldown, setCooldown] = useState(0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => setCooldown((c) => c - 1), 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  const sendResetLink = async () => {
     setLoading(true);
     setError("");
-  
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
-  
+
     setLoading(false);
-  
+
     if (error) {
       setError("Something went wrong. Please try again.");
       return;
     }
-  
+
     setSent(true);
+    setCooldown(RESEND_COOLDOWN);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await sendResetLink();
+  };
+
+  const handleResend = async () => {
+    if (cooldown > 0 || loading) return;
+    await sendResetLink();
   };
 
   return (
@@ -45,7 +63,7 @@ const ForgotPasswordPage = () => {
             <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
               Check your email
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground" aria-live="polite">
               If an account exists for{" "}
               <span className="font-semibold text-foreground">
                 {email || "your email"}
@@ -55,13 +73,23 @@ const ForgotPasswordPage = () => {
           </header>
 
           <div className="space-y-3">
+            {error && (
+              <p className="text-sm text-destructive" role="alert">
+                {error}
+              </p>
+            )}
             <Button
               type="button"
               variant="accent"
               className="h-12 w-full text-base font-bold"
-              onClick={() => setSent(false)}
+              onClick={handleResend}
+              disabled={cooldown > 0 || loading}
             >
-              Resend link
+              {loading
+                ? "Sending..."
+                : cooldown > 0
+                  ? `Resend link in ${cooldown}s`
+                  : "Resend link"}
             </Button>
             <Link
               to="/login"
@@ -96,7 +124,7 @@ const ForgotPasswordPage = () => {
             />
 
             {error && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" role="alert">
                 {error}
               </p>
             )}
